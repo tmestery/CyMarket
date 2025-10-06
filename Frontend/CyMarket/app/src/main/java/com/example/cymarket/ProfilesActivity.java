@@ -51,7 +51,12 @@ public class ProfilesActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String savedUri = prefs.getString("profile_image_uri", null);
         if (savedUri != null) {
-            profileImage.setImageURI(Uri.parse(savedUri));
+            try {
+                Uri uri = Uri.parse(savedUri);
+                profileImage.setImageURI(uri);
+            } catch (Exception e) {
+                profileImage.setImageResource(R.drawable.pfp);
+            }
         } else {
             profileImage.setImageResource(R.drawable.pfp);
         }

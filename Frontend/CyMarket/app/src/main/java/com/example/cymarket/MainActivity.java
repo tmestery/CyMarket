@@ -2,6 +2,7 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +21,13 @@ public class MainActivity extends AppCompatActivity {
         profileText = findViewById(R.id.main_profile_btn);
         settingsText = findViewById(R.id.main_settings_btn);
 
-        String username = getIntent().getStringExtra("username");
+        String tempUsername = getIntent().getStringExtra("username");
+        if (tempUsername == null) {
+            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            tempUsername = prefs.getString("username", null);
+        }
+        final String username = tempUsername; // effectively final
+
 
         profileText.setOnClickListener(new View.OnClickListener() {
             @Override

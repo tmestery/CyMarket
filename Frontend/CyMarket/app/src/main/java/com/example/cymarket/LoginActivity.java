@@ -2,6 +2,7 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -84,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
                 response -> {
                     try {
                         String fetchedUsername = response.getString("username");
-
+                        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                        prefs.edit().putString("username", fetchedUsername).apply();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("username", fetchedUsername);
                         startActivity(intent);
