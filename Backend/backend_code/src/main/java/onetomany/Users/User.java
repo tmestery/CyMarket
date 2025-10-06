@@ -38,8 +38,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
     private Set<Item> likedItems = new HashSet<>();
-    
-    
+
+    private String passwordRecoveryCode;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date passwordRecoveryExpiry;
 
     @Lob
     private byte[] profileImage;
@@ -164,6 +167,22 @@ public class User {
 
     public void setProfileImage(byte[] profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public String getPasswordRecoveryCode() {
+        return passwordRecoveryCode;
+    }
+
+    public void setPasswordRecoveryCode(String passwordRecoveryCode) {
+        this.passwordRecoveryCode = passwordRecoveryCode;
+    }
+
+    public Date getPasswordRecoveryExpiry() {
+        return passwordRecoveryExpiry;
+    }
+
+    public void setPasswordRecoveryExpiry(Date passwordRecoveryExpiry) {
+        this.passwordRecoveryExpiry = passwordRecoveryExpiry;
     }
    
 
