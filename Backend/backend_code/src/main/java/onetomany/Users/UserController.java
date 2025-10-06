@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.http.MediaType;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -42,10 +43,15 @@ public class UserController {
     UserRepository userRepository;
     @Autowired
     ItemsRepository itemRepository;
+    @Autowired
+    PasswordRecoveryService passwordRecoveryService;
 
 
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
+
+    private String recoverySent = "{\"message\":\"Recovery code sent\"}";
+    private String passwordReset = "{\"message\":\"Password updated\"}";
 
     @GetMapping(path = "/users")
     List<User> getAllUsersss(){
@@ -115,6 +121,45 @@ public class UserController {
         userRepository.save(user);
 
         return success;
+    }
+
+    @PostMapping(path = "/users/recovery-code")
+    public ResponseEntity<String> requestPasswordRecovery(@RequestBody PasswordRecoveryRequest request) {
+        if (request == null || !StringUtils.hasText(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+
+        User user = userRepository.findByEmailId(request.getEmail());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        passwordRecoveryService.sendRecoveryEmail(user);
+        return ResponseEntity.ok(recoverySent);
+    }
+
+    @PostMapping(path = "/users/recover-password")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequest request) {
+        if (request == null || !StringUtils.hasText(request.getEmail())
+                || !StringUtils.hasText(request.getRecoveryCode())
+                || !StringUtils.hasText(request.getNewPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email, recovery code and new password are required");
+        }
+
+        User user = userRepository.findByEmailId(request.getEmail());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        if (!passwordRecoveryService.isRecoveryCodeValid(user, request.getRecoveryCode())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired recovery code");
+        }
+
+        user.setUserPassword(request.getNewPassword());
+        passwordRecoveryService.clearRecoveryDetails(user);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(passwordReset);
     }
     @PostMapping(path = "/users/addItem/{username}/{itemID}")
     String createUser( @PathVariable String username, @PathVariable int itemID){
