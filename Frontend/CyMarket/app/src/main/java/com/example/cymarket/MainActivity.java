@@ -28,12 +28,17 @@ public class MainActivity extends AppCompatActivity {
         }
         final String username = tempUsername; // effectively final
 
-
         profileText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                String email = prefs.getString("email", null);
+                String password = prefs.getString("password", null);
+
                 Intent intent = new Intent(MainActivity.this, ProfilesActivity.class);
                 intent.putExtra("username", username);
+                intent.putExtra("email", email);
+                intent.putExtra("password", password);
                 startActivity(intent);
             }
         });

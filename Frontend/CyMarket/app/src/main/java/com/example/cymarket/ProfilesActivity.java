@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -45,24 +48,57 @@ public class ProfilesActivity extends AppCompatActivity {
 
         // Get username from intent and display it
         String username = getIntent().getStringExtra("username");
+        String password = getIntent().getStringExtra("password");
+        String email = getIntent().getStringExtra("email");
         usernameText.setText(username);
 
         // Set PFP if there
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String savedUri = prefs.getString("profile_image_uri", null);
         if (savedUri != null) {
-            try {
-                Uri uri = Uri.parse(savedUri);
-                profileImage.setImageURI(uri);
-            } catch (Exception e) {
-                profileImage.setImageResource(R.drawable.pfp);
+            Uri uri = Uri.parse(savedUri);
+            profileImage.setImageURI(uri);
+            if (profileImage.getDrawable() == null) {
+                profileImage.setImageResource(R.drawable.pfp); // fallback
             }
         } else {
             profileImage.setImageResource(R.drawable.pfp);
         }
 
         // GET join date data here
+        TextView joinDateText = findViewById(R.id.textView2);
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://coms-3090-056.class.las.iastate.edu:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        try {
+            String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8.toString());
+            String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
+
+            Call<String> call = apiService.getUserJoinDate(encodedEmail, encodedPassword);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        joinDateText.setText("Joined: " + response.body());
+                    } else {
+                        joinDateText.setText("Join date unavailable");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    joinDateText.setText("Error loading join date");
+                    Toast.makeText(getApplicationContext(), "Failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            joinDateText.setText("Encoding error");
+        }
 
         // Open image picker when profile image is clicked
         profileImage.setOnClickListener(v -> {

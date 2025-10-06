@@ -87,8 +87,12 @@ public class LoginActivity extends AppCompatActivity {
                         String fetchedUsername = response.getString("username");
                         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                         prefs.edit().putString("username", fetchedUsername).apply();
+                        prefs.edit().putString("password", password).apply();
+                        prefs.edit().putString("email", email).apply();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("username", fetchedUsername);
+                        intent.putExtra("password", password);
+                        intent.putExtra("email", email);
                         startActivity(intent);
                         finish();
                     } catch (JSONException e) {
