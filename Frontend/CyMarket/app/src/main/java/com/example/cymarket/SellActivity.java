@@ -14,7 +14,11 @@ public class SellActivity extends AppCompatActivity {
 
     private Button backButton;     // define backbutton variable
 
-    private EditText itemNameEditText;    // define itemnameedittext varaible
+    private EditText itemNameEditText;    // define itemnameedittext variable
+
+    private EditText priceEditText;     // define priceedittext variable
+    private EditText descriptionEditText;    // define descriptionedittext variable
+    private EditText quantityEditText;      // define quantityedittext variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,9 @@ public class SellActivity extends AppCompatActivity {
         messageText = findViewById(R.id.sell_msg_txt);
         backButton = findViewById(R.id.sell_back_btn);
         itemNameEditText = findViewById(R.id.sell_item_name_edt);
+        priceEditText = findViewById(R.id.sell_price_edt);
+        descriptionEditText = findViewById(R.id.sell_description_edt);
+        quantityEditText = findViewById(R.id.sell_quantity_edt);
 
         // establish listener for back button functionality
         backButton.setOnClickListener(new View.OnClickListener() {
