@@ -22,49 +22,44 @@ public class PasswordRecoveryService {
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
     private final SecureRandom secureRandom = new SecureRandom();
-    private final String defaultFromAddress;
+    private final String fromAddress;
 
     public PasswordRecoveryService(JavaMailSender mailSender,
                                    UserRepository userRepository,
-                                   @Value("${spring.mail.username:}") String defaultFromAddress) {
+                                   @Value("${app.mail.from:}") String fromAddress) {
         this.mailSender = mailSender;
         this.userRepository = userRepository;
-        this.defaultFromAddress = defaultFromAddress;
+        this.fromAddress = fromAddress;
     }
 
     public User prepareRecoveryCode(User user) {
         String recoveryCode = generateRecoveryCode();
         user.setPasswordRecoveryCode(recoveryCode);
-        user.setPasswordRecoveryExpiry(Date.from(Instant.now().plus(EXPIRATION_MINUTES, ChronoUnit.MINUTES)));
+        user.setPasswordRecoveryExpiry(Date.from(
+                Instant.now().plus(EXPIRATION_MINUTES, ChronoUnit.MINUTES)));
         return userRepository.save(user);
     }
 
     public void sendRecoveryEmail(User user) {
-        User updatedUser = prepareRecoveryCode(user);
-        SimpleMailMessage message = new SimpleMailMessage();
-        if (defaultFromAddress != null && !defaultFromAddress.isBlank()) {
-            message.setFrom(defaultFromAddress);
+        System.out.println(fromAddress);
+        if (fromAddress == null || fromAddress.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Configura app.mail.from con un remitente verificado en SendGrid");
         }
-        message.setTo(updatedUser.getEmailId());
-        message.setSubject("Password Recovery Code");
-        message.setText("Your password recovery code is: " + updatedUser.getPasswordRecoveryCode()
+        User updatedUser = prepareRecoveryCode(user);
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom(fromAddress);                     //  remitente verificado
+        msg.setTo(updatedUser.getEmailId());
+        msg.setSubject("Password Recovery Code");
+        msg.setText("Your password recovery code is: " + updatedUser.getPasswordRecoveryCode()
                 + "\nThis code will expire in " + EXPIRATION_MINUTES + " minutes."
                 + "\nIf you did not request this, please ignore this email.");
-
-        try {
-            mailSender.send(message);
-        } catch (MailException ex) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to send recovery email", ex);
-        }
+        mailSender.send(msg);
     }
 
     public boolean isRecoveryCodeValid(User user, String submittedCode) {
-        if (user.getPasswordRecoveryCode() == null || user.getPasswordRecoveryExpiry() == null) {
-            return false;
-        }
-        if (!user.getPasswordRecoveryCode().equals(submittedCode)) {
-            return false;
-        }
+        if (user.getPasswordRecoveryCode() == null || user.getPasswordRecoveryExpiry() == null) return false;
+        if (!user.getPasswordRecoveryCode().equals(submittedCode)) return false;
         return user.getPasswordRecoveryExpiry().after(new Date());
     }
 
@@ -74,10 +69,8 @@ public class PasswordRecoveryService {
     }
 
     private String generateRecoveryCode() {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < CODE_LENGTH; i++) {
-            builder.append(secureRandom.nextInt(10));
-        }
-        return builder.toString();
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < CODE_LENGTH; i++) b.append(secureRandom.nextInt(10));
+        return b.toString();
     }
 }

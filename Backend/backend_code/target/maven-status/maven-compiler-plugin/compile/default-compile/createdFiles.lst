@@ -1,10 +1,13 @@
-onetomany/Items/Item.class
 onetomany/Main.class
+onetomany/Users/PasswordResetRequest.class
+onetomany/Users/PasswordRecoveryService.class
 onetomany/Items/ItemsController.class
 onetomany/Items/ItemsRepository.class
-onetomany/Sellers/Seller.class
 onetomany/Users/User.class
-onetomany/Users/UserController.class
 onetomany/Sellers/SellerRepository.class
 onetomany/Sellers/SellerController.class
+onetomany/Items/Item.class
+onetomany/Sellers/Seller.class
+onetomany/Users/PasswordRecoveryRequest.class
+onetomany/Users/UserController.class
 onetomany/Users/UserRepository.class
