@@ -3,6 +3,7 @@ package com.example.cymarket;
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -23,4 +24,7 @@ public interface ApiService {
             @Path(value = "email", encoded = true) String email,
             @Path(value = "password", encoded = true) String password
     );
+
+    @DELETE("users/{id}")
+    Call<Void> deleteUser(@Path("id") String userId);
 }
