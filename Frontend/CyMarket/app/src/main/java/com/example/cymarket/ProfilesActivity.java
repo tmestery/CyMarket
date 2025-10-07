@@ -12,6 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.ByteArrayOutputStream;
@@ -55,26 +58,27 @@ public class ProfilesActivity extends AppCompatActivity {
         String email = getIntent().getStringExtra("email");
         usernameText.setText(username);
 
-        // Set PFP if there
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String savedUri = prefs.getString("profile_image_uri", null);
-        if (savedUri != null) {
-            try {
-                Uri uri = Uri.parse(savedUri);
-                InputStream inputStream = getContentResolver().openInputStream(uri);
-                if (inputStream != null) {
-                    Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(inputStream);
-                    profileImage.setImageBitmap(bitmap);
-                    inputStream.close();
-                } else {
-                    profileImage.setImageResource(R.drawable.pfp);
-                }
-            } catch (Exception e) {
-                profileImage.setImageResource(R.drawable.pfp);
-            }
-        } else {
-            profileImage.setImageResource(R.drawable.pfp);
-        }
+        // GET PFP if there
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/users/" + username + "/profile-image";
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        ImageRequest imageRequest = new ImageRequest(
+                url,
+                response -> {
+                    if (response != null) {
+                        profileImage.setImageBitmap(response);
+                    } else {
+                        profileImage.setImageResource(R.drawable.pfp);
+                    }
+                },
+                0, 0,
+                ImageView.ScaleType.CENTER_CROP,
+                Bitmap.Config.RGB_565,
+                error -> profileImage.setImageResource(R.drawable.pfp)
+        );
+
+        queue.add(imageRequest);
 
         // GET join date data here
         TextView joinDateText = findViewById(R.id.textView2);
@@ -116,7 +120,6 @@ public class ProfilesActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, PICK_IMAGE);
         });
-
 
         // Navigation buttons
         homeButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
