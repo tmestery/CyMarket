@@ -11,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,7 +33,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProfilesActivity extends AppCompatActivity {
-    private Button homeButton, messagesButton, settingsButton;
+    private Button homeButton, settingsButton;
     private TextView usernameText;
     private ImageView profileImage;
     private static final int PICK_IMAGE = 1;
@@ -44,7 +47,6 @@ public class ProfilesActivity extends AppCompatActivity {
         usernameText = findViewById(R.id.username_text);
         profileImage = findViewById(R.id.profile_image_view);
         homeButton = findViewById(R.id.prfls_home_page_btn);
-        messagesButton = findViewById(R.id.prfls_messages_btn);
         settingsButton = findViewById(R.id.prfls_setting_btn);
 
         // Get username from intent and display it
@@ -93,7 +95,7 @@ public class ProfilesActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        joinDateText.setText("Joined: " + response.body());
+                        joinDateText.setText("Join Date: " + response.body());
                     } else {
                         joinDateText.setText("Join date unavailable");
                     }
@@ -118,8 +120,23 @@ public class ProfilesActivity extends AppCompatActivity {
 
         // Navigation buttons
         homeButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
-        messagesButton.setOnClickListener(v -> startActivity(new Intent(this, MessagesActivity.class)));
         settingsButton.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_buy) {
+                startActivity(new Intent(ProfilesActivity.this, BuyActivity.class));
+                return true;
+            } else if (id == R.id.nav_sell) {
+                startActivity(new Intent(ProfilesActivity.this, SellActivity.class));
+                return true;
+            } else if (id == R.id.nav_chat) {
+                startActivity(new Intent(ProfilesActivity.this, MessagesActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override

@@ -5,31 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/profile_image_view"
-        android:layout_marginTop="40dp"
-        android:layout_width="145dp"
-        android:layout_height="145dp"
-        android:layout_gravity="center_horizontal"
-        app:srcCompat="@drawable/pfp" />
-
-    <TextView
-        android:id="@+id/username_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="USERNAME"
-        android:fontFamily="sans-serif-condensed-medium"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="40dp"
-        android:textSize="18dp"
-        android:textColor="#E63946">
-    </TextView>
-
     <!-- Main Content Block for Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:orientation="vertical"
         android:background="@drawable/card_background"
         android:elevation="8dp"
@@ -43,59 +23,93 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
             android:gravity="center"
-            android:weightSum="3"
-            android:layout_marginBottom="12dp">
+            android:orientation="horizontal"
+            android:weightSum="3">
 
+            <!-- Profile Button (left) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/prfls_home_page_btn"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="56dp"
-                android:layout_marginEnd="8dp"
-                android:text="Home"
-                android:textSize="13sp"
-                app:cornerRadius="16dp"
-                app:iconPadding="8dp"
-                android:elevation="4dp"
+                android:layout_width="108dp"
+                android:layout_height="44dp"
+                android:text="Profile"
+                android:textSize="14sp"
                 android:textColor="@color/white"
                 android:backgroundTint="#E63946"
-                android:contentDescription="Home" />
+                app:cornerRadius="20dp"
+                android:elevation="6dp"
+                android:layout_marginEnd="100dp"
+                android:contentDescription="Profile Navigation" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/prfls_messages_btn"
-                style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="56dp"
-                android:layout_marginEnd="8dp"
-                android:text="Message"
-                android:textSize="13sp"
-                app:cornerRadius="16dp"
-                app:iconPadding="8dp"
-                android:elevation="4dp"
-                android:textColor="@color/white"
-                android:backgroundTint="#E63946"
-                android:contentDescription="Messages" />
-
+            <!-- Settings Button (right) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/prfls_setting_btn"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="56dp"
-                android:text="Settings"
-                android:textSize="13sp"
-                app:cornerRadius="16dp"
-                app:iconPadding="8dp"
-                android:elevation="4dp"
-                android:textColor="@color/white"
+                android:layout_width="108dp"
+                android:layout_height="44dp"
                 android:backgroundTint="#E63946"
-                android:contentDescription="Settings" />
+                android:contentDescription="Settings Navigation"
+                android:elevation="6dp"
+                android:text="Settings"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:cornerRadius="20dp" />
+
+            <!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/prfls_home_page_btn"-->
+<!--                style="@style/Widget.MaterialComponents.Button"-->
+<!--                android:layout_width="195dp"-->
+<!--                android:layout_height="66dp"-->
+<!--                android:layout_marginEnd="150dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:backgroundTint="#E63946"-->
+<!--                android:contentDescription="Home"-->
+<!--                android:elevation="4dp"-->
+<!--                android:text="Home"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="13sp"-->
+<!--                app:cornerRadius="16dp"-->
+<!--                app:iconPadding="8dp" />-->
+
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/prfls_setting_btn"-->
+<!--                style="@style/Widget.MaterialComponents.Button"-->
+<!--                android:layout_width="450dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:backgroundTint="#E63946"-->
+<!--                android:contentDescription="Settings"-->
+<!--                android:elevation="4dp"-->
+<!--                android:text="Settings"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="13sp"-->
+<!--                app:cornerRadius="16dp"-->
+<!--                app:iconPadding="8dp" />-->
         </LinearLayout>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/profile_image_view"
+        android:layout_marginTop="15dp"
+        android:layout_width="145dp"
+        android:layout_height="145dp"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@drawable/pfp" />
+
+    <TextView
+        android:id="@+id/username_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="USERNAME"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="35dp"
+        android:textSize="18dp"
+        android:textColor="#E63946">
+    </TextView>
 
     <!-- Main Content Block where I will add: Liked Items -->
     <LinearLayout
@@ -127,6 +141,7 @@
             android:layout_height="54dp"
             android:autoSizeMaxTextSize="40dp"
             android:textSize="20dp"
+            android:layout_marginBottom="80dp"
             android:text="Liked Items" />
     </LinearLayout>
 
@@ -163,15 +178,15 @@
             android:text="Join Date" />
     </LinearLayout>
 
-    <!--    <Button-->
-<!--        android:layout_marginTop="80dp"-->
-<!--        android:id="@+id/prfls_notifs_btn"-->
-<!--        android:layout_width="150dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center"-->
-<!--        android:text="Notifs"-->
-<!--        android:textSize="20sp"-->
-<!--        android:backgroundTint="#E63946"-->
-<!--        android:textColor="@color/white">-->
-<!--    </Button>-->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:itemRippleColor="@color/buttons_2_color"
+        app:menu="@menu/bottom_nav_menu"
+        android:elevation="12dp" />
 </LinearLayout>
