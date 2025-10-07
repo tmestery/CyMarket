@@ -34,7 +34,7 @@
                 style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="108dp"
                 android:layout_height="44dp"
-                android:text="Profile"
+                android:text="Home"
                 android:textSize="14sp"
                 android:textColor="@color/white"
                 android:backgroundTint="#E63946"
@@ -56,37 +56,6 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:cornerRadius="20dp" />
-
-            <!--            <com.google.android.material.button.MaterialButton-->
-<!--                android:id="@+id/prfls_home_page_btn"-->
-<!--                style="@style/Widget.MaterialComponents.Button"-->
-<!--                android:layout_width="195dp"-->
-<!--                android:layout_height="66dp"-->
-<!--                android:layout_marginEnd="150dp"-->
-<!--                android:layout_weight="1"-->
-<!--                android:backgroundTint="#E63946"-->
-<!--                android:contentDescription="Home"-->
-<!--                android:elevation="4dp"-->
-<!--                android:text="Home"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:textSize="13sp"-->
-<!--                app:cornerRadius="16dp"-->
-<!--                app:iconPadding="8dp" />-->
-
-<!--            <com.google.android.material.button.MaterialButton-->
-<!--                android:id="@+id/prfls_setting_btn"-->
-<!--                style="@style/Widget.MaterialComponents.Button"-->
-<!--                android:layout_width="450dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:backgroundTint="#E63946"-->
-<!--                android:contentDescription="Settings"-->
-<!--                android:elevation="4dp"-->
-<!--                android:text="Settings"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:textSize="13sp"-->
-<!--                app:cornerRadius="16dp"-->
-<!--                app:iconPadding="8dp" />-->
         </LinearLayout>
     </LinearLayout>
 
