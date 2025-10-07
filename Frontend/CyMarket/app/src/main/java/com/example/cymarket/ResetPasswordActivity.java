@@ -48,7 +48,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
             return;
         }
 
-        String url = "https://your-backend-url.com/password/reset"; // replace with actual endpoint
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/users/recover-password"; // replace with actual endpoint
 
         JSONObject jsonBody = new JSONObject();
         try {

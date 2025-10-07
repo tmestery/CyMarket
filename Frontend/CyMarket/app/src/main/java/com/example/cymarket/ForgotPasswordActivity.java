@@ -27,7 +27,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forgot_password);
 
         resetPassword = findViewById(R.id.reset_password);
-        emailInput = findViewById(R.id.editTextTextEmailAddress);  // Make sure your layout has this EditText
+        emailInput = findViewById(R.id.editTextTextEmailAddress);
         requestQueue = Volley.newRequestQueue(this);
 
         resetPassword.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +46,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             return;
         }
 
-        String url = "https://your-backend-url.com/password/recovery"; // Replace with actual endpoint
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/users/recovery-code"; // Replace with actual endpoint
 
         JSONObject jsonBody = new JSONObject();
         try {
