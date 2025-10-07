@@ -1,7 +1,11 @@
 package onetomany.Users;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 import org.springframework.http.MediaType;
@@ -45,6 +49,8 @@ public class UserController {
     ItemsRepository itemRepository;
     @Autowired
     PasswordRecoveryService passwordRecoveryService;
+    @Autowired
+    private UserImageRepository userImageRepository;
 
 
     private String success = "{\"message\":\"success\"}";
@@ -212,8 +218,16 @@ public class UserController {
             return "User not found";
         }
 
+        if (imageFile == null || imageFile.isEmpty()) {
+            return "No image provided";
+        }
+
         try {
-            user.setProfileImage(imageFile.getBytes());
+            for (UserImage existing : new ArrayList<>(user.getImages())) {
+                user.removeImage(existing);
+            }
+            UserImage image = new UserImage(imageFile.getBytes(), imageFile.getContentType());
+            user.addImage(image);
             userRepository.save(user);
             return "Profile image uploaded successfully";
         } catch (IOException e) {
@@ -221,30 +235,117 @@ public class UserController {
         }
     }
 
- 
+
 
     @GetMapping("/users/{username}/profile-image")
     public ResponseEntity<byte[]> getProfileImage(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null || user.getProfileImage() == null) {
+        if (user == null || user.getImages().isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
+        UserImage image = user.getImages().get(0);
+        MediaType mediaType = image.getContentType() != null
+                ? MediaType.parseMediaType(image.getContentType())
+                : MediaType.APPLICATION_OCTET_STREAM;
+
         return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(user.getProfileImage());
+                .contentType(mediaType)
+                .body(image.getData());
     }
 
     @DeleteMapping("/users/{username}/profile-image")
     public String deleteProfileImage(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null || user.getProfileImage() == null) {
+        if (user == null || user.getImages().isEmpty()) {
             return "User not found or profile image not set";
         }
 
-        user.setProfileImage(null);
+        for (UserImage image : new ArrayList<>(user.getImages())) {
+            user.removeImage(image);
+        }
         userRepository.save(user);
         return "Profile image deleted successfully";
+    }
+
+    @PostMapping("/users/{username}/images")
+    public ResponseEntity<String> uploadUserImages(@PathVariable String username,
+                                                   @RequestParam("images") List<MultipartFile> imageFiles) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (imageFiles == null || imageFiles.isEmpty()) {
+            return ResponseEntity.badRequest().body("No images provided");
+        }
+
+        try {
+            for (MultipartFile imageFile : imageFiles) {
+                if (imageFile == null || imageFile.isEmpty()) {
+                    continue;
+                }
+
+                UserImage image = new UserImage(imageFile.getBytes(), imageFile.getContentType());
+                user.addImage(image);
+            }
+
+            userRepository.save(user);
+            return ResponseEntity.ok("Images uploaded successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload images");
+        }
+    }
+
+    @GetMapping("/users/{username}/images")
+    public ResponseEntity<List<Map<String, String>>> getUserImages(@PathVariable String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<Map<String, String>> images = user.getImages().stream()
+                .map(image -> Map.of(
+                        "id", String.valueOf(image.getId()),
+                        "contentType", image.getContentType() != null ? image.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                        "data", Base64.getEncoder().encodeToString(image.getData())
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(images);
+    }
+
+    @GetMapping("/users/{username}/images/{imageId}")
+    public ResponseEntity<byte[]> getUserImage(@PathVariable String username, @PathVariable Long imageId) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return userImageRepository.findById(imageId)
+                .filter(image -> image.getUser() != null && image.getUser().getId() == user.getId())
+                .map(image -> ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(
+                                image.getContentType() != null ? image.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                        .body(image.getData()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/users/{username}/images/{imageId}")
+    public ResponseEntity<String> deleteUserImage(@PathVariable String username, @PathVariable Long imageId) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        return userImageRepository.findById(imageId)
+                .filter(image -> image.getUser() != null && image.getUser().getId() == user.getId())
+                .map(image -> {
+                    user.removeImage(image);
+                    userRepository.save(user);
+                    return ResponseEntity.ok("Image deleted successfully");
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found"));
     }
     //test
 

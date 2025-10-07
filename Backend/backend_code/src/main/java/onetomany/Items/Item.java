@@ -1,12 +1,15 @@
 package onetomany.Items;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import onetomany.Sellers.Seller;
 import onetomany.Users.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -43,8 +46,9 @@ public class Item {
     private Set<User> likedByUsers = new HashSet<>();
 
 
-    @Lob
-    private byte[] profileImage;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ItemImage> images = new ArrayList<>();
 
 
     // =============================== Constructors ================================== //
@@ -158,12 +162,25 @@ public class Item {
         this.viewCount++;
     }
 
-    public byte[] getProfileImage() {
-        return profileImage;
+    public List<ItemImage> getImages() {
+        return images;
     }
 
-    public void setProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
+    public void setImages(List<ItemImage> images) {
+        this.images = images;
+    }
+
+    public void addImage(ItemImage image) {
+        if (image != null) {
+            images.add(image);
+            image.setItem(this);
+        }
+    }
+
+    public void removeImage(ItemImage image) {
+        if (image != null && images.remove(image)) {
+            image.setItem(null);
+        }
     }
 
     public Seller getSeller() {

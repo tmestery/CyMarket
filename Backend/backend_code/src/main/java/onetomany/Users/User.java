@@ -4,6 +4,7 @@ package onetomany.Users;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import onetomany.Items.Item;
@@ -44,8 +45,9 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     private Date passwordRecoveryExpiry;
 
-    @Lob
-    private byte[] profileImage;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<UserImage> images = new ArrayList<>();
    
 
 
@@ -161,14 +163,6 @@ public class User {
     }
 
    
-    public byte[] getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
-    }
-
     public String getPasswordRecoveryCode() {
         return passwordRecoveryCode;
     }
@@ -183,6 +177,27 @@ public class User {
 
     public void setPasswordRecoveryExpiry(Date passwordRecoveryExpiry) {
         this.passwordRecoveryExpiry = passwordRecoveryExpiry;
+    }
+
+    public List<UserImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<UserImage> images) {
+        this.images = images;
+    }
+
+    public void addImage(UserImage image) {
+        if (image != null) {
+            images.add(image);
+            image.setUser(this);
+        }
+    }
+
+    public void removeImage(UserImage image) {
+        if (image != null && images.remove(image)) {
+            image.setUser(null);
+        }
     }
    
 
