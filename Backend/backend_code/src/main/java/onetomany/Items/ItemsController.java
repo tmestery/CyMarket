@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -28,6 +30,8 @@ public class ItemsController {
     ItemsRepository itemsRepository;
     @Autowired
     private SellerRepository sellerRepository;
+    @Autowired
+    private ItemImageRepository itemImageRepository;
 
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
@@ -100,45 +104,84 @@ public class ItemsController {
         return success;
     }
 
-    @PostMapping("/items/{id}/profile-image")
-    public String uploadProfileImage(@PathVariable int id, @RequestParam("image") MultipartFile imageFile) {
+    @PostMapping("/{id}/images")
+    public ResponseEntity<String> uploadItemImages(@PathVariable int id, @RequestParam("images") List<MultipartFile> imageFiles) {
         Item item = itemsRepository.findById(id);
         if (item == null) {
-            return "Item not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found");
+        }
+
+        if (imageFiles == null || imageFiles.isEmpty()) {
+            return ResponseEntity.badRequest().body("No images provided");
         }
 
         try {
-            item.setProfileImage(imageFile.getBytes());
+            for (MultipartFile imageFile : imageFiles) {
+                if (imageFile == null || imageFile.isEmpty()) {
+                    continue;
+                }
+
+                ItemImage image = new ItemImage(imageFile.getBytes(), imageFile.getContentType());
+                item.addImage(image);
+            }
+
             itemsRepository.save(item);
-            return "Profile image uploaded successfully";
+            return ResponseEntity.ok("Images uploaded successfully");
         } catch (IOException e) {
-            return "Failed to upload profile image";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload images");
         }
     }
 
 
-    @GetMapping("/items/{id}/profile-image")
-    public ResponseEntity<byte[]> getProfileImage(@PathVariable int id) {
+    @GetMapping("/{id}/images")
+    public ResponseEntity<List<Map<String, String>>> getItemImages(@PathVariable int id) {
         Item item = itemsRepository.findById(id);
-        if (item == null || item.getProfileImage() == null) {
+        if (item == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(item.getProfileImage());
+        List<Map<String, String>> images = item.getImages().stream()
+                .map(image -> Map.of(
+                        "id", String.valueOf(image.getId()),
+                        "contentType", image.getContentType() != null ? image.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                        "data", Base64.getEncoder().encodeToString(image.getData())
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(images);
     }
 
-    @DeleteMapping("/items/{id}/profile-image")
-    public String deleteProfileImage(@PathVariable int id) {
-        Item item = itemsRepository.findById(id);
-        if (item == null || item.getProfileImage() == null) {
-            return "Item not found or profile image not set";
+    @GetMapping("/{itemId}/images/{imageId}")
+    public ResponseEntity<byte[]> getItemImage(@PathVariable int itemId, @PathVariable Long imageId) {
+        Item item = itemsRepository.findById(itemId);
+        if (item == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        item.setProfileImage(null);
-        itemsRepository.save(item);
-        return "Profile image deleted successfully";
+        return itemImageRepository.findById(imageId)
+                .filter(image -> image.getItem() != null && image.getItem().getId() == itemId)
+                .map(image -> ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(
+                                image.getContentType() != null ? image.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                        .body(image.getData()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{itemId}/images/{imageId}")
+    public ResponseEntity<String> deleteItemImage(@PathVariable int itemId, @PathVariable Long imageId) {
+        Item item = itemsRepository.findById(itemId);
+        if (item == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found");
+        }
+
+        return itemImageRepository.findById(imageId)
+                .filter(image -> image.getItem() != null && image.getItem().getId() == itemId)
+                .map(image -> {
+                    item.removeImage(image);
+                    itemsRepository.save(item);
+                    return ResponseEntity.ok("Image deleted successfully");
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found"));
     }
 
     //test
