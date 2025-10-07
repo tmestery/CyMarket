@@ -2,6 +2,7 @@ package com.example.cymarket;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -56,10 +57,18 @@ public class ProfilesActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String savedUri = prefs.getString("profile_image_uri", null);
         if (savedUri != null) {
-            Uri uri = Uri.parse(savedUri);
-            profileImage.setImageURI(uri);
-            if (profileImage.getDrawable() == null) {
-                profileImage.setImageResource(R.drawable.pfp); // fallback
+            try {
+                Uri uri = Uri.parse(savedUri);
+                InputStream inputStream = getContentResolver().openInputStream(uri);
+                if (inputStream != null) {
+                    Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(inputStream);
+                    profileImage.setImageBitmap(bitmap);
+                    inputStream.close();
+                } else {
+                    profileImage.setImageResource(R.drawable.pfp);
+                }
+            } catch (Exception e) {
+                profileImage.setImageResource(R.drawable.pfp);
             }
         } else {
             profileImage.setImageResource(R.drawable.pfp);
@@ -100,11 +109,12 @@ public class ProfilesActivity extends AppCompatActivity {
             joinDateText.setText("Encoding error");
         }
 
-        // Open image picker when profile image is clicked
         profileImage.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, PICK_IMAGE);
         });
+
 
         // Navigation buttons
         homeButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
@@ -118,15 +128,30 @@ public class ProfilesActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
-            profileImage.setImageURI(imageUri);
-            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-            prefs.edit().putString("profile_image_uri", imageUri.toString()).apply();
 
-            String username = usernameText.getText().toString();
-            if (!username.isEmpty()) {
-                addProfilePic(username, imageUri);
-            } else {
-                Toast.makeText(this, "Username is empty, cannot upload image", Toast.LENGTH_SHORT).show();
+            try {
+                // Decode image safely
+                InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                if (inputStream != null) {
+                    Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(inputStream);
+                    profileImage.setImageBitmap(bitmap);
+                    inputStream.close();
+                }
+
+                // Save URI for later
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                prefs.edit().putString("profile_image_uri", imageUri.toString()).apply();
+
+                // Upload to backend
+                String username = usernameText.getText().toString();
+                if (!username.isEmpty()) {
+                    addProfilePic(username, imageUri);
+                } else {
+                    Toast.makeText(this, "Username is empty, cannot upload image", Toast.LENGTH_SHORT).show();
+                }
+
+            } catch (Exception e) {
+                Toast.makeText(this, "Error loading image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
