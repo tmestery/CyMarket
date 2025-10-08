@@ -7,7 +7,9 @@ import onetomany.Items.Item;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Sellers")
@@ -34,9 +36,10 @@ public class Seller {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Item> items = new ArrayList<>();
+   
+
+  @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
+    private Set<Item> items = new HashSet<>();
 
     public Seller() {
     }
@@ -111,11 +114,11 @@ public class Seller {
         this.createdAt = createdAt;
     }
 
-    public List<Item> getItems() {
+    public Set<Item> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(Set<Item> items) {
         this.items = items;
     }
 
