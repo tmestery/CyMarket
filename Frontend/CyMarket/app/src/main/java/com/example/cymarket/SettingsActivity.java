@@ -22,6 +22,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Button profileButton;  // define settings button variable
     private Button deleteAccount; // define account deletion button here
     private Button logoutButton; // defines the logout button
+    private Button removePFP; // remove the profile pic
     private TextView usernameText;
     private TextView emailText;
     private TextView firstLastNameText;
@@ -36,6 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
         profileButton = findViewById(R.id.stngs_prfile_btn);
         deleteAccount = findViewById(R.id.delete_btn);
         logoutButton = findViewById(R.id.logout_btn);
+        removePFP = findViewById(R.id.remove_pfp_btn);
 
         // Intializing the TextViews that display account info:
         usernameText = findViewById(R.id.username_text);
@@ -120,5 +122,42 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        removePFP.setOnClickListener(new View.OnClickListener() {
+            // for gradle build: implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+            @Override
+            public void onClick(View v) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("http://coms-3090-056.class.las.iastate.edu:8080/")
+                        .addConverterFactory(retrofit2.converter.scalars.ScalarsConverterFactory.create())
+                        .build();
+
+                ApiService userApi = retrofit.create(ApiService.class);
+                Call<String> call = userApi.deleteProfileImage(username);
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Toast.makeText(SettingsActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(SettingsActivity.this, ProfilesActivity.class);
+                            intent.putExtra("username", username);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(SettingsActivity.this, "Failed to remove profile picture", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        Toast.makeText(SettingsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+
     }
 }

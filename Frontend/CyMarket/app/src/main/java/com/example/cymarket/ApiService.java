@@ -27,4 +27,7 @@ public interface ApiService {
 
     @DELETE("users/u/{username}")
     Call<Void> deleteUser(@Path("username") String username);
+
+    @DELETE("users/{username}/profile-image")
+    Call<String> deleteProfileImage(@Path("username") String username);
 }
