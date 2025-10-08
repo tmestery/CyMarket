@@ -2,6 +2,7 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -108,7 +109,14 @@ public class SettingsActivity extends AppCompatActivity {
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Fixing the encoding error for join date with:
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                String email = prefs.getString("email", null);
+                String password = prefs.getString("password", null);
                 Intent intent = new Intent(SettingsActivity.this, ProfilesActivity.class);
+                intent.putExtra("username", username);
+                intent.putExtra("email", email);
+                intent.putExtra("password", password);
                 startActivity(intent);
             }
         });
