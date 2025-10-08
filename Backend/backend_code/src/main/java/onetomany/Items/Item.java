@@ -74,6 +74,9 @@ public class Item {
     public void addLikedByUser(User user) {
         this.likedByUsers.add(user);
     }
+    public void removeLikedByUser(User user) {
+        this.likedByUsers.remove(user);
+    }
 
     public Set<User> getLikedByUsers() {
         return this.likedByUsers;
