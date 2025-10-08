@@ -205,7 +205,24 @@ public class UserController {
     @DeleteMapping(path = "/users/{id}")
     String deleteUser(@PathVariable int id){
         User temp= userRepository.findById(id);
-      
+
+        if(temp == null)
+            return failure;
+
+        userRepository.delete(temp);
+
+        return success;
+    }
+     @DeleteMapping(path = "/users/u/{username}")
+    String deleteUserByEmail(@PathVariable String username){
+        User temp= userRepository.findByUsername(username);
+        if(temp == null)
+            return failure;
+         List<Item> items = new ArrayList<>(temp.getLikedItems());
+        for (Item item : items) {
+            item.removeLikedByUser(temp);
+            itemRepository.save(item);
+        }
        
         userRepository.delete(temp);
 

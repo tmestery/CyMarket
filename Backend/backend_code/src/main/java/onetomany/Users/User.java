@@ -87,11 +87,19 @@ public class User {
     public Set<Item> getLikedItems(){
         return this.likedItems;
     }
-     public int getLikedItemsCount(){
+    public void setLikedItems(Set<Item> items){
+        this.likedItems=items;
+    
+    }
+    
+    public int getLikedItemsCount(){
         return this.likedItems.size();
     }
     public void removeItem(Item item){
         this.likedItems.remove(item);
+    }
+    public void removeAllItems(){
+        this.likedItems.clear();
     }
 
     
