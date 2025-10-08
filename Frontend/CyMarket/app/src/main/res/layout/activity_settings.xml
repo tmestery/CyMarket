@@ -40,7 +40,21 @@
                 android:backgroundTint="#E63946"
                 app:cornerRadius="20dp"
                 android:elevation="6dp"
-                android:layout_marginEnd="100dp" />
+                android:layout_marginEnd="2dp" />
+
+            <!-- Profile Button (left) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logout_btn"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="108dp"
+                android:layout_height="44dp"
+                android:text="Logout"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="#E63946"
+                app:cornerRadius="20dp"
+                android:elevation="6dp"
+                android:layout_marginEnd="2dp" />
 
             <!-- Settings Button (right) -->
             <com.google.android.material.button.MaterialButton

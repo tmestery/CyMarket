@@ -20,6 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Button homeButton;  // define profile button variable
     private Button profileButton;  // define settings button variable
     private Button deleteAccount; // define account deletion button here
+    private Button logoutButton; // defines the logout button
     private TextView usernameText;
     private TextView emailText;
     private TextView firstLastNameText;
@@ -33,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
         homeButton = findViewById(R.id.stngs_home_btn);
         profileButton = findViewById(R.id.stngs_prfile_btn);
         deleteAccount = findViewById(R.id.delete_btn);
+        logoutButton = findViewById(R.id.logout_btn);
 
         // Intializing the TextViews that display account info:
         usernameText = findViewById(R.id.username_text);
@@ -89,6 +91,15 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Click listener to logout the user, sending them to the login screen:
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
