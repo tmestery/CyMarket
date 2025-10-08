@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import retrofit2.Response;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import retrofit2.Call;
@@ -19,6 +20,10 @@ public class SettingsActivity extends AppCompatActivity {
     private Button homeButton;  // define profile button variable
     private Button profileButton;  // define settings button variable
     private Button deleteAccount; // define account deletion button here
+    private TextView usernameText;
+    private TextView emailText;
+    private TextView firstLastNameText;
+    private TextView passwordText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +34,21 @@ public class SettingsActivity extends AppCompatActivity {
         profileButton = findViewById(R.id.stngs_prfile_btn);
         deleteAccount = findViewById(R.id.delete_btn);
 
-        String email = getIntent().getStringExtra("email");
+        // Intializing the TextViews that display account info:
+        usernameText = findViewById(R.id.username_text);
+        emailText = findViewById(R.id.email_text);
+        firstLastNameText = findViewById(R.id.first_last_name_label);
+        passwordText = findViewById(R.id.password_text);
+
+        // Setting the TextViews to contain correct info:
         String username = getIntent().getStringExtra("username");
+        String password = getIntent().getStringExtra("password");
+        String email = getIntent().getStringExtra("email");
+
+        usernameText.setText("Username: " + username);
+        emailText.setText("Email: " + email);
+        firstLastNameText.setText("Name: ");
+        passwordText.setText("Password: " + password);
 
         deleteAccount.setOnClickListener(v -> {
             Retrofit retrofit = new Retrofit.Builder()
