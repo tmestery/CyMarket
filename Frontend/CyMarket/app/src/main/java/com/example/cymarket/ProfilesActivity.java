@@ -123,7 +123,13 @@ public class ProfilesActivity extends AppCompatActivity {
 
         // Navigation buttons
         homeButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
-        settingsButton.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+        settingsButton.setOnClickListener(v -> {
+            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            Intent intent = new Intent(ProfilesActivity.this, SettingsActivity.class);
+            intent.putExtra("username", username);
+            intent.putExtra("email", email);
+            intent.putExtra("password", password);
+        });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnItemSelectedListener(item -> {

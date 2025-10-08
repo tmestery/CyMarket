@@ -25,6 +25,6 @@ public interface ApiService {
             @Path(value = "password", encoded = true) String password
     );
 
-    @DELETE("users/{id}")
-    Call<Void> deleteUser(@Path("id") String userId);
+    @DELETE("users/u/{username}")
+    Call<Void> deleteUser(@Path("username") String username);
 }

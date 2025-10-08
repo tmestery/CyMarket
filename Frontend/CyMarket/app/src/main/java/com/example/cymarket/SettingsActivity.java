@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import retrofit2.Response;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -28,41 +30,40 @@ public class SettingsActivity extends AppCompatActivity {
         deleteAccount = findViewById(R.id.delete_btn);
 
         String email = getIntent().getStringExtra("email");
+        String username = getIntent().getStringExtra("username");
 
-        // Click listener for when delete button is pressed:
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Make the request to delete the account
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://coms-3090-056.class.las.iastate.edu:8080/") // ✅ base URL should end with /
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+        deleteAccount.setOnClickListener(v -> {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://coms-3090-056.class.las.iastate.edu:8080/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-                ApiService apiService = retrofit.create(ApiService.class);
+            ApiService apiService = retrofit.create(ApiService.class);
 
-                Call<Void> call = apiService.deleteUser(email); // or userId depending on what your backend expects
+            Call<Void> call = apiService.deleteUser(username);
 
-                call.enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Log.d("DeleteUser", "User deleted successfully");
-                        } else {
-                            Log.e("DeleteUser", "Failed to delete user: " + response.code());
-                        }
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(SettingsActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                        Log.d("DeleteUser", "User deleted successfully");
+
+                        Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(SettingsActivity.this, "Failed to delete account. Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                        Log.e("DeleteUser", "Failed to delete user: " + response.code());
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("DeleteUser", "Error: " + t.getMessage());
-                    }
-                });
-
-                // Change screen when the request has been fulfilled - account deleted
-                Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(SettingsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("DeleteUser", "Error: " + t.getMessage());
+                }
+            });
         });
 
         // Click listener on home button pressed:
