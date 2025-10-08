@@ -33,8 +33,7 @@ public class Item {
     private String username;
 
     @ManyToOne
-    @JsonIgnore
-    @JoinColumn
+    @JoinColumn(name = "seller_id")
     private Seller seller;
 
     @ManyToMany
@@ -70,7 +69,13 @@ public class Item {
     public Item() {
 
     }
+   
+    // =============================== Getters and Setters ================================== //
 
+public void setLikedByUsers(Set<User> likedByUsers) {
+        this.likedByUsers = likedByUsers;
+    }
+   
     public void addLikedByUser(User user) {
         this.likedByUsers.add(user);
     }
