@@ -52,10 +52,12 @@ public class ProfilesActivity extends AppCompatActivity {
         homeButton = findViewById(R.id.prfls_home_page_btn);
         settingsButton = findViewById(R.id.prfls_setting_btn);
 
-        // Get username from intent and display it
-        String username = getIntent().getStringExtra("username");
-        String password = getIntent().getStringExtra("password");
-        String email = getIntent().getStringExtra("email");
+        String tempUsername = getIntent().getStringExtra("username");
+        if (tempUsername == null) {
+            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            tempUsername = prefs.getString("username", null);
+        }
+        final String username = tempUsername; // effectively final
         usernameText.setText(username);
 
         // GET PFP if there
@@ -91,8 +93,10 @@ public class ProfilesActivity extends AppCompatActivity {
         ApiService apiService = retrofit.create(ApiService.class);
 
         try {
-            String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8.toString());
-            String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
+            String password2 = getIntent().getStringExtra("password");
+            String email2 = getIntent().getStringExtra("email");
+            String encodedEmail = URLEncoder.encode(email2, StandardCharsets.UTF_8.toString());
+            String encodedPassword = URLEncoder.encode(password2, StandardCharsets.UTF_8.toString());
 
             Call<String> call = apiService.getUserJoinDate(encodedEmail, encodedPassword);
             call.enqueue(new Callback<String>() {
@@ -123,12 +127,16 @@ public class ProfilesActivity extends AppCompatActivity {
 
         // Navigation buttons
         homeButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+
         settingsButton.setOnClickListener(v -> {
             SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            String email = prefs.getString("email", null);
+            String password = prefs.getString("password", null);
             Intent intent = new Intent(ProfilesActivity.this, SettingsActivity.class);
             intent.putExtra("username", username);
             intent.putExtra("email", email);
             intent.putExtra("password", password);
+            startActivity(intent);
         });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
