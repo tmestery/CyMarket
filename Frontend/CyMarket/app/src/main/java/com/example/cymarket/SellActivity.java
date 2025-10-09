@@ -18,7 +18,9 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 
-
+/**
+ * TODO - Add image support
+ */
 public class SellActivity extends AppCompatActivity {
 
     private TextView messageText;   // define messagetext variable
@@ -80,7 +82,7 @@ public class SellActivity extends AppCompatActivity {
         // build the json payload using information entered by user
         JSONObject json = new JSONObject();
         try {
-            json.put("itemName", itemName);
+            json.put("name", itemName);
             json.put("price", Double.parseDouble(price));
             json.put("description", description);
             json.put("quantity", Integer.parseInt(quantity));
