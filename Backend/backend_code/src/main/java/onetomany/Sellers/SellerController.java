@@ -193,13 +193,7 @@ public class SellerController {
         item.setIfAvailable(true);
 
         seller.addItem(item);
-
-        sellerRepository.save(seller);
-        item.setSeller(seller);
         Item savedItem = itemsRepository.save(item);
-        seller.addItem(savedItem);
-        sellerRepository.save(seller);
-        
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
     }

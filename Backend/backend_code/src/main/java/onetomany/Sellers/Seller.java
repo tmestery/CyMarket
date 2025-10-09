@@ -5,10 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import onetomany.Items.Item;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,6 +37,7 @@ public class Seller {
    
 
   @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Item> items = new HashSet<>();
 
     public Seller() {

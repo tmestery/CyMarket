@@ -204,5 +204,23 @@ public class ItemsController {
         return ResponseEntity.ok(sellerInfo);
     }
 
+    // POST seller creates item
+    @PostMapping("/{id}/items")
+    public ResponseEntity<Item> createItemForSeller(@PathVariable long id, @RequestBody Item item) {
+        Seller seller = sellerRepository.findById(id);
+        if (seller == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (item.getCreationDate() == null) {
+            item.setCreationDate(new Date());
+        }
+        item.setIfAvailable(true);
+
+        seller.addItem(item);
+        Item savedItem = itemsRepository.save(item);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
+    }
 
 }

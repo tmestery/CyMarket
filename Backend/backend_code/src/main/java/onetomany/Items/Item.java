@@ -1,7 +1,6 @@
 package onetomany.Items;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import onetomany.Sellers.Seller;
 import onetomany.Users.User;
@@ -34,6 +33,7 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
+    @JsonIgnore
     private Seller seller;
 
     @ManyToMany
@@ -42,11 +42,12 @@ public class Item {
             joinColumns = @JoinColumn(name = "item_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @JsonIgnore
     private Set<User> likedByUsers = new HashSet<>();
 
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonIgnore
     private List<ItemImage> images = new ArrayList<>();
 
 
