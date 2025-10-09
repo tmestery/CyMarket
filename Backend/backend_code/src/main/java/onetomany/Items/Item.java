@@ -26,6 +26,7 @@ public class Item {
     private boolean ifAvailable;
     private String category;
     private int viewCount = 0;
+    private int quantity = 0;
 
 
     @Column(unique = true)
@@ -59,12 +60,9 @@ public class Item {
         this.price = price;
         this.creationDate = new Date();
         this.ifAvailable = true;
-
         this.category = category;
-
         this.username = userName;
-
-
+        this.quantity = 0;
     }
 
     public Item() {
@@ -169,6 +167,24 @@ public void setLikedByUsers(Set<User> likedByUsers) {
 
     public void addCount() {
         this.viewCount++;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void incrementQuantity() {
+        this.quantity++;
+    }
+
+    public void decrementQuantity() {
+        if (this.quantity > 0) {
+            this.quantity--;
+        }
     }
 
     public List<ItemImage> getImages() {
