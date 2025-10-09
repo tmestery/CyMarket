@@ -1,68 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:paddingTop="80dp"
+    android:background="#ffffff">
 
+    <!-- Messages Title -->
     <TextView
         android:id="@+id/msgs_msg_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Messages"
-        android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+        android:textSize="30sp"
+        android:textColor="#fc0303"
         android:layout_marginBottom="50dp"
-        android:textSize="30dp"
-        android:textColor="#fc0303">
-    </TextView>
+        android:gravity="center"/>
 
-    <Button
+    <!-- Home Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/msgs_home_page_btn"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="300dp"
+        android:layout_height="44dp"
         android:text="Home"
-        android:textSize="20sp"
-        android:textColor="#ffffff">
-    </Button>
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:backgroundTint="#969ba3"
+        android:elevation="6dp"
+        android:layout_marginBottom="15dp"/>
 
-    <Button
+    <!-- Friends Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/friends_btn"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="300dp"
+        android:layout_height="44dp"
+        android:text="Friends"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:backgroundTint="#969ba3"
+        android:elevation="6dp"
+        android:layout_marginBottom="15dp"/>
+
+    <!-- Profile Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/msgs_profile_btn"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="300dp"
+        android:layout_height="44dp"
         android:text="Profile"
-        android:textSize="20sp"
-        android:textColor="#ffffff">
-    </Button>
-
-    <Button
-        android:id="@+id/msgs_buy_btn"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Buy"
-        android:textSize="20sp"
-        android:textColor="#ffffff">
-    </Button>
-
-    <Button
-        android:id="@+id/msgs_sell_btn"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Sell"
-        android:textSize="20sp"
-        android:textColor="#ffffff">
-    </Button>
-
-    <Button
-        android:id="@+id/msgs_listings_btn"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="My Listings"
-        android:textSize="20sp"
-        android:textColor="#ffffff">
-    </Button>
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:backgroundTint="#969ba3"
+        android:elevation="6dp"
+        android:layout_marginBottom="15dp"/>
 </LinearLayout>

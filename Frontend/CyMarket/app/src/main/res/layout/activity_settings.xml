@@ -38,7 +38,6 @@
                 android:textSize="14sp"
                 android:textColor="@color/white"
                 android:backgroundTint="#E63946"
-                app:cornerRadius="20dp"
                 android:elevation="6dp"
                 android:layout_marginEnd="2dp" />
 
@@ -52,7 +51,6 @@
                 android:textSize="14sp"
                 android:textColor="@color/white"
                 android:backgroundTint="#E63946"
-                app:cornerRadius="20dp"
                 android:elevation="6dp"
                 android:layout_marginEnd="2dp" />
 
@@ -67,8 +65,7 @@
                 android:elevation="6dp"
                 android:text="Profile"
                 android:textColor="@color/white"
-                android:textSize="14sp"
-                app:cornerRadius="20dp" />
+                android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -198,7 +195,6 @@
             android:layout_marginBottom="15dp"
             android:textColor="@color/white"
             android:backgroundTint="#969ba3"
-            app:cornerRadius="20dp"
             android:elevation="6dp"/>
 
         <!-- Break in Page -->
@@ -220,7 +216,6 @@
             android:layout_marginBottom="15dp"
             android:textColor="@color/white"
             android:backgroundTint="#969ba3"
-            app:cornerRadius="20dp"
             android:elevation="6dp"/>
     </LinearLayout>
 </LinearLayout>

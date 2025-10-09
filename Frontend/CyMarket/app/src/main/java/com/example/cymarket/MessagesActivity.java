@@ -12,11 +12,10 @@ public class MessagesActivity extends AppCompatActivity {
 
     private Button homeButton;  // define profile button variable
     private Button profileButton;  // define messages button variable
-
-    private Button buyButton;   // define buy button variable
-    private Button sellButton;  // define settings button variable
-
-    private Button myListingsButton; // define my listings button variable
+    private Button friendsButton; // find friends button
+    private Button buyButton;
+    private Button sellButton;
+    private Button myListingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,15 +25,22 @@ public class MessagesActivity extends AppCompatActivity {
         // Link all the buttons:
         homeButton = findViewById(R.id.msgs_home_page_btn);
         profileButton = findViewById(R.id.msgs_profile_btn);
-        buyButton = findViewById(R.id.msgs_buy_btn);
-        sellButton = findViewById(R.id.msgs_sell_btn);
-        myListingsButton = findViewById(R.id.msgs_listings_btn);
+        friendsButton = findViewById(R.id.friends_btn);
 
         // Click listener on home button pressed:
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MessagesActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Click listener on friends button pressed:
+        friendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MessagesActivity.this, FriendsActivity.class);
                 startActivity(intent);
             }
         });
@@ -47,58 +53,5 @@ public class MessagesActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        // Click listener on buy button pressed:
-        buyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MessagesActivity.this, BuyActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Click listener on sell button pressed:
-        sellButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MessagesActivity.this, SellActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Click listener on listings button pressed:
-        myListingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MessagesActivity.this, ListingsActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
     }
 }
