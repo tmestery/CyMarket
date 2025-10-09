@@ -63,11 +63,20 @@ public class UserController {
     List<User> getAllUsersss(){
         return userRepository.findAll();
     }
+
     @GetMapping(path = "/users/{id}")
     User getAllUser(@PathVariable int id){
 
 
         return  userRepository.findById(id);
+    }
+    @GetMapping(path = "/users/getName/{email}")
+    String getName(@PathVariable String email){
+        User temp =  userRepository.findByEmailId(email);
+        if (temp == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return temp.getName();
     }
 
     @GetMapping(path = "/users/u/{username}")
@@ -211,9 +220,10 @@ public class UserController {
 
         userRepository.delete(temp);
 
+
         return success;
     }
-     @DeleteMapping(path = "/users/u/{username}")
+    @DeleteMapping(path = "/users/u/{username}")
     String deleteUserByEmail(@PathVariable String username){
         User temp= userRepository.findByUsername(username);
         if(temp == null)
