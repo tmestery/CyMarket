@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <!-- Main Content Block for Buttons -->
+    <!-- Main Content Block for Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -99,6 +99,7 @@
             android:textColor="@color/black">
         </TextView>
 
+        <!-- Break in Page -->
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -109,53 +110,81 @@
             android:id="@+id/username_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="USERNAME"
+            android:text="Username:                                        example"
             android:fontFamily="sans-serif-condensed-medium"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="35dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:textSize="18dp"
             android:textColor="@color/black">
         </TextView>
+
+        <!-- Break in Page -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="5dp"
+            android:background="#969ba3" />
 
         <TextView
             android:id="@+id/email_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="EMAIL"
+            android:text="Email:                    example@example.com"
             android:fontFamily="sans-serif-condensed-medium"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="35dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:textSize="18dp"
             android:textColor="@color/black">
         </TextView>
+
+        <!-- Break in Page -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="5dp"
+            android:background="#969ba3" />
 
         <TextView
             android:id="@+id/first_last_name_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FIRST + LAST NAME"
+            android:text="Name:                                         First L ast"
             android:fontFamily="sans-serif-condensed-medium"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="35dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:textSize="18dp"
             android:textColor="@color/black">
         </TextView>
+
+        <!-- Break in Page -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="5dp"
+            android:background="#969ba3" />
 
         <TextView
             android:id="@+id/password_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PASSWORD"
+            android:text="Password:                                    *********"
             android:fontFamily="sans-serif-condensed-medium"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp"
             android:textSize="18dp"
             android:textColor="@color/black">
         </TextView>
+
+        <!-- Break in Page -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="15dp"
+            android:background="#969ba3" />
 
         <!-- Delete Account Button (left) -->
         <com.google.android.material.button.MaterialButton
@@ -166,10 +195,18 @@
             android:layout_gravity="center_horizontal"
             android:text="Remove Profile Picture"
             android:textSize="14sp"
+            android:layout_marginBottom="15dp"
             android:textColor="@color/white"
-            android:backgroundTint="#E63946"
+            android:backgroundTint="#969ba3"
             app:cornerRadius="20dp"
             android:elevation="6dp"/>
+
+        <!-- Break in Page -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="15dp"
+            android:background="#969ba3" />
 
         <!-- Delete Account Button (left) -->
         <com.google.android.material.button.MaterialButton
@@ -180,8 +217,9 @@
             android:layout_gravity="center_horizontal"
             android:text="DELETE ACCOUNT"
             android:textSize="14sp"
+            android:layout_marginBottom="15dp"
             android:textColor="@color/white"
-            android:backgroundTint="#E63946"
+            android:backgroundTint="#969ba3"
             app:cornerRadius="20dp"
             android:elevation="6dp"/>
     </LinearLayout>
