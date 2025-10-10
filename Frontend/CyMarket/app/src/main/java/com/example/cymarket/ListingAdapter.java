@@ -19,6 +19,9 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+/**
+ * TODO - Make buy button function properly, not just reduce quantity. Quantity reduction is for framework/PUT demonstration.
+ */
 // this class will bind listing information to the views set in item_listing_card.xml
 public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHolder> {
 
