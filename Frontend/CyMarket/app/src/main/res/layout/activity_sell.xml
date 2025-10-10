@@ -146,6 +146,7 @@
         android:layout_weight="1">
     </Space>
 
+    <!-- back btn -->
     <Button
         android:id="@+id/sell_back_btn"
         android:layout_width="150dp"

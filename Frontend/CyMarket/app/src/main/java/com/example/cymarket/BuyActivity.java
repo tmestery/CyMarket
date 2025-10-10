@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +34,7 @@ public class BuyActivity extends AppCompatActivity {
     private List<Listing> listingList = new ArrayList<>();
 
     private Button backButton;       // define backbutton variable
+    private Button clearButton;      // define clear button variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +44,19 @@ public class BuyActivity extends AppCompatActivity {
         // link to xml
         recyclerView = findViewById(R.id.buy_listings_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ListingAdapter(listingList);
+        adapter = new ListingAdapter(this, listingList);
         recyclerView.setAdapter(adapter);
         backButton = findViewById(R.id.buy_back_btn);
+        clearButton = findViewById(R.id.buy_clear_all_btn);
+
+        // calls clearAllListings w/ button functionality
+        clearButton.setOnClickListener(v -> clearAllListings());
 
         // establish listener for back button functionality
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(BuyActivity.this, MessagesActivity.class);
+                Intent intent = new Intent(BuyActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -83,10 +89,12 @@ public class BuyActivity extends AppCompatActivity {
                             String title = obj.optString("name", "Untitled");
                             String description = obj.optString("description", "No description");
                             double price = obj.optDouble("price", 0.0);
-                            int quantity = 1; // TODO - backend does not return quantity, needs implementation
+                            int quantity = obj.optInt("quantity", 1);
+                            // get id from backend
+                            int id = obj.getInt("id");
 
                             // add to local list
-                            listingList.add(new Listing(title, description, price, quantity));
+                            listingList.add(new Listing(title, description, price, quantity, id));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -104,6 +112,56 @@ public class BuyActivity extends AppCompatActivity {
         // volley request
         Volley.newRequestQueue(this).add(request);
     }
+
+    // clears all current listings in the
+    private void clearAllListings() {
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/items";
+
+        JsonArrayRequest getRequest = new JsonArrayRequest( // retrieve all current listings
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    // loop through to get ids
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            JSONObject item = response.getJSONObject(i);
+                            int itemId = item.getInt("id");
+
+                            // delete url for item of "id"
+                            String deleteUrl = url + "/" + itemId;
+
+                            // delete request
+                            JsonObjectRequest deleteRequest = new JsonObjectRequest(
+                                    Request.Method.DELETE,
+                                    deleteUrl,
+                                    null,
+                                    deleteResponse -> {
+                                        // empty, could log each deletion
+                                    },
+                                    error -> {
+                                        Toast.makeText(getApplicationContext(), "Delete failed for item " + itemId, Toast.LENGTH_SHORT).show();
+                                    }
+                            );
+
+                            // delete request to queue
+                            VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(deleteRequest);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    Toast.makeText(getApplicationContext(), "Clear request sent", Toast.LENGTH_SHORT).show();
+                    fetchListings(); // refresh after deletion
+                },
+                error -> Toast.makeText(getApplicationContext(), "Failed to fetch items", Toast.LENGTH_SHORT).show()
+        );
+
+        // GET request for UI refresh
+        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(getRequest);
+    }
+
 
     @Override
     protected void onStart() {

@@ -69,7 +69,7 @@ public class SellActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SellActivity.this, MessagesActivity.class);
+                Intent intent = new Intent(SellActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -77,7 +77,7 @@ public class SellActivity extends AppCompatActivity {
 
     // Volley request
     private void postItemForSale(String itemName, String price, String description, String quantity) {
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/items"; // TODO - fill in with actual url
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/items";
 
         // build the json payload using information entered by user
         JSONObject json = new JSONObject();
@@ -96,11 +96,12 @@ public class SellActivity extends AppCompatActivity {
                 Request.Method.POST,
                 url,
                 json,
-                response -> {  // if successful, move to listing activity where it will be displayed
+                response -> {  // if successful, move refresh prompts
                     Toast.makeText(getApplicationContext(), "Item listed!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(SellActivity.this, ListingsActivity.class);
-                    startActivity(intent);
-                    finish();
+                    itemNameEditText.setText("");
+                    priceEditText.setText("");
+                    descriptionEditText.setText("");
+                    quantityEditText.setText("");
                 },
                 error -> Toast.makeText(getApplicationContext(),
                         "Listing failed: " + error.toString(), Toast.LENGTH_SHORT).show()

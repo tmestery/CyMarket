@@ -55,4 +55,13 @@
         android:layout_marginTop="4dp">
     </TextView>
 
+    <!-- buy btn -->
+    <Button
+        android:id="@+id/listing_buy_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buy"
+        android:layout_marginTop="8dp">
+    </Button>
+
 </androidx.appcompat.widget.LinearLayoutCompat>
