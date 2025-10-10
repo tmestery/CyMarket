@@ -40,4 +40,8 @@ public interface ApiService {
     // Can be used to display all users - for messaging in the future + friends??
     @GET("/users")
     Call<List<User>> getAllUsers();
+
+    // Can be used to get the user's name
+    @GET("users/getName/{email}")
+    Call<String> getName(@Path("email") String email);
 }

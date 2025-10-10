@@ -5,28 +5,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import retrofit2.Response;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SettingsActivity extends AppCompatActivity {
-    private Button homeButton;  // define profile button variable
-    private Button profileButton;  // define settings button variable
-    private Button deleteAccount; // define account deletion button here
-    private Button logoutButton; // defines the logout button
-    private Button removePFP; // remove the profile pic
+    private Button homeButton;
+    private Button profileButton;
+    private Button deleteAccount;
+    private Button logoutButton;
+    private Button removePFP;
     private TextView usernameText;
     private TextView emailText;
     private TextView firstLastNameText;
     private TextView passwordText;
+
+    private static final String BASE_URL = "http://coms-3090-056.class.las.iastate.edu:8080/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +38,12 @@ public class SettingsActivity extends AppCompatActivity {
         logoutButton = findViewById(R.id.logout_btn);
         removePFP = findViewById(R.id.remove_pfp_btn);
 
-        // Intializing the TextViews that display account info:
         usernameText = findViewById(R.id.username_text);
         emailText = findViewById(R.id.email_text);
         firstLastNameText = findViewById(R.id.first_last_name_label);
         passwordText = findViewById(R.id.password_text);
 
-        // Setting the TextViews to contain correct info:
+        // Get user info passed from previous activity
         String username = getIntent().getStringExtra("username");
         String password = getIntent().getStringExtra("password");
         String email = getIntent().getStringExtra("email");
@@ -55,17 +53,43 @@ public class SettingsActivity extends AppCompatActivity {
         firstLastNameText.setText("Name: ");
         passwordText.setText("Password: " + password);
 
+        // Retrofit instance
+        Retrofit retrofitScalars = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(retrofit2.converter.scalars.ScalarsConverterFactory.create())
+                .build();
+        ApiService apiService = retrofitScalars.create(ApiService.class);
+
+        // GET user's full name
+        Call<String> getNameCall = apiService.getName(email);
+        getNameCall.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    firstLastNameText.setText("Name: " + response.body());
+                } else {
+                    firstLastNameText.setText("Name: Not found");
+                    Log.e("GET_NAME", "Failed to get name. Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                firstLastNameText.setText("Name: Error");
+                Log.e("GET_NAME", "Error: " + t.getMessage());
+            }
+        });
+
+        // DELETE account
         deleteAccount.setOnClickListener(v -> {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://coms-3090-056.class.las.iastate.edu:8080/")
+            Retrofit retrofitGson = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
+            ApiService apiServiceDelete = retrofitGson.create(ApiService.class);
 
-            ApiService apiService = retrofit.create(ApiService.class);
-
-            Call<Void> call = apiService.deleteUser(username);
-
-            call.enqueue(new Callback<Void>() {
+            Call<Void> deleteCall = apiServiceDelete.deleteUser(username);
+            deleteCall.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
@@ -89,75 +113,52 @@ public class SettingsActivity extends AppCompatActivity {
             });
         });
 
-        // Click listener on home button pressed:
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        // Home button
+        homeButton.setOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
-        // Click listener to logout the user, sending them to the login screen:
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
+        // Logout button
+        logoutButton.setOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
 
-        // Click listener on profile button pressed:
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Fixing the encoding error for join date with:
-                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                String email = prefs.getString("email", null);
-                String password = prefs.getString("password", null);
-                Intent intent = new Intent(SettingsActivity.this, ProfilesActivity.class);
-                intent.putExtra("username", username);
-                intent.putExtra("email", email);
-                intent.putExtra("password", password);
-                startActivity(intent);
-            }
+        // Profile button
+        profileButton.setOnClickListener(v -> {
+            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            String savedEmail = prefs.getString("email", email);
+            String savedPassword = prefs.getString("password", password);
+            Intent intent = new Intent(SettingsActivity.this, ProfilesActivity.class);
+            intent.putExtra("username", username);
+            intent.putExtra("email", savedEmail);
+            intent.putExtra("password", savedPassword);
+            startActivity(intent);
         });
 
-        removePFP.setOnClickListener(new View.OnClickListener() {
-            // for gradle build: implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
-            @Override
-            public void onClick(View v) {
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://coms-3090-056.class.las.iastate.edu:8080/")
-                        .addConverterFactory(retrofit2.converter.scalars.ScalarsConverterFactory.create())
-                        .build();
-
-                ApiService userApi = retrofit.create(ApiService.class);
-                Call<String> call = userApi.deleteProfileImage(username);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            Toast.makeText(SettingsActivity.this, response.body(), Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(SettingsActivity.this, ProfilesActivity.class);
-                            intent.putExtra("username", username);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Toast.makeText(SettingsActivity.this, "Failed to remove profile picture", Toast.LENGTH_SHORT).show();
-                        }
+        // Remove profile picture
+        removePFP.setOnClickListener(v -> {
+            Call<String> removePfpCall = apiService.deleteProfileImage(username);
+            removePfpCall.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Toast.makeText(SettingsActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SettingsActivity.this, ProfilesActivity.class);
+                        intent.putExtra("username", username);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(SettingsActivity.this, "Failed to remove profile picture", Toast.LENGTH_SHORT).show();
                     }
+                }
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Toast.makeText(SettingsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Toast.makeText(SettingsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
-
-
     }
 }
