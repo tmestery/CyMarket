@@ -50,6 +50,9 @@
             android:name=".FriendsActivity"
             android:exported="false"/>
         <activity
+            android:name=".AdminDashboardActivity"
+            android:exported="false"/>
+        <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="true">
