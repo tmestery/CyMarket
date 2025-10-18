@@ -7,10 +7,11 @@
     android:background="@color/background_light"
     tools:context=".AdminDashboardActivity">
 
-
     <!-- Top-Bar -->
     <LinearLayout
         android:id="@+id/top_nav"
+        android:layout_marginLeft="7sp"
+        android:layout_marginRight="7sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -26,9 +27,10 @@
             android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
+            android:textSize="30sp"
             android:textColor="@color/black"
             android:layout_marginBottom="30dp"
+            android:fontFamily="@font/inter"
             android:text="Administator" />
     </LinearLayout>
 
@@ -37,7 +39,68 @@
         android:id="@+id/middle_buttons"
         android:layout_width="match_parent"
         android:layout_marginTop="70dp"
+        android:layout_marginLeft="7sp"
+        android:layout_marginRight="7sp"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="start"
+        android:background="?attr/colorSurface"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:elevation="6dp">
+
+        <Button
+            android:id="@+id/sales_btn"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#F6F6F6"
+            android:text="Sales"
+            android:fontFamily="@font/inter"
+            android:textSize="15sp"
+            android:backgroundTint="@android:color/black"
+            app:cornerRadius="30dp" />
+
+        <Button
+            android:id="@+id/users_btn"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Users"
+            android:fontFamily="@font/inter"
+            android:textSize="15sp"
+            android:backgroundTint="#F6F6F6"
+            app:cornerRadius="30dp"/>
+    </LinearLayout>
+
+    <!-- Bottom-Users-Bar -->
+    <LinearLayout
+        android:id="@+id/bottom_nav_sales"
+        android:layout_width="match_parent"
+        android:layout_marginTop="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="7sp"
+        android:layout_marginRight="7sp"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:background="?attr/colorSurface"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:elevation="6dp">
+    </LinearLayout>
+
+    <!-- Bottom-Users-Bar (Hidden at start)-->
+    <LinearLayout
+        android:id="@+id/bottom_nav_users"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="7sp"
+        android:layout_marginRight="7sp"
+        android:layout_marginTop="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
         android:background="?attr/colorSurface"
@@ -45,10 +108,10 @@
         android:paddingVertical="8dp"
         android:elevation="6dp">
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewFriends"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/> <!-- makes it take the rest of the total space -->
     </LinearLayout>
 </RelativeLayout>
