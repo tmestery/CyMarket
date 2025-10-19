@@ -27,11 +27,11 @@
             android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
+            android:textSize="27sp"
             android:textColor="@color/black"
             android:layout_marginBottom="30dp"
             android:fontFamily="@font/inter"
-            android:text="Administator" />
+            android:text="Administrator Dashboard" />
     </LinearLayout>
 
     <!-- Middle-Buttons-Bar -->

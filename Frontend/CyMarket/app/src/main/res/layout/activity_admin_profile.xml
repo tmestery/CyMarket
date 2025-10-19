@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Main Content Block for Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:background="@drawable/card_background"
+        android:elevation="8dp"
+        android:padding="24dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="32dp"
+        android:clipToOutline="true"
+        android:backgroundTint="?attr/colorSurface">
+
+        <!-- button rows -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <!-- Profile Button (left) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/prfls_home_page_btn"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="108dp"
+                android:layout_height="44dp"
+                android:text="Home"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="#E63946"
+                app:cornerRadius="20dp"
+                android:elevation="6dp"
+                android:layout_marginEnd="100dp"
+                android:contentDescription="Profile Navigation" />
+
+            <!-- Settings Button (right) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/prfls_setting_btn"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="108dp"
+                android:layout_height="44dp"
+                android:backgroundTint="#E63946"
+                android:contentDescription="Settings Navigation"
+                android:elevation="6dp"
+                android:text="Settings"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:cornerRadius="20dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/profile_image_view"
+        android:layout_marginTop="15dp"
+        android:layout_width="145dp"
+        android:layout_height="145dp"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@drawable/pfp" />
+
+    <TextView
+        android:id="@+id/username_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="USERNAME"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="35dp"
+        android:textSize="18dp"
+        android:textColor="#E63946">
+    </TextView>
+
+    <!-- Main Content Block where I will add: Join Date -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/card_background"
+        android:elevation="8dp"
+        android:padding="24dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="32dp"
+        android:clipToOutline="true"
+        android:backgroundTint="?attr/colorSurface">
+
+        <!-- button rows -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="3"
+            android:layout_marginBottom="12dp">
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="330dp"
+            android:layout_height="54dp"
+            android:autoSizeMaxTextSize="40dp"
+            android:textSize="20dp"
+            android:layout_marginBottom="130sp"
+            android:text="Join Date" />
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
+        app:menu="@menu/bottom_nav_menu2" />
+</LinearLayout>

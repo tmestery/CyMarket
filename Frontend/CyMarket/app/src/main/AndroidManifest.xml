@@ -53,6 +53,12 @@
             android:name=".AdminDashboardActivity"
             android:exported="false"/>
         <activity
+            android:name=".AdminSettingsActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".AdminProfilesActivity"
+            android:exported="false"/>
+        <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="true">
