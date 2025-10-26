@@ -59,6 +59,9 @@
             android:name=".AdminProfilesActivity"
             android:exported="false"/>
         <activity
+            android:name=".FavoritesActivity"
+            android:exported="false"/>
+        <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="true">
