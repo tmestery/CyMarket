@@ -24,6 +24,9 @@
             android:name=".MessagesActivity"
             android:exported="false" />
         <activity
+            android:name=".GeneralMessageViewerActivity"
+            android:exported="false"/>
+        <activity
             android:name=".ProfilesActivity"
             android:exported="false" />
         <activity
@@ -59,8 +62,11 @@
             android:name=".AdminProfilesActivity"
             android:exported="false"/>
         <activity
+            android:name=".FavoritesActivity"
+            android:exported="false"/>
+        <activity
             android:name=".SplashScreenActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/Theme.MyApp.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
