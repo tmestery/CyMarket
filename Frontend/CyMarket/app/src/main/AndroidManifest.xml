@@ -24,6 +24,9 @@
             android:name=".MessagesActivity"
             android:exported="false" />
         <activity
+            android:name=".GeneralMessageViewerActivity"
+            android:exported="false"/>
+        <activity
             android:name=".ProfilesActivity"
             android:exported="false" />
         <activity
