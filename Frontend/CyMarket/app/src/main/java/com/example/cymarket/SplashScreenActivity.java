@@ -9,16 +9,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen); // Changed to activity_splash layout
+        // Switch to your normal theme before inflating XML
+        setTheme(R.style.AppTheme);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                startActivity(i);
-                finish();
-            }
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash_screen);
+
+        new Handler().postDelayed(() -> {
+            startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class));
+            finish();
         }, 1000);
     }
 }
