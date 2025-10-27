@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import onetomany.Items.Item;
 import onetomany.Reports.Reports;
+import onetomany.userLogIn.userLogin;
 
 
 
@@ -29,6 +30,9 @@ public class User {
 
     @Column(unique = true)
     private String username;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    userLogin  userLogin;
 
      @OneToMany(mappedBy = "user")
     List<Reports> userReports;
@@ -105,6 +109,9 @@ public class User {
     }
     public void removeAllItems(){
         this.likedItems.clear();
+    }
+    public void setUserLogin(userLogin userLogin) {
+        this.userLogin = userLogin;
     }
 
     

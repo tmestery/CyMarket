@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import onetomany.Items.Item;
 import onetomany.Items.ItemsRepository;
+import onetomany.userLogIn.userLogin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
-
+import onetomany.userLogIn.*;
 /**
  *
  * @author Vivek Bengre
@@ -51,6 +52,9 @@ public class UserController {
     PasswordRecoveryService passwordRecoveryService;
     @Autowired
     private UserImageRepository userImageRepository;
+
+    @Autowired
+    private userLoginRepository userLoginRepository;
 
 
     private String success = "{\"message\":\"success\"}";
@@ -133,6 +137,13 @@ public class UserController {
         user.setJoiningDate(new Date());
         user.setLastLoggin();
         user.setIfActive(true);
+        userRepository.save(user);
+
+        User temptest= userRepository.findUserByUsername(user.getUsername());
+        userLogin temp= new userLogin(user.getUsername(),user.getEmailId(),'n',user.getUserPassword());
+        temp.setUser(temptest);
+        temptest.setUserLogin(temp);
+        userLoginRepository.save(temp);
         userRepository.save(user);
 
         return success;
