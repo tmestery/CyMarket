@@ -3,6 +3,7 @@ package onetomany.Users;
 
 import java.util.*;
 
+import onetomany.Notifications.Notification;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -48,13 +49,17 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<UserImage> images = new ArrayList<>();
-   
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Notification> notifications = new ArrayList<>();
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
 
-
-
- 
-
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
 
 
 

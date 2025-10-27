@@ -167,4 +167,32 @@ public class NotificationService {
             createAndSendNotification(user, NotificationType.SYSTEM_ANNOUNCEMENT, message);
         }
     }
+
+// Notify when item is liked
+    public void notifyItemLiked(User itemOwner, String likerUsername, Long itemId, String itemName) {
+        String message = likerUsername + " liked your item: " + itemName;
+        createAndSendNotification(itemOwner, NotificationType.ITEM_LIKED, message, itemId, "ITEM");
+    }
+
+// Notify when item is sold
+    public void notifyItemSold(User seller, Long itemId, String itemName, String buyerUsername) {
+        String message = "Your item '" + itemName + "' was purchased by " + buyerUsername;
+        createAndSendNotification(seller, NotificationType.ITEM_SOLD, message, itemId, "ITEM");
+    }
+    // Notify when item is purchased
+    public void notifyItemPurchased(User buyer, Long itemId, String itemName) {
+        String message = "You successfully purchased: " + itemName;
+        createAndSendNotification(buyer, NotificationType.ITEM_PURCHASED, message, itemId, "ITEM");
+    }
+
+//  Notify on new message
+    public void notifyNewMessage(User recipient, String senderUsername, Long conversationId) {
+        String message = "New message from " + senderUsername;
+        createAndSendNotification(recipient, NotificationType.NEW_MESSAGE, message, conversationId, "MESSAGE");
+    }
+
+// Notify on transaction status change
+    public void notifyTransactionUpdate(User user, NotificationType type, Long transactionId, String details) {
+        createAndSendNotification(user, type, details, transactionId, "TRANSACTION");
+    }
 }

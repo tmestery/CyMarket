@@ -94,4 +94,38 @@ public class NotificationController {
         return notificationService.deleteAllUserNotifications(username) ? SUCCESS : FAILURE;
     }
 
+
+     // Test endpoint to send notification for testing
+    @PostMapping("/test/{username}")
+    @Operation(summary = "Send a test notification", description = "Useful for testing the notification system")
+    public ResponseEntity<String> sendTestNotification(@PathVariable String username, 
+                                                       @RequestBody TestNotificationRequest request) {
+        var user = userRepository.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("{\"message\":\"user not found\"}");
+        }
+        
+        try {
+            if (request.getRelatedEntityId() != null && request.getRelatedEntityType() != null) {
+                notificationService.createAndSendNotification(
+                    user,
+                    NotificationType.valueOf(request.getType()),
+                    request.getMessage(),
+                    request.getRelatedEntityId(),
+                    request.getRelatedEntityType()
+                );
+            } else {
+                notificationService.createAndSendNotification(
+                    user,
+                    NotificationType.valueOf(request.getType()),
+                    request.getMessage()
+                );
+            }
+            return ResponseEntity.ok(SUCCESS);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("{\"message\":\"Invalid notification type\"}");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(FAILURE);
+        }
+    }
 }
