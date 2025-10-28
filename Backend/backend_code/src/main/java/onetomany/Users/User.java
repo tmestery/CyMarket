@@ -86,8 +86,9 @@ public class User {
         this.ifActive = true;
     
         userReports = new ArrayList<>();
+        
         this.UserPassword= userPassword;
-
+        userGroups = new ArrayList<>();
         this.username = username;
         
         this.lastLoggin=new Date();
