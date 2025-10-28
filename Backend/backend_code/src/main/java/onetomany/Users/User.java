@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
+import onetomany.Group.Group;
 import onetomany.Items.Item;
 import onetomany.Reports.Reports;
 import onetomany.userLogIn.userLogin;
@@ -40,6 +41,10 @@ public class User {
     
     @Column(unique = true)
     private String emailId;
+
+     @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    List<Group> userGroups;
 
      @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
@@ -232,6 +237,36 @@ public class User {
     }
     public void removeReport(Reports reports){
         this.userReports.remove(reports);
+    }
+
+    public void addReport(Reports reports){
+        this.userReports.add(reports);
+    }
+    public List<Reports> getUserReports(){
+        return this.userReports;
+    }
+    public void setUserReports(List<Reports> reports){
+        this.userReports= reports;
+    }
+    public userLogin getUserLogin(){
+        return this.userLogin;
+    }
+    public void setUserLoginDetails(userLogin userLogin){
+        this.userLogin=userLogin;
+    }
+    public List<Group> getUserGroups() {
+        return userGroups;
+    }
+    public void setUserGroups(List<Group> userGroups) {
+        this.userGroups = userGroups;
+    }
+    public void addUserGroup(Group group) {
+        if (!this.userGroups.contains(group)) {
+            this.userGroups.add(group);
+        }
+    }
+    public void removeUserGroup(Group group) {
+        this.userGroups.remove(group);
     }
 
     
