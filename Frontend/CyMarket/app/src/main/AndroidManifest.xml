@@ -65,6 +65,9 @@
             android:name=".FavoritesActivity"
             android:exported="false"/>
         <activity
+            android:name=".CreateGroupActivity"
+            android:exported="false"/>
+        <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/Theme.MyApp.Splash"
             android:exported="true">
