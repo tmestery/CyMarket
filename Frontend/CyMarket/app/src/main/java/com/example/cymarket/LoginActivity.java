@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                 tapCount++;
 
                 // 5 taps unlock admin
-                if (tapCount == 5) {
+                if (tapCount == 10) {
                     tapCount = 0;
                     Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
                     startActivity(intent);
