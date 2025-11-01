@@ -8,6 +8,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -15,9 +18,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AdminSettingsActivity extends AppCompatActivity {
-    private Button homeButton;
-    private Button profileButton;
-    private Button deleteAccount;
     private Button logoutButton;
     private Button removePFP;
     private TextView usernameText;
@@ -30,11 +30,9 @@ public class AdminSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_admin_settings);
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
 
-        homeButton = findViewById(R.id.stngs_home_btn);
-        profileButton = findViewById(R.id.stngs_prfile_btn);
-        deleteAccount = findViewById(R.id.delete_btn);
         logoutButton = findViewById(R.id.logout_btn);
         removePFP = findViewById(R.id.remove_pfp_btn);
 
@@ -80,27 +78,25 @@ public class AdminSettingsActivity extends AppCompatActivity {
             }
         });
 
-        // Home button
-        homeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminSettingsActivity.this, AdminDashboardActivity.class);
-            startActivity(intent);
+        bottomNav.setSelectedItemId(R.id.nav_home);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, AdminDashboardActivity.class));
+                return true;
+            } else if (id == R.id.nav_settings) {
+                startActivity(new Intent(this, AdminSettingsActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, AdminProfilesActivity.class));
+                return true;
+            }
+            return false;
         });
 
         // Logout button
         logoutButton.setOnClickListener(v -> {
             Intent intent = new Intent(AdminSettingsActivity.this, LoginActivity.class);
-            startActivity(intent);
-        });
-
-        // Profile button
-        profileButton.setOnClickListener(v -> {
-            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-            String savedEmail = prefs.getString("email", email);
-            String savedPassword = prefs.getString("password", password);
-            Intent intent = new Intent(AdminSettingsActivity.this, AdminProfilesActivity.class);
-            intent.putExtra("username", username);
-            intent.putExtra("email", savedEmail);
-            intent.putExtra("password", savedPassword);
             startActivity(intent);
         });
 

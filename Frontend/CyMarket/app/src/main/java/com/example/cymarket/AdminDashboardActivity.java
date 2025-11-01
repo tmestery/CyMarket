@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -31,6 +33,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         // Set buttons:
         salesButton = findViewById(R.id.sales_btn);
         usersButton = findViewById(R.id.users_btn);
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
 
         // Set sales and users info displays that will be hidden/brought out:
         LinearLayout bottomNaveSales = findViewById(R.id.bottom_nav_sales);
@@ -55,6 +58,22 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 bottomNavUsers.setVisibility(View.INVISIBLE);
                 bottomNaveSales.setVisibility(View.VISIBLE);
             }
+        });
+
+        bottomNav.setSelectedItemId(R.id.nav_home);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, AdminDashboardActivity.class));
+                return true;
+            } else if (id == R.id.nav_settings) {
+                startActivity(new Intent(this, AdminSettingsActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, AdminProfilesActivity.class));
+                return true;
+            }
+            return false;
         });
     }
 

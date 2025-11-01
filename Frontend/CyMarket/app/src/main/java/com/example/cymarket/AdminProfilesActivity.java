@@ -34,7 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class AdminProfilesActivity extends AppCompatActivity {
-    private Button homeButton, settingsButton;
+    private Button settingsButton;
     private TextView usernameText, joinDateText;
     private ImageView profileImage;
     private static final int PICK_IMAGE = 1;
@@ -44,13 +44,13 @@ public class AdminProfilesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profiles);
+        setContentView(R.layout.activity_admin_profile);
 
         usernameText = findViewById(R.id.username_text);
         profileImage = findViewById(R.id.profile_image_view);
         joinDateText = findViewById(R.id.textView2);
-        homeButton = findViewById(R.id.prfls_home_page_btn);
         settingsButton = findViewById(R.id.prfls_setting_btn);
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
 
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String username = prefs.getString("username", null);
@@ -75,6 +75,23 @@ public class AdminProfilesActivity extends AppCompatActivity {
                 Bitmap.Config.RGB_565,
                 error -> profileImage.setImageResource(R.drawable.pfp)
         );
+
+        bottomNav.setSelectedItemId(R.id.nav_home);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, AdminDashboardActivity.class));
+                return true;
+            } else if (id == R.id.nav_settings) {
+                startActivity(new Intent(this, AdminSettingsActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, AdminProfilesActivity.class));
+                return true;
+            }
+            return false;
+        });
+
         queue.add(imageRequest);
 
         Retrofit retrofitScalars = new Retrofit.Builder()
@@ -134,29 +151,6 @@ public class AdminProfilesActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(intent, PICK_IMAGE);
         });
-
-        // Buttons
-        homeButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
-        settingsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminProfilesActivity.this, AdminDashboardActivity.class);
-            startActivity(intent);
-        });
-
-//        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-//        bottomNav.setOnItemSelectedListener(item -> {
-//            int id = item.getItemId();
-//            if (id == R.id.nav_buy) {
-//                startActivity(new Intent(AdminProfilesActivity.this, BuyActivity.class));
-//                return true;
-//            } else if (id == R.id.nav_sell) {
-//                startActivity(new Intent(AdminProfilesActivity.this, SellActivity.class));
-//                return true;
-//            } else if (id == R.id.nav_chat) {
-//                startActivity(new Intent(AdminProfilesActivity.this, MessagesActivity.class));
-//                return true;
-//            }
-//            return false;
-//        });
     }
 
     @Override
