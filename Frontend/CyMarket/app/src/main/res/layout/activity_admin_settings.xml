@@ -1,227 +1,166 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Main Content Block for Buttons -->
+    <!-- Wrap all content above the bottom nav -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:orientation="vertical"
-        android:background="@drawable/card_background"
-        android:elevation="8dp"
-        android:padding="24dp"
-        android:layout_marginHorizontal="16dp"
-        android:clipToOutline="true"
-        android:backgroundTint="?attr/colorSurface">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <!-- button rows -->
+        <!-- Main Content Block for Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="3">
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:elevation="8dp"
+            android:padding="24dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="32dp"
+            android:clipToOutline="true"
+            android:backgroundTint="?attr/colorSurface">
 
-            <!-- Profile Button (left) -->
+            <TextView
+                android:id="@+id/name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="General Account Settings"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="15dp"
+                android:textSize="25dp"
+                android:textColor="@color/black" />
+
+            <!-- Break in Page -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/black" />
+
+            <TextView
+                android:id="@+id/username_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username:                                        example"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textSize="18dp"
+                android:textColor="@color/black" />
+
+            <!-- Break in Page -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="5dp"
+                android:background="#969ba3" />
+
+            <TextView
+                android:id="@+id/email_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email:                    example@example.com"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textSize="18dp"
+                android:textColor="@color/black" />
+
+            <!-- Break in Page -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="5dp"
+                android:background="#969ba3" />
+
+            <TextView
+                android:id="@+id/first_last_name_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name:                                         First Last"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textSize="18dp"
+                android:textColor="@color/black" />
+
+            <!-- Break in Page -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="5dp"
+                android:background="#969ba3" />
+
+            <TextView
+                android:id="@+id/password_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password:                                    *********"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:textSize="18dp"
+                android:textColor="@color/black" />
+
+            <!-- Break in Page -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="15dp"
+                android:background="#969ba3" />
+
+            <!-- Remove Profile Picture Button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/stngs_home_btn"
+                android:id="@+id/remove_pfp_btn"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
+                android:layout_width="300dp"
                 android:layout_height="44dp"
-                android:text="Home"
+                android:layout_gravity="center_horizontal"
+                android:text="Remove Profile Picture"
                 android:textSize="14sp"
+                android:layout_marginBottom="15dp"
                 android:textColor="@color/white"
-                android:backgroundTint="#E63946"
-                android:elevation="6dp"
-                android:layout_marginEnd="2dp" />
+                android:backgroundTint="#969ba3"
+                android:elevation="6dp" />
 
-            <!-- Profile Button (left) -->
+            <!-- Break in Page -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="15dp"
+                android:background="#969ba3" />
+
+            <!-- Logout Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/logout_btn"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
+                android:layout_width="300dp"
                 android:layout_height="44dp"
-                android:text="Logout"
-                android:textSize="14sp"
+                android:layout_gravity="center_horizontal"
+                android:text="LOGOUT"
+                android:textSize="14dp"
                 android:textColor="@color/white"
-                android:backgroundTint="#E63946"
-                android:elevation="6dp"
-                android:layout_marginEnd="2dp" />
-
-            <!-- Settings Button (right) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/stngs_prfile_btn"
-                style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
-                android:layout_height="44dp"
-                android:backgroundTint="#E63946"
-                android:contentDescription="Home Navigation"
-                android:elevation="6dp"
-                android:text="Profile"
-                android:textColor="@color/white"
-                android:textSize="14sp"/>
+                android:backgroundTint="#969ba3"
+                android:elevation="6dp" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Main Content Block for Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:background="@drawable/card_background"
-        android:elevation="8dp"
-        android:padding="24dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="32dp"
-        android:clipToOutline="true"
-        android:backgroundTint="?attr/colorSurface">
-
-        <TextView
-            android:id="@+id/name_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="General Account Settings"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="15dp"
-            android:textSize="25dp"
-            android:textColor="@color/black">
-        </TextView>
-
-        <!-- Break in Page -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/black" />
-
-        <TextView
-            android:id="@+id/username_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Username:                                        example"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:textSize="18dp"
-            android:textColor="@color/black">
-        </TextView>
-
-        <!-- Break in Page -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="5dp"
-            android:background="#969ba3" />
-
-        <TextView
-            android:id="@+id/email_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email:                    example@example.com"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:textSize="18dp"
-            android:textColor="@color/black">
-        </TextView>
-
-        <!-- Break in Page -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="5dp"
-            android:background="#969ba3" />
-
-        <TextView
-            android:id="@+id/first_last_name_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name:                                         First Last"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:textSize="18dp"
-            android:textColor="@color/black">
-        </TextView>
-
-        <!-- Break in Page -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="5dp"
-            android:background="#969ba3" />
-
-        <TextView
-            android:id="@+id/password_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Password:                                    *********"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="15dp"
-            android:textSize="18dp"
-            android:textColor="@color/black">
-        </TextView>
-
-        <!-- Break in Page -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="15dp"
-            android:background="#969ba3" />
-
-        <!-- Delete Account Button (left) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/remove_pfp_btn"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="300dp"
-            android:layout_height="44dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Remove Profile Picture"
-            android:textSize="14sp"
-            android:layout_marginBottom="15dp"
-            android:textColor="@color/white"
-            android:backgroundTint="#969ba3"
-            android:elevation="6dp"/>
-
-        <!-- Break in Page -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="15dp"
-            android:background="#969ba3" />
-
-        <!-- Delete Account Button (left) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/delete_btn"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="300dp"
-            android:layout_height="44dp"
-            android:layout_gravity="center_horizontal"
-            android:text="DELETE ACCOUNT"
-            android:textSize="14sp"
-            android:textColor="@color/white"
-            android:backgroundTint="#969ba3"
-            android:elevation="6dp"/>
-    </LinearLayout>
-
+    <!-- Bottom navigation stays at the bottom -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"
