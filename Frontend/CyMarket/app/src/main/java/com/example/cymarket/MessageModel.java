@@ -1,19 +1,23 @@
 package com.example.cymarket;
 
-public class ChatMessage {
-    private String text;
-    private boolean isMine;
+public class MessageModel {
+    private String message;
+    private boolean sentByMe;
 
-    public ChatMessage(String text, boolean isMine) {
-        this.text = text;
-        this.isMine = isMine;
+    public MessageModel(String message, boolean sentByMe) {
+        this.message = message;
+        this.sentByMe = sentByMe;
     }
 
-    public String getText() {
-        return text;
+    public String getMessage() {
+        return message;
+    }
+
+    public boolean isSentByMe() {
+        return sentByMe;
     }
 
     public boolean isMine() {
-        return isMine;
+        return isSentByMe();
     }
 }

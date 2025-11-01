@@ -15,7 +15,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FriendsActivity extends AppCompatActivity {
-    private Button messagesButton; // set messages button
+    private Button messagesButton;
     private RecyclerView recyclerView;
     private FriendsAdapter adapter;
 
@@ -45,8 +45,8 @@ public class FriendsActivity extends AppCompatActivity {
                     }
 
                     adapter = new FriendsAdapter(users, user -> {
-                        Intent intent = new Intent(FriendsActivity.this, MessagesActivity.class);
-                        intent.putExtra("chat_with", user.getUsername());
+                        Intent intent = new Intent(FriendsActivity.this, CreateGroupActivity.class);
+                        intent.putExtra("friendUsername", user.getUsername()); // Pass clicked friend
                         startActivity(intent);
                     });
                     recyclerView.setAdapter(adapter);
@@ -62,11 +62,11 @@ public class FriendsActivity extends AppCompatActivity {
             }
         });
 
-        // Click listener on messages button pressed:
         messagesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FriendsActivity.this, MessagesActivity.class);
+                Intent intent = new Intent(FriendsActivity.this, CreateGroupActivity.class);
+                intent.putExtra("friend_username", "someFriendUsername");
                 startActivity(intent);
             }
         });

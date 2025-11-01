@@ -8,41 +8,35 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int TYPE_ME = 1;
-    private static final int TYPE_THEM = 2;
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHolder> {
 
-    private final List<ChatMessage> messages;
+    private final List<MessageModel> messages;
 
-    public ChatAdapter(List<ChatMessage> messages) {
+    public ChatAdapter(List<MessageModel> messages) {
         this.messages = messages;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return messages.get(position).isMine() ? TYPE_ME : TYPE_THEM;
+        return messages.get(position).isSentByMe() ? 1 : 2;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ME) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_me, parent, false);
-            return new MeViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_them, parent, false);
-            return new ThemViewHolder(view);
-        }
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message, parent, false);
+        return new MessageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ChatMessage m = messages.get(position);
-        if (holder instanceof MeViewHolder) {
-            ((MeViewHolder) holder).message.setText(m.getText());
-        } else {
-            ((ThemViewHolder) holder).message.setText(m.getText());
-        }
+    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        MessageModel m = messages.get(position);
+        holder.messageText.setText(m.getMessage());
+
+        holder.messageText.setBackgroundResource(
+                m.isSentByMe() ? R.drawable.bg_message_sent : R.drawable.bg_message_recieved
+        );
     }
 
     @Override
@@ -50,19 +44,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return messages.size();
     }
 
-    static class MeViewHolder extends RecyclerView.ViewHolder {
-        TextView message;
-        MeViewHolder(@NonNull View itemView) {
-            super(itemView);
-            message = itemView.findViewById(R.id.text_message_me);
-        }
-    }
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText;
 
-    static class ThemViewHolder extends RecyclerView.ViewHolder {
-        TextView message;
-        ThemViewHolder(@NonNull View itemView) {
+        public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            message = itemView.findViewById(R.id.text_message_them);
+            messageText = itemView.findViewById(R.id.textViewMessage);
         }
     }
 }

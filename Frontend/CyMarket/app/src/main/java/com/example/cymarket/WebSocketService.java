@@ -10,26 +10,34 @@ import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 public class WebSocketService extends Service {
 
-    // key to WebSocketClient obj mapping - for multiple WebSocket connections
     private final Map<String, WebSocketClient> webSockets = new HashMap<>();
+    private static WebSocketService instance;
 
     public WebSocketService() {}
+
+    public void send(String key, String message) {
+        WebSocketClient client = webSockets.get(key);
+        if (client != null && client.isOpen()) {
+            client.send(message);
+        } else {
+            Log.d("WebSocketService", "WebSocket not connected for key: " + key);
+        }
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             String action = intent.getAction();
             if ("CONNECT".equals(action)) {
-                String url = intent.getStringExtra("url");      // eg, "ws://localhost:8080/chat/1/uname"
-                String key = intent.getStringExtra("key");      // eg, "chat1" - refer to MainActivity where this Intent was called
-                connectWebSocket(key, url);                           // Initialize WebSocket connection
+                String url = intent.getStringExtra("url");
+                String key = intent.getStringExtra("key");
+                connectWebSocket(key, url);
             } else if ("DISCONNECT".equals(action)) {
                 String key = intent.getStringExtra("key");
                 disconnectWebSocket(key);
@@ -39,15 +47,20 @@ public class WebSocketService extends Service {
     }
 
     @Override
-    public void onCreate() {    // Register BroadcastReceiver to listen for messages from Activities
+    public void onCreate() {
         super.onCreate();
+        instance = this;
         LocalBroadcastManager
                 .getInstance(this)
                 .registerReceiver(messageReceiver, new IntentFilter("SendWebSocketMessage"));
     }
 
+    public static WebSocketService getInstance() {
+        return instance;
+    }
+
     @Override
-    public void onDestroy() {   // Close WebSocket connection to prevent memory leaks
+    public void onDestroy() {
         super.onDestroy();
         for (WebSocketClient client : webSockets.values()) {
             client.close();
@@ -60,23 +73,21 @@ public class WebSocketService extends Service {
         return null;
     }
 
-    // Initialize WebSocket client and define callback for message reception
     private void connectWebSocket(String key, String url) {
-
         try {
             URI serverUri = URI.create(url);
             WebSocketClient webSocketClient = new WebSocketClient(serverUri) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
                     Log.d(key, "Connected");
+
+                    Intent readyIntent = new Intent("WebSocketReady");
+                    readyIntent.putExtra("key", key);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(readyIntent);
                 }
 
                 @Override
                 public void onMessage(String message) {
-
-                    // whenever a message is received for this WebSocketClient obj
-                    // broadcast the message internally (within the app) with its corresponding key
-                    // only the Activities who care about this message will act accordingly
                     Intent intent = new Intent("WebSocketMessageReceived");
                     intent.putExtra("key", key);
                     intent.putExtra("message", message);
@@ -90,29 +101,29 @@ public class WebSocketService extends Service {
 
                 @Override
                 public void onError(Exception ex) {
-                    Log.d(key, "Error");
+                    Log.d(key, "Error: " + ex.getMessage());
                 }
             };
 
-            webSocketClient.connect();              // connect to the websocket
-            webSockets.put(key, webSocketClient);   // add this instance to the mapping
+            webSockets.put(key, webSocketClient);
+            webSocketClient.connect();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Listen to the messages from Activities
-    // Send the message to its designated Websocket connection
-    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String key = intent.getStringExtra("key");
             String message = intent.getStringExtra("message");
 
             WebSocketClient webSocket = webSockets.get(key);
-            if (webSocket != null) {
+            if (webSocket != null && webSocket.isOpen()) {
                 webSocket.send(message);
+            } else {
+                Log.d("WebSocketService", "Cannot send, WebSocket not open for key: " + key);
             }
         }
     };

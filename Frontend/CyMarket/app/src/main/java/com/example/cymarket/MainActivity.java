@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
             tempUsername = prefs.getString("username", null);
         }
-        final String username = tempUsername; // effectively final
+        final String username = tempUsername;
 
         profileText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SellActivity.class));
                 return true;
             } else if (id == R.id.nav_chat) {
-                startActivity(new Intent(MainActivity.this, MessagesActivity.class));
+                startActivity(new Intent(MainActivity.this, FriendsActivity.class));
                 return true;
             }
             return false;
