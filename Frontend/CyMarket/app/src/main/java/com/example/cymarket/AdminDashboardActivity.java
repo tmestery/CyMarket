@@ -29,8 +29,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_dashboard);
 
         // Set buttons:
-        salesButton.findViewById(R.id.sales_btn);
-        usersButton.findViewById(R.id.users_btn);
+        salesButton = findViewById(R.id.sales_btn);
+        usersButton = findViewById(R.id.users_btn);
 
         // Set sales and users info displays that will be hidden/brought out:
         LinearLayout bottomNaveSales = findViewById(R.id.bottom_nav_sales);
@@ -71,8 +71,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         user.setProfileImageUrl("http://coms-3090-056.class.las.iastate.edu:8080/users/" + user.getUsername() + "/profile-image");
                     }
 
-                    adapter = new FriendsAdapter(users);
-                    recyclerView.setAdapter(adapter);
+                    adapter = new FriendsAdapter(users, user -> {
+                        Intent intent = new Intent(AdminDashboardActivity.this, MessagesActivity.class);
+                        intent.putExtra("chat_with", user.getUsername());
+                        startActivity(intent);
+                    });
                 } else {
                     Toast.makeText(AdminDashboardActivity.this, "Failed to fetch users", Toast.LENGTH_SHORT).show();
                 }

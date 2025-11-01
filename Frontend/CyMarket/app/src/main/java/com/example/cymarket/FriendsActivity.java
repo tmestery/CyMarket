@@ -44,7 +44,11 @@ public class FriendsActivity extends AppCompatActivity {
                         user.setProfileImageUrl("http://coms-3090-056.class.las.iastate.edu:8080/users/" + user.getUsername() + "/profile-image");
                     }
 
-                    adapter = new FriendsAdapter(users);
+                    adapter = new FriendsAdapter(users, user -> {
+                        Intent intent = new Intent(FriendsActivity.this, MessagesActivity.class);
+                        intent.putExtra("chat_with", user.getUsername());
+                        startActivity(intent);
+                    });
                     recyclerView.setAdapter(adapter);
                 } else {
                     Toast.makeText(FriendsActivity.this, "Failed to fetch users", Toast.LENGTH_SHORT).show();

@@ -12,10 +12,16 @@ import java.util.List;
 
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
 
-    private final List<User> users;
+    public interface OnUserClickListener {
+        void onUserClick(User user);
+    }
 
-    public FriendsAdapter(List<User> users) {
+    private final List<User> users;
+    private final OnUserClickListener listener;
+
+    public FriendsAdapter(List<User> users, OnUserClickListener listener) {
         this.users = users;
+        this.listener = listener;
     }
 
     @NonNull
@@ -32,8 +38,12 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
         Glide.with(holder.itemView.getContext())
                 .load(user.getProfileImageUrl())
-                .placeholder(R.drawable.pfp) // your placeholder image
+                .placeholder(R.drawable.pfp)
                 .into(holder.profileImage);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onUserClick(user);
+        });
     }
 
     @Override
