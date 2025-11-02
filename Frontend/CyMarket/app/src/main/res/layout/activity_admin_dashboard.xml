@@ -209,8 +209,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewFriends"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/> <!-- makes it take the rest of the total space -->
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
