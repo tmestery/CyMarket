@@ -15,6 +15,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_ME = 0;
     private static final int TYPE_THEM = 1;
 
+
     public MessageAdapter(List<MessageModel> messages) {
         this.messages = messages;
     }
