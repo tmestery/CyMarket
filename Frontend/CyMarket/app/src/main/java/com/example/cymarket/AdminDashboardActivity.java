@@ -37,6 +37,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         // Set sales and users info displays that will be hidden/brought out:
         LinearLayout bottomNaveSales = findViewById(R.id.bottom_nav_sales);
+        LinearLayout bottomNaveSales2 = findViewById(R.id.bottom_nav_sales_2);
         LinearLayout bottomNavUsers = findViewById(R.id.bottom_nav_users);
 
         // Setting and getting all users on screen
@@ -49,6 +50,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             public void onClick(View v) {
                 bottomNavUsers.setVisibility(View.VISIBLE);
                 bottomNaveSales.setVisibility(View.INVISIBLE);
+                bottomNaveSales2.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -57,6 +59,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             public void onClick(View v) {
                 bottomNavUsers.setVisibility(View.INVISIBLE);
                 bottomNaveSales.setVisibility(View.VISIBLE);
+                bottomNaveSales2.setVisibility(View.VISIBLE);
             }
         });
 
@@ -95,6 +98,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         intent.putExtra("chat_with", user.getUsername());
                         startActivity(intent);
                     });
+
+                    // ⚡ Set adapter on RecyclerView here
+                    recyclerView.setAdapter(adapter);
+
                 } else {
                     Toast.makeText(AdminDashboardActivity.this, "Failed to fetch users", Toast.LENGTH_SHORT).show();
                 }
