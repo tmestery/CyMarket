@@ -2,152 +2,93 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MessagesActivity extends AppCompatActivity {
-
-    private String chatWith;
-    private int groupId;
-    private RecyclerView recyclerView;
-    private MessageAdapter adapter;
     private Button sendButton;
     private EditText messageInput;
-
-    private List<MessageModel> messages = new ArrayList<>();
-
-    // Receiver to enable send button when WebSocket is ready
-    private final BroadcastReceiver webSocketReadyReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String key = intent.getStringExtra("key");
-            if (key.equals(chatWith)) {
-                sendButton.setEnabled(true);
-            }
-        }
-    };
-
-    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String key = intent.getStringExtra("key");
-            String message = intent.getStringExtra("message");
-            if (key.equals(chatWith)) {
-                messages.add(new MessageModel(message, false));
-                adapter.notifyItemInserted(messages.size() - 1);
-                recyclerView.scrollToPosition(messages.size() - 1);
-            }
-        }
-    };
+    private TextView messagesRecyclerView; // For now keeping simple – swap later with recycler
+    private static final String CHAT_KEY = "groupChat";
+    private static final String TAG = "MessagesActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
 
-        chatWith = getIntent().getStringExtra("chat_with");
-
-        recyclerView = findViewById(R.id.messagesRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        sendButton = findViewById(R.id.sendButton); // use class-level reference
+        sendButton = findViewById(R.id.sendButton);
         messageInput = findViewById(R.id.messageInput);
-
-        adapter = new MessageAdapter(messages);
-        recyclerView.setAdapter(adapter);
-
-        chatWith = getIntent().getStringExtra("chat_with");
-        groupId = getIntent().getIntExtra("groupId", -1);
-
-        if (groupId == -1) {
-            Toast.makeText(this, "Invalid group", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-
-        // Disable send until WebSocket is ready
-        sendButton.setEnabled(false);
+        messagesRecyclerView = findViewById(R.id.messagesTitle);
 
         sendButton.setOnClickListener(v -> {
-            String msg = messageInput.getText().toString().trim();
-            if (!msg.isEmpty()) {
-                sendMessage(msg);
-                messageInput.setText("");
-            }
+            String message = messageInput.getText().toString().trim();
+            if(message.isEmpty()) return;
+
+            Intent intent = new Intent("SendWebSocketMessage");
+            intent.putExtra("key", CHAT_KEY);
+            intent.putExtra("message", message);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+            messageInput.setText("");
         });
 
+        // Connect when we arrive here
+        String wsUrl = "ws://YOUR_SERVER/chat/" + getIntent().getStringExtra("groupName");
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_buy) {
-                startActivity(new Intent(MessagesActivity.this, BuyActivity.class));
-                return true;
-            } else if (id == R.id.nav_sell) {
-                startActivity(new Intent(MessagesActivity.this, SellActivity.class));
-                return true;
-            } else if (id == R.id.nav_chat) {
-                startActivity(new Intent(MessagesActivity.this, FriendsActivity.class));
-                return true;
-            }
-            return false;
-        });
-
-        startWebSocket();
+        Intent serviceIntent = new Intent(this, WebSocketService.class);
+        serviceIntent.setAction("CONNECT");
+        serviceIntent.putExtra("key", CHAT_KEY);
+        serviceIntent.putExtra("url", wsUrl);
+        startService(serviceIntent);
+        setupBottomNav();
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
+                String msg = intent.getStringExtra("message");
+                runOnUiThread(() -> {
+                    messagesRecyclerView.append("\n" + msg);
+                });
+            }
+        }
+    };
 
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(messageReceiver, new IntentFilter("WebSocketMessageReceived"));
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(webSocketReadyReceiver, new IntentFilter("WebSocketReady"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                receiver, new IntentFilter("WebSocketMessageReceived")
+        );
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(webSocketReadyReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Intent intent = new Intent(this, WebSocketService.class);
-        intent.setAction("DISCONNECT");
-        intent.putExtra("key", chatWith);
-        startService(intent);
-    }
-
-    private void startWebSocket() {
-        Intent serviceIntent = new Intent(this, WebSocketService.class);
-        serviceIntent.setAction("CONNECT");
-        serviceIntent.putExtra("url", "ws://coms-3090-056.class.las.iastate.edu:8080/chat/" + groupId + "/" + chatWith);
-        serviceIntent.putExtra("key", chatWith);
-        startService(serviceIntent);
-    }
-
-    private void sendMessage(String message) {
-        messages.add(new MessageModel(message, true));
-        adapter.notifyItemInserted(messages.size() - 1);
-        recyclerView.scrollToPosition(messages.size() - 1);
-
-        Intent intent = new Intent("SendWebSocketMessage");
-        intent.putExtra("key", chatWith);
-        intent.putExtra("message", message);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    private void setupBottomNav() {
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_buy)
+                startActivity(new Intent(this, BuyActivity.class));
+            else if (item.getItemId() == R.id.nav_sell)
+                startActivity(new Intent(this, SellActivity.class));
+            else if (item.getItemId() == R.id.nav_chat)
+                startActivity(new Intent(this, GroupListActivity.class));
+            return true;
+        });
     }
 }

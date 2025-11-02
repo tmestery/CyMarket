@@ -62,6 +62,12 @@
             android:name=".AdminProfilesActivity"
             android:exported="false"/>
         <activity
+            android:name=".GroupListActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ReportUserActivity"
+            android:exported="false"/>
+        <activity
             android:name=".FavoritesActivity"
             android:exported="false"/>
         <activity

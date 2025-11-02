@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SellActivity.class));
                 return true;
             } else if (id == R.id.nav_chat) {
-                startActivity(new Intent(MainActivity.this, FriendsActivity.class));
+                startActivity(new Intent(MainActivity.this, GroupListActivity.class));
                 return true;
             }
             return false;

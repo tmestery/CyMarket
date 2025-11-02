@@ -2,134 +2,93 @@ package com.example.cymarket;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 public class WebSocketService extends Service {
 
-    private final Map<String, WebSocketClient> webSockets = new HashMap<>();
-    private static WebSocketService instance;
-
-    public WebSocketService() {}
-
-    public void send(String key, String message) {
-        WebSocketClient client = webSockets.get(key);
-        if (client != null && client.isOpen()) {
-            client.send(message);
-        } else {
-            Log.d("WebSocketService", "WebSocket not connected for key: " + key);
-        }
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            String action = intent.getAction();
-            if ("CONNECT".equals(action)) {
-                String url = intent.getStringExtra("url");
-                String key = intent.getStringExtra("key");
-                connectWebSocket(key, url);
-            } else if ("DISCONNECT".equals(action)) {
-                String key = intent.getStringExtra("key");
-                disconnectWebSocket(key);
-            }
-        }
-        return START_STICKY;
-    }
+    private final Map<String, WebSocketClient> sockets = new HashMap<>();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
-        LocalBroadcastManager
-                .getInstance(this)
-                .registerReceiver(messageReceiver, new IntentFilter("SendWebSocketMessage"));
-    }
-
-    public static WebSocketService getInstance() {
-        return instance;
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(sendReceiver, new IntentFilter("WS_SEND"));
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        for (WebSocketClient client : webSockets.values()) {
-            client.close();
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) return START_STICKY;
+
+        String action = intent.getAction();
+        String key = intent.getStringExtra("key");
+
+        if ("WS_CONNECT".equals(action)) {
+            connect(key, intent.getStringExtra("url"));
+        } else if ("WS_DISCONNECT".equals(action)) {
+            disconnect(key);
         }
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver);
+
+        return START_STICKY;
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    private void connect(String key, String url) {
+        if (sockets.containsKey(key)) return;
 
-    private void connectWebSocket(String key, String url) {
-        try {
-            URI serverUri = URI.create(url);
-            WebSocketClient webSocketClient = new WebSocketClient(serverUri) {
-                @Override
-                public void onOpen(ServerHandshake handshakedata) {
-                    Log.d(key, "Connected");
-
-                    Intent readyIntent = new Intent("WebSocketReady");
-                    readyIntent.putExtra("key", key);
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(readyIntent);
-                }
-
-                @Override
-                public void onMessage(String message) {
-                    Intent intent = new Intent("WebSocketMessageReceived");
-                    intent.putExtra("key", key);
-                    intent.putExtra("message", message);
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                }
-
-                @Override
-                public void onClose(int code, String reason, boolean remote) {
-                    Log.d(key, "Closed");
-                }
-
-                @Override
-                public void onError(Exception ex) {
-                    Log.d(key, "Error: " + ex.getMessage());
-                }
-            };
-
-            webSockets.put(key, webSocketClient);
-            webSocketClient.connect();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String key = intent.getStringExtra("key");
-            String message = intent.getStringExtra("message");
-
-            WebSocketClient webSocket = webSockets.get(key);
-            if (webSocket != null && webSocket.isOpen()) {
-                webSocket.send(message);
-            } else {
-                Log.d("WebSocketService", "Cannot send, WebSocket not open for key: " + key);
+        WebSocketClient client = new WebSocketClient(URI.create(url)) {
+            @Override
+            public void onOpen(ServerHandshake handshake) {
+                Intent ready = new Intent("WS_READY");
+                ready.putExtra("key", key);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(ready);
             }
+
+            @Override
+            public void onMessage(String msg) {
+                Intent intent = new Intent("WS_MSG");
+                intent.putExtra("key", key);
+                intent.putExtra("message", msg);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+            }
+
+            @Override public void onClose(int code, String reason, boolean remote) {}
+            @Override public void onError(Exception ex) {
+                Log.e("WS", "error: " + ex.getMessage());
+            }
+        };
+
+        sockets.put(key, client);
+        client.connect();
+    }
+
+    private final BroadcastReceiver sendReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(android.content.Context context, Intent intent) {
+            String key = intent.getStringExtra("key");
+            String msg = intent.getStringExtra("message");
+
+            WebSocketClient ws = sockets.get(key);
+            if (ws != null && ws.isOpen()) ws.send(msg);
         }
     };
 
-    private void disconnectWebSocket(String key) {
-        if (webSockets.containsKey(key))
-            webSockets.get(key).close();
+    private void disconnect(String key) {
+        if (!sockets.containsKey(key)) return;
+        sockets.get(key).close();
+        sockets.remove(key);
     }
+
+    @Override
+    public IBinder onBind(Intent intent) { return null; }
 }
