@@ -79,7 +79,7 @@ public class User {
     // =============================== Constructors ================================== //
 
 
-    public User(String name, String emailId, String userPassword,String username ) {
+    public User(String name, String emailId, String UserPassword,String username ) {
         this.name = name;
         this.emailId = emailId;
         this.joiningDate = new Date();
@@ -87,13 +87,26 @@ public class User {
     
         userReports = new ArrayList<>();
         
-        this.UserPassword= userPassword;
+        this.UserPassword= UserPassword;
         userGroups = new ArrayList<>();
         this.username = username;
         
         this.lastLoggin=new Date();
 
 
+    }
+
+    public User(userLogin userLogin) {
+        this.userLogin = userLogin;
+        this.name = userLogin.getName();
+        this.emailId = userLogin.getEmail();
+        this.joiningDate = new Date();
+        this.ifActive = true;   
+        userReports = new ArrayList<>();
+        this.UserPassword= userLogin.getPassword();
+        userGroups = new ArrayList<>();
+        this.username = userLogin.getUserName();
+        this.lastLoggin=new Date();
     }
 
     public User() {
