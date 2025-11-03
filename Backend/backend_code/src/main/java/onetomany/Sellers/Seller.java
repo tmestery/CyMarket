@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import onetomany.Items.Item;
+import onetomany.userLogIn.userLogin;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -40,6 +41,10 @@ public class Seller {
     @JsonIgnore
     private Set<Item> items = new HashSet<>();
 
+
+    @OneToOne(cascade = CascadeType.ALL)
+    userLogin  userLogin;
+
     public Seller() {
     }
 
@@ -48,6 +53,34 @@ public class Seller {
         this.bio = bio;
     }
 
+     public Seller(String username) {
+        this.username = username;
+        this.bio = "";
+        this.rating = 0.0;
+        this.ratingsCount = 0;
+        this.totalSales = 0;
+        this.active = true;
+        this.createdAt = new Date();
+     }
+
+
+     public Seller(userLogin userLogin) {
+        this.username = userLogin.getUserName();
+        this.bio = "";
+        this.rating = 0.0;
+        this.ratingsCount = 0;
+        this.totalSales = 0;
+        this.active = true;
+        this.createdAt = new Date();
+        this.userLogin = userLogin;
+     }
+
+     public userLogin getUserLogin() {
+        return userLogin;
+    }
+    public void setUserLogin(userLogin userLogin) {
+        this.userLogin = userLogin;
+    }
 
     public Long getId() {
         return id;

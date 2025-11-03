@@ -3,6 +3,8 @@ package onetomany.userLogIn;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import onetomany.Sellers.Seller;
 import onetomany.Users.User;
 import onetomany.adminUser.adminUser;
 
@@ -14,9 +16,11 @@ public class userLogin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+
     @Column(unique = true)
     private String userName;
 
+    String name;
 
     String email;
 
@@ -42,6 +46,19 @@ public class userLogin {
     @JoinColumn
     adminUser adminUser;
 
+    @OneToOne
+    @JsonIgnore
+    @JoinColumn
+    Seller seller;
+
+
+    public userLogin(String userName, String email, String password,String name){
+        this.email= email;
+        this.userName= userName;
+        this.password= password;
+        this.name = name;
+        
+    }
 
     public userLogin(String userName, String email, char type, String password){
         this.email= email;
@@ -51,6 +68,25 @@ public class userLogin {
     }
 
 
+    public String getName() {
+        return name;
+    }
+    public void setName(String newName) {
+        this.name = newName;
+    }
+
+    public Seller getSeller() {
+        return seller;
+    }
+    public void setSeller(Seller newSeller){
+        this.seller= newSeller;
+    }
+    public adminUser getAdminUser() {
+        return adminUser;
+    }
+
+
+
     public void setId(int id){
         this.id= id;
     }
@@ -58,15 +94,16 @@ public class userLogin {
         this.user= newUser;
     }
     public void setPassword(String newPassword){
-        this.password= password;
+        this.password= newPassword;
     }
 
+    
     public User getUser() {
         return user;
     }
 
     public char getType() {
-        return type;
+        return this.type;
     }
 
     public int getId() {
@@ -89,8 +126,8 @@ public class userLogin {
         this.email = email;
     }
 
-    public void setType(char type) {
-        this.type = type;
+    public void setType(char newtype) {
+        this.type = newtype;
     }
 
     public void setUserName(String userName) {
