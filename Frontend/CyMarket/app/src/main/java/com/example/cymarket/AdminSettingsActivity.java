@@ -24,7 +24,6 @@ public class AdminSettingsActivity extends AppCompatActivity {
     private TextView emailText;
     private TextView firstLastNameText;
     private TextView passwordText;
-
     private static final String BASE_URL = "http://coms-3090-056.class.las.iastate.edu:8080/";
 
     @Override

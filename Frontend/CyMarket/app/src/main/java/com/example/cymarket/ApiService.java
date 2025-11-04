@@ -44,4 +44,9 @@ public interface ApiService {
     // Can be used to get the user's name
     @GET("users/getName/{email}")
     Call<String> getName(@Path("email") String email);
+
+    // Can be used to get the reports for admin dashboard (determines outcome)
+    @GET("/adminUser/getReports/{id}/{email}/{password}/")
+    Call<Reports> getReports(@Path("id") int id, @Path("email") String email, @Path("password") String password);
+
 }

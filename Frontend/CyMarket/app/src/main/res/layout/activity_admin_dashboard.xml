@@ -72,6 +72,18 @@
             android:textSize="15sp"
             android:backgroundTint="#F6F6F6"
             app:cornerRadius="30dp"/>
+
+        <Button
+            android:id="@+id/report_btn"
+            android:layout_marginTop="45dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#F6F6F6"
+            android:text="Report"
+            android:fontFamily="@font/inter"
+            android:textSize="15sp"
+            android:backgroundTint="@android:color/black"
+            app:cornerRadius="30dp" />
     </LinearLayout>
 
     <!-- Bottom-Sales-Bar -->
@@ -208,6 +220,29 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewFriends"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+    <!-- Bottom-Report-Bar (Hidden at start)-->
+    <LinearLayout
+        android:id="@+id/bottom_report_users"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="7sp"
+        android:layout_marginRight="7sp"
+        android:layout_marginTop="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:background="?attr/colorSurface"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:elevation="6dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewReports"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>

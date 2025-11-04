@@ -75,16 +75,8 @@ public class SignupActivity extends AppCompatActivity {
                     checkUserExists(username, new VolleyCallback() {
                         @Override
                         public void onSuccess() {
-                            // Email does NOT exist → proceed with signup
                             Toast.makeText(getApplicationContext(), "Signing Up", Toast.LENGTH_LONG).show();
                             signUpUser(firstName, lastName, email, username, password);
-
-                            // @GetMapping(path = "/loginEmail/{email}/{password}/")
-                            // @GetMapping(path = "/us/{username}/{password}/")
-
-                            // Go to login screen after signup
-                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                            startActivity(intent);
                         }
 
                         @Override
@@ -100,6 +92,7 @@ public class SignupActivity extends AppCompatActivity {
     // Interface to run the code after the request is finished
     public interface VolleyCallback {
         void onSuccess();
+
         void onFailure();
     }
 
@@ -134,16 +127,16 @@ public class SignupActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
+
     private void signUpUser(String firstName, String lastName, String email, String username, String password) {
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/users";
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/usersLogin/U";  // U = normal user
 
         JSONObject json = new JSONObject();
         try {
-            json.put("name", firstName + " " + lastName);
-            json.put("emailId", email);
-            json.put("username", username);
-            json.put("userPassword", password);
-            json.put("ifActive", true);
+            json.put("userName", username);
+            json.put("email", email);
+            json.put("password", password);
+            // backend doesn't need first/last, it auto-creates User + Seller
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,19 +145,16 @@ public class SignupActivity extends AppCompatActivity {
                 Request.Method.POST,
                 url,
                 json,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Volley Response", response.toString());
-                        Toast.makeText(getApplicationContext(), "Signup Success!", Toast.LENGTH_SHORT).show();
-                    }
+                response -> {
+                    Toast.makeText(getApplicationContext(), "Account created! Login now.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+                    finish();
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("Volley Error", error.toString());
-                        Toast.makeText(getApplicationContext(), "Signup Failed: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                error -> {
+                    Toast.makeText(getApplicationContext(),
+                            "Signup Failed: " + (error.getMessage() != null ? error.getMessage() : "Unknown error"),
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
         ) {
             @Override
@@ -175,7 +165,6 @@ public class SignupActivity extends AppCompatActivity {
             }
         };
 
-        // Add to request queue
         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);
     }
 }

@@ -22,6 +22,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Button removePFP;
     private TextView usernameText;
     private TextView emailText;
+    private Button logoutButton;
     private TextView firstLastNameText;
     private TextView passwordText;
 
@@ -34,6 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         deleteAccount = findViewById(R.id.delete_btn);
         removePFP = findViewById(R.id.remove_pfp_btn);
+        logoutButton = findViewById(R.id.logout_btn);
 
         usernameText = findViewById(R.id.username_text);
         emailText = findViewById(R.id.email_text);
@@ -108,6 +110,12 @@ public class SettingsActivity extends AppCompatActivity {
                     Log.e("DeleteUser", "Error: " + t.getMessage());
                 }
             });
+        });
+
+        // Logout button
+        logoutButton.setOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
 
         // Remove profile picture

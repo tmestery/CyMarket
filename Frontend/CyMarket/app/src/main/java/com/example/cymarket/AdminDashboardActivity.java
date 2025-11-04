@@ -21,9 +21,13 @@ import retrofit2.Response;
 
 public class AdminDashboardActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
-    private FriendsAdapter adapter;
     private Button salesButton;
     private Button usersButton;
+    private Button reportButton;
+    private RecyclerView reportsRecyclerView;
+    private ReportsAdapter reportsAdapter;
+
+    private FriendsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +37,35 @@ public class AdminDashboardActivity extends AppCompatActivity {
         // Set buttons:
         salesButton = findViewById(R.id.sales_btn);
         usersButton = findViewById(R.id.users_btn);
+        reportButton = findViewById(R.id.report_btn);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+
+        // Setting up view reports for admin:
+        reportsRecyclerView = findViewById(R.id.recyclerViewReports);
+        reportsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Set sales and users info displays that will be hidden/brought out:
         LinearLayout bottomNaveSales = findViewById(R.id.bottom_nav_sales);
         LinearLayout bottomNaveSales2 = findViewById(R.id.bottom_nav_sales_2);
         LinearLayout bottomNavUsers = findViewById(R.id.bottom_nav_users);
+        LinearLayout bottomReport = findViewById(R.id.bottom_report_users);
 
         // Setting and getting all users on screen
         recyclerView = findViewById(R.id.recyclerViewFriends);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         fetchUsers();
+
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomNavUsers.setVisibility(View.INVISIBLE);
+                bottomNaveSales.setVisibility(View.INVISIBLE);
+                bottomNaveSales2.setVisibility(View.INVISIBLE);
+                bottomReport.setVisibility(View.VISIBLE);
+
+                fetchReports();
+            }
+        });
 
         usersButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +73,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 bottomNavUsers.setVisibility(View.VISIBLE);
                 bottomNaveSales.setVisibility(View.INVISIBLE);
                 bottomNaveSales2.setVisibility(View.INVISIBLE);
+                bottomReport.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -60,6 +83,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 bottomNavUsers.setVisibility(View.INVISIBLE);
                 bottomNaveSales.setVisibility(View.VISIBLE);
                 bottomNaveSales2.setVisibility(View.VISIBLE);
+                bottomReport.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -93,13 +117,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         user.setProfileImageUrl("http://coms-3090-056.class.las.iastate.edu:8080/users/" + user.getUsername() + "/profile-image");
                     }
 
-                    adapter = new FriendsAdapter(users, user -> {
-                        Intent intent = new Intent(AdminDashboardActivity.this, MessagesActivity.class);
-                        intent.putExtra("chat_with", user.getUsername());
-                        startActivity(intent);
-                    });
+//                   Not needed since admin won't need to start gc with them at this moment:
+                    adapter = new FriendsAdapter(users, null);
 
-                    // ⚡ Set adapter on RecyclerView here
+                    // Set adapter on RecyclerView here
                     recyclerView.setAdapter(adapter);
 
                 } else {
@@ -114,4 +135,30 @@ public class AdminDashboardActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void fetchReports() {
+        ApiService apiService = RetroClient.getApiService();
+        String email = "admin@email.com";   // <- replace with stored admin login
+        String password = "adminPass";      // <- replace with stored admin login
+        int id = 1; // or whichever report id you want
+
+        apiService.getReports(id, email, password).enqueue(new Callback<Reports>() {
+            @Override
+            public void onResponse(Call<Reports> call, Response<Reports> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Reports reports = response.body();
+                    reportsAdapter = new ReportsAdapter(reports.getReportList());
+                    reportsRecyclerView.setAdapter(reportsAdapter);
+                } else {
+                    Toast.makeText(AdminDashboardActivity.this, "No reports found", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Reports> call, Throwable t) {
+                Toast.makeText(AdminDashboardActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

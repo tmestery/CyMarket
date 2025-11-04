@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
+import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -56,7 +57,6 @@ public class LoginActivity extends AppCompatActivity {
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* when signup button is pressed, use intent to switch to Signup Activity */
                 Intent intent2 = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
                 startActivity(intent2);
             }
@@ -66,7 +66,6 @@ public class LoginActivity extends AppCompatActivity {
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* when signup button is pressed, use intent to switch to Signup Activity */
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 startActivity(intent);
             }
@@ -79,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 tapCount++;
 
-                // 5 taps unlock admin
+                // 10 taps unlock admin (kept your original behavior)
                 if (tapCount == 10) {
                     tapCount = 0;
                     Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
@@ -89,12 +88,16 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Uses the new email-login endpoint and checks the returned "type" field for admin access.
+     * On success stores username/email/password/type in SharedPreferences and navigates.
+     */
     private void checkUserCredentials(String email, String password) {
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
 
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/loginEmail/"
-                + encodedEmail + "/" + encodedPassword + "/";
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/login/e/"
+                + encodedEmail + "/" + encodedPassword;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
@@ -102,24 +105,29 @@ public class LoginActivity extends AppCompatActivity {
                 null,
                 response -> {
                     try {
-                        String fetchedUsername = response.getString("username");
+                        String fetchedEmail = response.optString("email", email);
+                        String type = response.optString("type", "U");
+
                         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                        prefs.edit().putString("username", fetchedUsername).apply();
+                        prefs.edit().putString("email", fetchedEmail).apply();
                         prefs.edit().putString("password", password).apply();
-                        prefs.edit().putString("email", email).apply();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("username", fetchedUsername);
-                        intent.putExtra("password", password);
-                        intent.putExtra("email", email);
+
+                        boolean isAdmin = type.equalsIgnoreCase("A");
+
+                        Intent intent = new Intent(
+                                LoginActivity.this,
+                                isAdmin ? AdminDashboardActivity.class : MainActivity.class
+                        );
                         startActivity(intent);
                         finish();
-                    } catch (JSONException e) {
-                        Toast.makeText(getApplicationContext(),
-                                "Parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Error logging in", Toast.LENGTH_SHORT).show();
                     }
                 },
                 error -> Toast.makeText(getApplicationContext(),
-                        "Login failed: " + error.toString(), Toast.LENGTH_SHORT).show()
+                        "Invalid Email or Password", Toast.LENGTH_SHORT).show()
         );
 
         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
