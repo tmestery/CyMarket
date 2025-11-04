@@ -18,6 +18,8 @@ public class MessagesActivity extends AppCompatActivity {
     private Button sendButton;
     private EditText messageInput;
     private TextView messagesRecyclerView; // For now keeping simple – swap later with recycler
+    private TextView groupchatPersonName;
+    private TextView groupChatName;
     private static final String CHAT_KEY = "groupChat";
     private static final String TAG = "MessagesActivity";
 
@@ -26,9 +28,24 @@ public class MessagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
 
+        // These are the intents that are being passed:
+        //  intent.putExtra("chat_with", username);
+        //  intent.putExtra("groupId", groupId); // pass the correct group ID
+
+        String groupchatName = getIntent().getStringExtra("groupID");
+        String friendUsername = getIntent().getStringExtra("friendUsername");
+
         sendButton = findViewById(R.id.sendButton);
         messageInput = findViewById(R.id.messageInput);
         messagesRecyclerView = findViewById(R.id.messagesTitle);
+        groupchatPersonName = findViewById(R.id.groupchatPerson);
+        groupChatName = findViewById(R.id.groupChatName);
+
+        // Set name of group-chat in UI
+        groupChatName.setText(groupchatName);
+
+        // Set name of person in group-chat UI
+        groupchatPersonName.setText(friendUsername);
 
         sendButton.setOnClickListener(v -> {
             String message = messageInput.getText().toString().trim();

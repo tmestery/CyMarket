@@ -10,10 +10,10 @@
 
     <!-- Building block that supports the screen -->
     <LinearLayout
-        android:layout_width="375dp"
-        android:layout_height="wrap_content"
+        android:layout_width="400dp"
+        android:layout_height="700dp"
         android:orientation="vertical"
-        android:padding="60dp"
+        android:padding="42dp"
         android:background="@drawable/big_block_background"
         android:elevation="12dp"
         android:gravity="center">
@@ -24,7 +24,7 @@
             android:text="Welcome"
             android:textSize="45sp"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/buttons_2_color"
+            android:textColor="@color/white"
             android:layout_marginBottom="4dp"
             android:gravity="center"/>
 
@@ -34,8 +34,8 @@
             android:text="Sign in to continue."
             android:textSize="16sp"
             android:fontFamily="sans-serif"
-            android:textColor="@color/buttons_2_color"
-            android:layout_marginBottom="32dp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="28dp"
             android:gravity="center"/>
 
         <!-- First and Last Name Part -->
@@ -113,7 +113,7 @@
                 android:id="@+id/signup_username_edt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Enter Username Here"
+                android:hint="Enter Username"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/black"
                 android:textSize="15sp"
@@ -135,7 +135,7 @@
                 android:id="@+id/signup_password_edt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Enter Password Here"
+                android:hint="Enter Password"
                 android:inputType="textPassword"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/black"
@@ -158,7 +158,7 @@
                 android:id="@+id/signup_confirm_edt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Confirm Password Here"
+                android:hint="Confirm Password"
                 android:inputType="textPassword"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/black"
@@ -183,21 +183,22 @@
                 android:layout_height="wrap_content"
                 android:text="Create Account"
                 android:textSize="18sp"
-                android:backgroundTint="@color/buttons_1_color"
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/signup_login_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? Log in"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-medium"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4dp"
+                android:layout_marginTop="12dp"/>
         </LinearLayout>
     </LinearLayout>
-    <TextView
-        android:id="@+id/signup_login_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Already have an account? Log in"
-        android:textSize="14sp"
-        android:textColor="@color/black"
-        android:fontFamily="sans-serif-medium"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="4dp"
-        android:layout_marginTop="12dp"/>
 </androidx.appcompat.widget.LinearLayoutCompat>

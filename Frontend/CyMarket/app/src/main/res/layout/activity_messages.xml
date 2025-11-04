@@ -39,10 +39,46 @@
             android:padding="8dp" />
     </LinearLayout>
 
+    <!-- Groupchat Name Header -->
+    <LinearLayout
+        android:id="@+id/groupchatHeader"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="50sp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="#000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/groupChatName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:text="Groupchat Name"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/groupchatPerson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:text="Groupchat Person"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+
     <!-- Recyclerviewer for Messages -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesRecyclerView"
         android:layout_width="0dp"
+        android:layout_marginTop="50dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingTop="16dp"
