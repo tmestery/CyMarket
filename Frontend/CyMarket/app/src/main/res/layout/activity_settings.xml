@@ -5,74 +5,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+<!--    &lt;!&ndash; Main Content Block for Buttons &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:orientation="vertical"-->
+<!--        android:background="@drawable/card_background"-->
+<!--        android:elevation="8dp"-->
+<!--        android:padding="24dp"-->
+<!--        android:layout_marginHorizontal="16dp"-->
+<!--        android:layout_marginBottom="32dp"-->
+<!--        android:clipToOutline="true"-->
+<!--        android:backgroundTint="?attr/colorSurface">-->
+
+<!--        &lt;!&ndash; button rows &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="12dp"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:weightSum="3">-->
+
+<!--            &lt;!&ndash; Profile Button (left) &ndash;&gt;-->
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/stngs_home_btn"-->
+<!--                style="@style/Widget.MaterialComponents.Button"-->
+<!--                android:layout_width="108dp"-->
+<!--                android:layout_height="44dp"-->
+<!--                android:text="Home"-->
+<!--                android:textSize="14sp"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:backgroundTint="#E63946"-->
+<!--                android:elevation="6dp"-->
+<!--                android:layout_marginEnd="2dp" />-->
+
+<!--            &lt;!&ndash; Profile Button (left) &ndash;&gt;-->
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/logout_btn"-->
+<!--                style="@style/Widget.MaterialComponents.Button"-->
+<!--                android:layout_width="108dp"-->
+<!--                android:layout_height="44dp"-->
+<!--                android:text="Logout"-->
+<!--                android:textSize="14sp"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:backgroundTint="#E63946"-->
+<!--                android:elevation="6dp"-->
+<!--                android:layout_marginEnd="2dp" />-->
+
+<!--            &lt;!&ndash; Settings Button (right) &ndash;&gt;-->
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/stngs_prfile_btn"-->
+<!--                style="@style/Widget.MaterialComponents.Button"-->
+<!--                android:layout_width="108dp"-->
+<!--                android:layout_height="44dp"-->
+<!--                android:backgroundTint="#E63946"-->
+<!--                android:contentDescription="Home Navigation"-->
+<!--                android:elevation="6dp"-->
+<!--                android:text="Profile"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="14sp"/>-->
+<!--        </LinearLayout>-->
+<!--    </LinearLayout>-->
+
     <!-- Main Content Block for Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:background="@drawable/card_background"
-        android:elevation="8dp"
-        android:padding="24dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="32dp"
-        android:clipToOutline="true"
-        android:backgroundTint="?attr/colorSurface">
-
-        <!-- button rows -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="3">
-
-            <!-- Profile Button (left) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/stngs_home_btn"
-                style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
-                android:layout_height="44dp"
-                android:text="Home"
-                android:textSize="14sp"
-                android:textColor="@color/white"
-                android:backgroundTint="#E63946"
-                android:elevation="6dp"
-                android:layout_marginEnd="2dp" />
-
-            <!-- Profile Button (left) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/logout_btn"
-                style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
-                android:layout_height="44dp"
-                android:text="Logout"
-                android:textSize="14sp"
-                android:textColor="@color/white"
-                android:backgroundTint="#E63946"
-                android:elevation="6dp"
-                android:layout_marginEnd="2dp" />
-
-            <!-- Settings Button (right) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/stngs_prfile_btn"
-                style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
-                android:layout_height="44dp"
-                android:backgroundTint="#E63946"
-                android:contentDescription="Home Navigation"
-                android:elevation="6dp"
-                android:text="Profile"
-                android:textColor="@color/white"
-                android:textSize="14sp"/>
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Main Content Block for Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="608dp"
         android:layout_marginTop="20dp"
         android:orientation="vertical"
         android:background="@drawable/card_background"
@@ -218,4 +218,16 @@
             android:backgroundTint="#969ba3"
             android:elevation="6dp"/>
     </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:itemRippleColor="@color/buttons_2_color"
+        app:menu="@menu/bottom_nav_menu"
+        android:elevation="12dp" />
 </LinearLayout>

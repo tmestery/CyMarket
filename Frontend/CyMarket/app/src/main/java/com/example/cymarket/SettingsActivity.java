@@ -8,6 +8,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -15,10 +18,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SettingsActivity extends AppCompatActivity {
-    private Button homeButton;
-    private Button profileButton;
     private Button deleteAccount;
-    private Button logoutButton;
     private Button removePFP;
     private TextView usernameText;
     private TextView emailText;
@@ -32,10 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        homeButton = findViewById(R.id.stngs_home_btn);
-        profileButton = findViewById(R.id.stngs_prfile_btn);
         deleteAccount = findViewById(R.id.delete_btn);
-        logoutButton = findViewById(R.id.logout_btn);
         removePFP = findViewById(R.id.remove_pfp_btn);
 
         usernameText = findViewById(R.id.username_text);
@@ -113,30 +110,6 @@ public class SettingsActivity extends AppCompatActivity {
             });
         });
 
-        // Home button
-        homeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-            startActivity(intent);
-        });
-
-        // Logout button
-        logoutButton.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
-            startActivity(intent);
-        });
-
-        // Profile button
-        profileButton.setOnClickListener(v -> {
-            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-            String savedEmail = prefs.getString("email", email);
-            String savedPassword = prefs.getString("password", password);
-            Intent intent = new Intent(SettingsActivity.this, ProfilesActivity.class);
-            intent.putExtra("username", username);
-            intent.putExtra("email", savedEmail);
-            intent.putExtra("password", savedPassword);
-            startActivity(intent);
-        });
-
         // Remove profile picture
         removePFP.setOnClickListener(v -> {
             Call<String> removePfpCall = apiService.deleteProfileImage(username);
@@ -159,6 +132,22 @@ public class SettingsActivity extends AppCompatActivity {
                     Toast.makeText(SettingsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+        });
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_buy) {
+                startActivity(new Intent(SettingsActivity.this, BuyActivity.class));
+                return true;
+            } else if (id == R.id.nav_sell) {
+                startActivity(new Intent(SettingsActivity.this, SellActivity.class));
+                return true;
+            } else if (id == R.id.nav_chat) {
+                startActivity(new Intent(SettingsActivity.this, GroupListActivity.class));
+                return true;
+            }
+            return false;
         });
     }
 }
