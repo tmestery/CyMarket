@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText; // define username edittext variable
     private EditText passwordEditText; // define password edittext variable
     private Button loginButton;  // define login button variable
-    private Button signupButton;  // define signup button variable
+    private TextView signupButton;  // define signup textview variable
     private TextView forgotPassword;
     private TextView secretAdmin;
 
@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.login_email_edt);
         passwordEditText = findViewById(R.id.login_password_edt);
         loginButton = findViewById(R.id.login_login_btn);
-        signupButton = findViewById(R.id.login_signup_btn);
+        signupButton = findViewById(R.id.login_signup_txt);
         forgotPassword = findViewById(R.id.forgot_password);
         secretAdmin = findViewById(R.id.admin_hidden_entry);
 
