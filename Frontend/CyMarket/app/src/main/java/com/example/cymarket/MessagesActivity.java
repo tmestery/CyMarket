@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MessagesActivity extends AppCompatActivity {
@@ -23,6 +25,7 @@ public class MessagesActivity extends AppCompatActivity {
     private TextView groupchatPersonName;
     private TextView groupChatName;
     private TextView messagesRecyclerView;
+    private Button reportButton;
     private static final String CHAT_KEY = "groupChat";
     private static final String TAG = "MessagesActivity";
 
@@ -38,6 +41,7 @@ public class MessagesActivity extends AppCompatActivity {
         String groupchatName = getIntent().getStringExtra("groupID");
         String friendUsername = getIntent().getStringExtra("friendUsername");
 
+        reportButton = findViewById(R.id.reportButton);
         sendButton = findViewById(R.id.sendButton);
         messageInput = findViewById(R.id.messageInput);
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
@@ -60,6 +64,15 @@ public class MessagesActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
             messageInput.setText("");
+        });
+
+        reportButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MessagesActivity.this, ReportUserActivity.class);
+
+            // pass the user being reported
+            intent.putExtra("reportedUser", groupchatPersonName.getText().toString());
+
+            startActivity(intent);
         });
 
         // Connect when we arrive here

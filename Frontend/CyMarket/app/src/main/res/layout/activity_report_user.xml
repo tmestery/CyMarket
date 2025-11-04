@@ -29,6 +29,23 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Report Input -->
+    <EditText
+        android:id="@+id/reportInput"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:hint="Enter report"
+        android:minLines="3"
+        android:gravity="top"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/headerBar"
+        app:layout_constraintBottom_toTopOf="@id/messageInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Message Type Area -->
     <LinearLayout
         android:id="@+id/messageInputLayout"
@@ -42,26 +59,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/messageInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Type a message"
-            android:padding="12dp"
-            android:background="@color/white"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:inputType="textShortMessage" />
-
         <Button
             android:id="@+id/reportButton"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:text="Report"
             android:textColor="@color/white"
             android:backgroundTint="@color/buttons_1_color"
-            android:layout_marginStart="8dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="50dp"
             android:padding="8dp" />
     </LinearLayout>
 

@@ -88,10 +88,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Uses the new email-login endpoint and checks the returned "type" field for admin access.
-     * On success stores username/email/password/type in SharedPreferences and navigates.
-     */
     private void checkUserCredentials(String email, String password) {
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
