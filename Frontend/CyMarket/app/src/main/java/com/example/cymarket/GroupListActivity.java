@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,15 +54,15 @@ public class GroupListActivity extends AppCompatActivity {
     }
 
     private void loadGroups() {
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        String username = prefs.getString("username", "");
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE); // match LoginActivity
+        String username = prefs.getString("username", null);
 
-        if (username.isEmpty()) {
+        if (username == null || username.isEmpty()) {
             Toast.makeText(this, "No user session", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String url = BASE_URL + "/chat/groups/" + username;
+        String url = BASE_URL + "/groups/list/" + username;
 
         JsonArrayRequest request = new JsonArrayRequest(
                 Request.Method.GET, url, null,
@@ -77,11 +78,11 @@ public class GroupListActivity extends AppCompatActivity {
             groups.clear();
             for (int i = 0; i < response.length(); i++) {
                 JSONObject group = response.getJSONObject(i);
-                groups.add(group.getString("groupName"));
+                groups.add(group.getString("name")); // <-- use "name", not "groupName"
             }
             adapter.notifyDataSetChanged();
         } catch (Exception e) {
-            Toast.makeText(this, "Parse error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
