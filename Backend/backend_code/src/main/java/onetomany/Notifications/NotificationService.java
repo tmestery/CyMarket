@@ -68,7 +68,7 @@ public class NotificationService {
     }
 
 
-     // Get all notifications *paginated
+     // Get all notifications paginated
     public Page<NotificationDTO> getUserNotifications(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
@@ -194,5 +194,52 @@ public class NotificationService {
 // Notify on transaction status change
     public void notifyTransactionUpdate(User user, NotificationType type, Long transactionId, String details) {
         createAndSendNotification(user, type, details, transactionId, "TRANSACTION");
+    }
+
+    // Notify when order is created
+    public void notifyOrderCreated(User buyer, Long orderId, int itemCount, double totalAmount) {
+        String message = "Your order #" + orderId + " has been created successfully. " + itemCount + " items, Total: $" + String.format("%.2f", totalAmount);
+        createAndSendNotification(buyer, NotificationType.TRANSACTION_PENDING, message, orderId, "ORDER");
+    }
+
+    // Notify when order status changes
+    public void notifyOrderStatusChange(User user, Long orderId, String status, String details) {
+        NotificationType type = switch (status.toUpperCase()) {
+            case "COMPLETED" -> NotificationType.TRANSACTION_COMPLETED;
+            case "CANCELLED" -> NotificationType.TRANSACTION_CANCELLED;
+            case "SHIPPED" -> NotificationType.ORDER_SHIPPED;
+            default -> NotificationType.TRANSACTION_PENDING;
+        };
+        createAndSendNotification(user, type, details, orderId, "ORDER");
+    }
+
+    // Notify seller about new sale
+    public void notifySellerNewSale(User seller, String itemName, String buyerUsername, Long orderId, int quantity) {
+        String message = buyerUsername + " purchased " + quantity + " unit(s) of your item '" + itemName + "' (Order #" + orderId + ")";
+        createAndSendNotification(seller, NotificationType.ITEM_SOLD, message, orderId, "ORDER");
+    }
+
+    // Notify low stock
+    public void notifyLowStock(User seller, String itemName, int currentStock, Long itemId) {
+        String message = "Low stock alert: '" + itemName + "' has only " + currentStock + " units remaining";
+        createAndSendNotification(seller, NotificationType.LOW_STOCK_ALERT, message, itemId, "ITEM");
+    }
+
+    // Notify out of stock
+    public void notifyOutOfStock(User seller, String itemName, Long itemId) {
+        String message = "Your item '" + itemName + "' is now out of stock";
+        createAndSendNotification(seller, NotificationType.OUT_OF_STOCK_ALERT, message, itemId, "ITEM");
+    }
+
+    // Notify payment received for sellers
+    public void notifyPaymentReceived(User seller, Long orderId, double amount, String itemName) {
+        String message = "Payment received for order #" + orderId + " - '" + itemName + "': $" + String.format("%.2f", amount);
+        createAndSendNotification(seller, NotificationType.PAYMENT_RECEIVED, message, orderId, "ORDER");
+    }
+
+    // Notify refund processed
+    public void notifyRefundProcessed(User buyer, Long orderId, double amount) {
+        String message = "Refund of $" + String.format("%.2f", amount) + " has been processed for order #" + orderId;
+        createAndSendNotification(buyer, NotificationType.REFUND_PROCESSED, message, orderId, "ORDER");
     }
 }
