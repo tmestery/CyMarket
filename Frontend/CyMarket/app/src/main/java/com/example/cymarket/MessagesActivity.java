@@ -2,6 +2,8 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +19,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MessagesActivity extends AppCompatActivity {
     private Button sendButton;
     private EditText messageInput;
-    private TextView messagesRecyclerView; // For now keeping simple – swap later with recycler
     private TextView groupchatPersonName;
     private TextView groupChatName;
+    private TextView messagesRecyclerView;
     private static final String CHAT_KEY = "groupChat";
     private static final String TAG = "MessagesActivity";
 
@@ -37,7 +39,7 @@ public class MessagesActivity extends AppCompatActivity {
 
         sendButton = findViewById(R.id.sendButton);
         messageInput = findViewById(R.id.messageInput);
-        messagesRecyclerView = findViewById(R.id.messagesTitle);
+        messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
         groupchatPersonName = findViewById(R.id.groupchatPerson);
         groupChatName = findViewById(R.id.groupChatName);
 
@@ -51,7 +53,7 @@ public class MessagesActivity extends AppCompatActivity {
             String message = messageInput.getText().toString().trim();
             if(message.isEmpty()) return;
 
-            Intent intent = new Intent("SendWebSocketMessage");
+            Intent intent = new Intent("WS_SEND");
             intent.putExtra("key", CHAT_KEY);
             intent.putExtra("message", message);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
@@ -60,10 +62,12 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         // Connect when we arrive here
-        String wsUrl = "ws://YOUR_SERVER/chat/" + getIntent().getStringExtra("groupName");
+        String wsUrl = "ws://YOUR_SERVER:8080/chat/"
+                + getIntent().getStringExtra("groupId") + "/"
+                + getIntent().getStringExtra("friendUsername");
 
         Intent serviceIntent = new Intent(this, WebSocketService.class);
-        serviceIntent.setAction("CONNECT");
+        serviceIntent.setAction("WS_CONNECT");
         serviceIntent.putExtra("key", CHAT_KEY);
         serviceIntent.putExtra("url", wsUrl);
         startService(serviceIntent);
@@ -87,7 +91,7 @@ public class MessagesActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                receiver, new IntentFilter("WebSocketMessageReceived")
+                receiver,new IntentFilter("WS_MSG")
         );
     }
 

@@ -1,10 +1,8 @@
 package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,14 +10,17 @@ import android.widget.Toast;
 import org.json.JSONObject;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class CreateGroupActivity extends AppCompatActivity {
 
     private EditText groupNameInput;
     private Button createGroupBtn;
-    private String username = "yourUsername"; // replace with logged-in user
+    private String username;
     private static final String BASE_URL = "http://coms-3090-056.class.las.iastate.edu:8080";
 
     @Override
@@ -27,6 +28,9 @@ public class CreateGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
 
+        // assign to the class field (don't shadow)
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        username = prefs.getString("username", "");
         String friendUsername = getIntent().getStringExtra("friendUsername");
 
         groupNameInput = findViewById(R.id.groupNameInput);
@@ -44,54 +48,92 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     private void createGroup(String groupName, String friendUsername) {
         new Thread(() -> {
+            HttpURLConnection conn = null;
+            HttpURLConnection getConn = null;
             try {
+                // URL-encode path segments
+                String encGroupName = URLEncoder.encode(groupName, StandardCharsets.UTF_8.toString());
+
                 // Create group
-                URL url = new URL(BASE_URL + "/groups/create/" + groupName);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                URL url = new URL(BASE_URL + "/groups/create/" + encGroupName);
+                conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.connect();
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                int createCode = conn.getResponseCode();
+                if (createCode == HttpURLConnection.HTTP_OK || createCode == HttpURLConnection.HTTP_CREATED) {
 
-                    // Fetch group to get its ID
-                    URL getUrl = new URL(BASE_URL + "/groups/" + groupName);
-                    HttpURLConnection getConn = (HttpURLConnection) getUrl.openConnection();
+                    // Fetch group to get its ID (by name)
+                    URL getUrl = new URL(BASE_URL + "/groups/" + encGroupName);
+                    getConn = (HttpURLConnection) getUrl.openConnection();
                     getConn.setRequestMethod("GET");
                     getConn.connect();
 
                     if (getConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        java.util.Scanner sc = new java.util.Scanner(getConn.getInputStream());
-                        String response = sc.useDelimiter("\\A").next();
+                        String response;
+                        try (Scanner sc = new Scanner(getConn.getInputStream())) {
+                            response = sc.useDelimiter("\\A").hasNext() ? sc.next() : "";
+                        }
+
+                        if (response.isEmpty()) {
+                            runOnUiThread(() -> Toast.makeText(this, "Empty response when fetching group", Toast.LENGTH_SHORT).show());
+                            return;
+                        }
+
                         JSONObject groupObj = new JSONObject(response);
                         int groupId = groupObj.getInt("id");
 
-                        // Add logged-in user + friend to group
-                        String[] usersToAdd = {username, friendUsername};
+                        // Build list of users to add
+                        List<String> usersToAdd = new ArrayList<>();
+                        if (username != null && !username.isEmpty()) usersToAdd.add(username);
+                        if (friendUsername != null && !friendUsername.isEmpty()) usersToAdd.add(friendUsername);
+
                         for (String user : usersToAdd) {
-                            URL addUserUrl = new URL(BASE_URL + "/groups/group/add-user/" + groupId + "/" + user);
+                            String encUser = URLEncoder.encode(user, StandardCharsets.UTF_8.toString());
+                            URL addUserUrl = new URL(BASE_URL + "/groups/group/add-user/" + groupId + "/" + encUser);
                             HttpURLConnection addUserConn = (HttpURLConnection) addUserUrl.openConnection();
                             addUserConn.setRequestMethod("POST");
                             addUserConn.connect();
+
+                            int code = addUserConn.getResponseCode();
+                            addUserConn.disconnect();
+
+                            // Optionally: handle non-200 codes
+                            if (code != HttpURLConnection.HTTP_OK && code != HttpURLConnection.HTTP_CREATED) {
+                                final String errMsg = "Failed to add user " + user + " (code " + code + ")";
+                                runOnUiThread(() -> Toast.makeText(this, errMsg, Toast.LENGTH_SHORT).show());
+                            }
                         }
 
-                        Intent intent = new Intent(CreateGroupActivity.this, MessagesActivity.class);
-                        intent.putExtra("chat_with", username);
-                        intent.putExtra("groupId", groupId); // pass the correct group ID
-                        startActivity(intent);
+                        // Start MessagesActivity on UI thread and pass group info
+                        runOnUiThread(() -> {
+                            Intent intent = new Intent(CreateGroupActivity.this, MessagesActivity.class);
+                            // pass both forms used in your app to be safe
+                            intent.putExtra("groupID", String.valueOf(groupId));
+                            intent.putExtra("groupId", String.valueOf(groupId));
+                            intent.putExtra("friendUsername", friendUsername != null ? friendUsername : "");
+                            startActivity(intent);
 
-                        runOnUiThread(() ->
-                                Toast.makeText(this, "Group created and joined successfully!", Toast.LENGTH_SHORT).show()
-                        );
+                            Toast.makeText(this, "Group created and joined successfully!", Toast.LENGTH_SHORT).show();
+                        });
+
+                    } else {
+                        final int gc = getConn.getResponseCode();
+                        runOnUiThread(() -> Toast.makeText(this, "Failed to fetch created group (code " + gc + ")", Toast.LENGTH_SHORT).show());
                     }
 
                 } else {
-                    runOnUiThread(() -> Toast.makeText(this, "Failed to create group", Toast.LENGTH_SHORT).show());
+                    final int cc = createCode;
+                    runOnUiThread(() -> Toast.makeText(this, "Failed to create group (code " + cc + ")", Toast.LENGTH_SHORT).show());
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            } finally {
+                if (conn != null) conn.disconnect();
+                if (getConn != null) getConn.disconnect();
             }
         }).start();
     }

@@ -6,12 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
