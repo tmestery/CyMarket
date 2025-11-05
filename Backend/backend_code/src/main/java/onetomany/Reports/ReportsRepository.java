@@ -9,8 +9,10 @@ import java.util.List;
 public interface ReportsRepository extends JpaRepository<Reports, Long>{
     Reports findById(int id);
     Reports findById(long id);
+   
     Reports findByReport(String report);
+    
 
-    List<Reports> findByUser2(User user2);
+    List<Reports> findByUser(User user);
 
 }

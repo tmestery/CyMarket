@@ -3,6 +3,7 @@ package onetomany.Reports;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import onetomany.Sellers.Seller;
 import onetomany.Users.User;
@@ -16,15 +17,33 @@ public class Reports {
     private String report;
 
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn
-    private Seller user2;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Seller seller;
+
+    public Reports(User user, Seller seller, String report){
+        this.user= user;
+        this.seller= seller;
+        this.report = report;
+    }
+    // test
+
+    private boolean reviewed= false;
+    public boolean isReviewed() {
+        return reviewed;
+    }
+    public void setReviewed(boolean reviewed) {
+        this.reviewed = reviewed;
+    }
+    public Seller getSeller(){
+        return this.seller;
+    }
 
     public int getId(){
         return this.id;
@@ -55,12 +74,13 @@ public class Reports {
         this.user= user;
     }
 
-    public void setUser2(Seller user2) {
-        this.user2 = user2;
+    public void setSeller(Seller seller) {
+        this.seller = seller;
     }
 
-    public void deleteUSer(){
+
+    public void deleteUser(){
         user= null;
-        user2=null;
+        seller=null;
     }
 }
