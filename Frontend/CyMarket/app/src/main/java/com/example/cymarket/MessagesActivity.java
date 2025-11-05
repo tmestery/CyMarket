@@ -76,7 +76,7 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         // Connect when we arrive here
-        String wsUrl = "ws://YOUR_SERVER:8080/chat/"
+        String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
                 + getIntent().getStringExtra("groupId") + "/"
                 + getIntent().getStringExtra("friendUsername");
 
