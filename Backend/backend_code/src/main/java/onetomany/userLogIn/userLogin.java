@@ -38,18 +38,19 @@ public class userLogin {
     }
 
     @OneToOne
+    @JoinColumn(name="user_id")
     @JsonIgnore
-    @JoinColumn
-    User user;
+    private User user;
+
     @OneToOne
     @JsonIgnore
     @JoinColumn
     adminUser adminUser;
 
     @OneToOne
+    @JoinColumn(name="seller_id")
     @JsonIgnore
-    @JoinColumn
-    Seller seller;
+    private Seller seller;
 
 
     public userLogin(String userName, String email, String password,String name){

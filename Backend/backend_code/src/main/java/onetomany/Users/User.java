@@ -33,11 +33,12 @@ public class User {
     @Column(unique = true)
     private String username;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    userLogin  userLogin;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    private userLogin userLogin;
 
-     @OneToMany(mappedBy = "user")
-    List<Reports> userReports;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Reports> userReports = new ArrayList<>();
     
     @Column(unique = true)
     private String emailId;

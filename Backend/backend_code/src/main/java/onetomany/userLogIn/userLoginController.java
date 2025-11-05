@@ -13,6 +13,7 @@ import onetomany.Users.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,8 @@ public class userLoginController {
     UserRepository userRepository;
     @Autowired
     SellerRepository sellerRepository;
+    @Autowired
+    ReportsRepository reportsRepository;
 
 
     private String success = "{\"message\":\"success\"}";
@@ -103,7 +106,40 @@ public class userLoginController {
         return temp;
     }
 
+    @PostMapping(path = "/usersLogin/newReport/{username1}/{username2}")
+    @Transactional
+    public String createReport(@PathVariable String username1,
+                           @PathVariable String username2,
+                           @RequestBody String payload) {
 
+    userLogin ul1 = userLoginRepository.findByUserName(username1);
+    userLogin ul2 = userLoginRepository.findByUserName(username2);
+
+    if (ul1 == null || ul2 == null)
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Users not found");
+
+    User user = ul1.getUser();
+    Seller seller = ul2.getSeller();
+    if (user == null || seller == null)
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login not bound to User/Seller");
+
+    
+    Reports existing = reportsRepository.findByReport(payload);
+    if (existing != null)
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Report already exists");
+
+    Reports newReport = new Reports(user, seller, payload);
+
+   
+    user.addReport(newReport);
+    seller.addReport(newReport);
+
+  
+    reportsRepository.save(newReport);
+
+    return success;
+}
+    
     @PostMapping(path = "/usersLogin/{type}")
     String createUser(@PathVariable char type,@RequestBody userLogin user){
         if (user == null)
@@ -127,6 +163,7 @@ public class userLoginController {
         userLoginRepository.save(temp);
         return success;
     }
+    
 
     
 

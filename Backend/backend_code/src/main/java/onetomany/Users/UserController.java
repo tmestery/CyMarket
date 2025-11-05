@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import onetomany.Items.Item;
 import onetomany.Items.ItemsRepository;
+import onetomany.Reports.Reports;
 import onetomany.userLogIn.userLogin;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,13 +121,13 @@ public class UserController {
 //    }
 
 
-//    @GetMapping("/users/getReports/{id}/")
-//    List<Reports> add(@PathVariable int id){
-//        User tempUser= userRepository.findById(id);
-//        if(tempUser == null)
-//            return null;
-//        return tempUser.getReports();
-//    }
+   @GetMapping("/users/getReports/{id}/")
+   List<Reports> add(@PathVariable int id){
+       User tempUser= userRepository.findById(id);
+       if(tempUser == null)
+           return null;
+       return tempUser.getUserReports();
+   }
 
 
     

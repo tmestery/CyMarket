@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import onetomany.Items.Item;
+import onetomany.Reports.Reports;
 import onetomany.userLogIn.userLogin;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,6 +38,10 @@ public class Seller {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+   @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Reports> userReports = new ArrayList<>();
+
    
 
   @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
@@ -42,8 +49,8 @@ public class Seller {
     private Set<Item> items = new HashSet<>();
 
 
-    @OneToOne(cascade = CascadeType.ALL)
-    userLogin  userLogin;
+    @OneToOne(mappedBy = "seller", cascade = CascadeType.ALL, optional = true)
+    private userLogin userLogin;
 
     public Seller() {
     }
@@ -51,6 +58,7 @@ public class Seller {
     public Seller(String username, String bio) {
         this.username = username;
         this.bio = bio;
+        userReports = new ArrayList<>();
     }
 
      public Seller(String username) {
@@ -61,6 +69,7 @@ public class Seller {
         this.totalSales = 0;
         this.active = true;
         this.createdAt = new Date();
+        userReports = new ArrayList<>();
      }
 
 
@@ -74,6 +83,19 @@ public class Seller {
         this.createdAt = new Date();
         this.userLogin = userLogin;
      }
+
+     public List<Reports> getUserReports() {
+        return userReports;
+    }
+    public void setUserReports(List<Reports> userReports) {
+        this.userReports = userReports;
+    }
+    public void addReport(Reports report) {
+        this.userReports.add(report);
+    }
+    public void removeReport(Reports report) {
+        this.userReports.remove(report);
+    }
 
      public userLogin getUserLogin() {
         return userLogin;
