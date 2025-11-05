@@ -34,7 +34,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class AdminProfilesActivity extends AppCompatActivity {
-    private Button settingsButton;
     private TextView usernameText, joinDateText;
     private ImageView profileImage;
     private static final int PICK_IMAGE = 1;
@@ -49,7 +48,6 @@ public class AdminProfilesActivity extends AppCompatActivity {
         usernameText = findViewById(R.id.username_text);
         profileImage = findViewById(R.id.profile_image_view);
         joinDateText = findViewById(R.id.textView2);
-        settingsButton = findViewById(R.id.prfls_setting_btn);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
 
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
