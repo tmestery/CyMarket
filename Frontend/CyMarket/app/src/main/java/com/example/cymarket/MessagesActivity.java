@@ -2,77 +2,66 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MessagesActivity extends AppCompatActivity {
+
     private Button sendButton;
     private EditText messageInput;
     private TextView groupchatPersonName;
     private TextView groupChatName;
-    private TextView messagesRecyclerView;
+    private TextView messagesTextView; // renamed for clarity
     private Button reportButton;
+
     private static final String CHAT_KEY = "groupChat";
     private static final String TAG = "MessagesActivity";
+
+    private String username;
+    private int groupId;
+    private String groupName;
+    private String friendUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
 
-        // These are the intents that are being passed:
-        //  intent.putExtra("chat_with", username);
-        //  intent.putExtra("groupId", groupId); // pass the correct group ID
-        //        String groupchatName = getIntent().getStringExtra("groupID");
-        //        String friendUsername = getIntent().getStringExtra("friendUsername");
-
-        reportButton = findViewById(R.id.reportButton);
         sendButton = findViewById(R.id.sendButton);
         messageInput = findViewById(R.id.messageInput);
-        messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
+        messagesTextView = findViewById(R.id.messagesRecyclerView);
         groupchatPersonName = findViewById(R.id.groupchatPerson);
         groupChatName = findViewById(R.id.groupChatName);
+        reportButton = findViewById(R.id.reportButton);
 
-        String groupId = getIntent().getStringExtra("groupId");
-        String friendUsername = getIntent().getStringExtra("friendUsername");
+        // ✅ Get username from shared prefs
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        username = prefs.getString("username", "");
 
-        // Add a fetch function for groupID using one of these on backend:
-//    @GetMapping(path = "/getGroups")
-//    public List<Group> getGroup(){
-//        List<Group> temp= groupRepository.findAll();
-//        return temp;
-//    }
-//    @GetMapping(path = "/{name}")
-//    public Group getGroups(@PathVariable String name){
-//        return groupRepository.findByName(name);
-//    }
-        // i think that one of these backend endpoints will return group ID then i will be able to proeprly make websocket work!
+        // ✅ Receive group info and friend name
+        groupId = getIntent().getIntExtra("groupID", -1);
+        groupName = getIntent().getStringExtra("groupName");
+        friendUsername = getIntent().getStringExtra("friendUsername");
 
-        // Set name of group-chat in UI
-        groupChatName.setText(groupId); // or fetch group name if needed
+        if (groupId == -1) {
+            messagesTextView.setText("Error: Missing group ID.");
+            return;
+        }
 
-        // Set name of person in group-chat UI
-        groupchatPersonName.setText(friendUsername);
+        // ✅ Display info
+        groupChatName.setText(groupName != null ? groupName : "Group #" + groupId);
+        groupchatPersonName.setText(friendUsername != null ? friendUsername : "Group Chat");
 
+        // ✅ Handle sending messages
         sendButton.setOnClickListener(v -> {
-            if (!socketReady) {
-                Log.w(TAG, "Socket not ready yet");
-                return;
-            }
             String message = messageInput.getText().toString().trim();
             if (message.isEmpty()) return;
 
@@ -84,51 +73,35 @@ public class MessagesActivity extends AppCompatActivity {
             messageInput.setText("");
         });
 
+        // ✅ Report button
         reportButton.setOnClickListener(v -> {
             Intent intent = new Intent(MessagesActivity.this, ReportUserActivity.class);
-
-            // pass the user being reported
             intent.putExtra("reportedUser", groupchatPersonName.getText().toString());
             startActivity(intent);
         });
 
-        // Connect when we arrive here
-        //  String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
-        //          + getIntent().getStringExtra("groupId") + "/"
-        //          + getIntent().getStringExtra("friendUsername");
+        // ✅ Connect to WebSocket
         String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
-                + groupId + "/"
-                + friendUsername;
+                + groupId + "/" + username;
 
         Intent serviceIntent = new Intent(this, WebSocketService.class);
         serviceIntent.setAction("WS_CONNECT");
         serviceIntent.putExtra("key", CHAT_KEY);
         serviceIntent.putExtra("url", wsUrl);
         startService(serviceIntent);
+
         setupBottomNav();
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    // ✅ Receives messages from WebSocketService
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
                 String msg = intent.getStringExtra("message");
                 runOnUiThread(() -> {
-                    messagesRecyclerView.append("\n" + msg);
+                    messagesTextView.append("\n" + msg);
                 });
-            }
-        }
-    };
-
-    private boolean socketReady = false;
-
-    private final BroadcastReceiver socketReadyReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
-                socketReady = true;
-                runOnUiThread(() -> sendButton.setEnabled(true));
-                Log.d(TAG, "WebSocket ready!");
             }
         }
     };
@@ -136,16 +109,15 @@ public class MessagesActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
-        lbm.registerReceiver(receiver, new IntentFilter("WS_MSG"));
-        lbm.registerReceiver(socketReadyReceiver, new IntentFilter("WS_READY"));
-        sendButton.setEnabled(false);
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(receiver, new IntentFilter("WS_MSG"));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(receiver);
     }
 
     private void setupBottomNav() {
