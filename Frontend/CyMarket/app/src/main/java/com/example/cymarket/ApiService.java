@@ -49,4 +49,6 @@ public interface ApiService {
     @GET("/adminUser/getReports/{id}/{email}/{password}/")
     Call<Reports> getReports(@Path("id") int id, @Path("email") String email, @Path("password") String password);
 
+    @POST("/groups/group/add-user/{id}/{username}")
+    Call<Void> addUserToGroup(@Path("id") int groupID, @Path("username") String username);
 }
