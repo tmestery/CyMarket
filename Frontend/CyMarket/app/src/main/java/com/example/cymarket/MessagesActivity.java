@@ -38,8 +38,8 @@ public class MessagesActivity extends AppCompatActivity {
         //  intent.putExtra("chat_with", username);
         //  intent.putExtra("groupId", groupId); // pass the correct group ID
 
-        String groupchatName = getIntent().getStringExtra("groupID");
-        String friendUsername = getIntent().getStringExtra("friendUsername");
+//        String groupchatName = getIntent().getStringExtra("groupID");
+//        String friendUsername = getIntent().getStringExtra("friendUsername");
 
         reportButton = findViewById(R.id.reportButton);
         sendButton = findViewById(R.id.sendButton);
@@ -48,8 +48,23 @@ public class MessagesActivity extends AppCompatActivity {
         groupchatPersonName = findViewById(R.id.groupchatPerson);
         groupChatName = findViewById(R.id.groupChatName);
 
+        String groupId = getIntent().getStringExtra("groupId");
+        String friendUsername = getIntent().getStringExtra("friendUsername");
+
+        // Add a fetch function for groupID using one of these on backend:
+//    @GetMapping(path = "/getGroups")
+//    public List<Group> getGroup(){
+//        List<Group> temp= groupRepository.findAll();
+//        return temp;
+//    }
+//    @GetMapping(path = "/{name}")
+//    public Group getGroups(@PathVariable String name){
+//        return groupRepository.findByName(name);
+//    }
+        // i think that one of these backend endpoints will return group ID then i will be able to proeprly make websocket work!
+
         // Set name of group-chat in UI
-        groupChatName.setText(groupchatName);
+        groupChatName.setText(groupId); // or fetch group name if needed
 
         // Set name of person in group-chat UI
         groupchatPersonName.setText(friendUsername);
@@ -71,14 +86,16 @@ public class MessagesActivity extends AppCompatActivity {
 
             // pass the user being reported
             intent.putExtra("reportedUser", groupchatPersonName.getText().toString());
-
             startActivity(intent);
         });
 
         // Connect when we arrive here
+        //  String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
+        //          + getIntent().getStringExtra("groupId") + "/"
+        //          + getIntent().getStringExtra("friendUsername");
         String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
-                + getIntent().getStringExtra("groupId") + "/"
-                + getIntent().getStringExtra("friendUsername");
+                + groupId + "/"
+                + friendUsername;
 
         Intent serviceIntent = new Intent(this, WebSocketService.class);
         serviceIntent.setAction("WS_CONNECT");

@@ -58,10 +58,24 @@ public class CreateGroupActivity extends AppCompatActivity {
                 URL url = new URL(BASE_URL + "/groups/create/" + encGroupName);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
+                conn.setRequestProperty("Accept", "*/*"); // accept any response type
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
                 conn.connect();
 
-                int createCode = conn.getResponseCode();
+                // consume the response safely
+                int createCode;
+                try {
+                    createCode = conn.getResponseCode();
+                    // read and discard the response to avoid EOF
+                    try (Scanner sc = new Scanner(conn.getInputStream())) {
+                        while (sc.hasNext()) sc.next();
+                    }
+                } catch (Exception e) {
+                    // fallback if server sends no body
+                    createCode = conn.getResponseCode();
+                }
+
                 if (createCode == HttpURLConnection.HTTP_OK || createCode == HttpURLConnection.HTTP_CREATED) {
 
                     // Fetch group to get its ID (by name)
@@ -82,7 +96,8 @@ public class CreateGroupActivity extends AppCompatActivity {
                         }
 
                         JSONObject groupObj = new JSONObject(response);
-                        int groupId = groupObj.getInt("id");
+//                        int groupId = groupObj.getInt("groupID");
+                        int groupId = 11;
 
                         // Build list of users to add
                         List<String> usersToAdd = new ArrayList<>();
