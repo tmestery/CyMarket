@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONObject;
+
 public class MessagesActivity extends AppCompatActivity {
 
     private Button sendButton;
@@ -21,10 +23,8 @@ public class MessagesActivity extends AppCompatActivity {
     private TextView groupChatName;
     private TextView messagesTextView; // renamed for clarity
     private Button reportButton;
-
-    private static final String CHAT_KEY = "groupChat";
+    private String CHAT_KEY;
     private static final String TAG = "MessagesActivity";
-
     private String username;
     private int groupId;
     private String groupName;
@@ -55,6 +55,9 @@ public class MessagesActivity extends AppCompatActivity {
             messagesTextView.setText("Error: Missing group ID.");
             return;
         }
+
+        // Set chat key here:
+        CHAT_KEY = "groupChat_" + groupId;
 
         // ✅ Display info
         groupChatName.setText(groupName != null ? groupName : "Group #" + groupId);
@@ -93,14 +96,20 @@ public class MessagesActivity extends AppCompatActivity {
         setupBottomNav();
     }
 
-    // ✅ Receives messages from WebSocketService
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
                 String msg = intent.getStringExtra("message");
                 runOnUiThread(() -> {
-                    messagesTextView.append("\n" + msg);
+                    try {
+                        JSONObject obj = new JSONObject(msg);
+                        String sender = obj.getString("sender");
+                        String content = obj.getString("content");
+                        messagesTextView.append("\n" + sender + ": " + content);
+                    } catch (Exception e) {
+                        messagesTextView.append("\n" + msg); // fallback
+                    }
                 });
             }
         }
