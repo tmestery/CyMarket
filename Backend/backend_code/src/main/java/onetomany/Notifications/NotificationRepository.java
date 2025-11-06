@@ -12,16 +12,13 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    List<Notification> findByUserOrderByCreatedAtDesc(User user);
-
-    Page<Notification> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
-
-    List<Notification> findByUserAndIsReadFalseOrderByCreatedAtDesc(User user);
-
-    long countByUserAndIsReadFalse(User user);
-
     List<Notification> findByUserAndTypeOrderByCreatedAtDesc(User user, NotificationType type);
 
     @Transactional
     void deleteByUser(User user);
+    List<Notification> findByUserOrderByCreatedAtDesc(User user);
+    Page<Notification> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
+    long countByUserAndIsReadFalse(User user);
+    List<Notification> findByUserAndIsReadFalseOrderByCreatedAtDesc(User user);
+
 }

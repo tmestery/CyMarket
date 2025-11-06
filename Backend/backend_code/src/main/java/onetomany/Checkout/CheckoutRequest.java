@@ -15,6 +15,17 @@ public class CheckoutRequest {
     private String shippingState;
     private String shippingZipCode;
     private String shippingCountry;
-    private String paymentMethod;
+    // Card payment fields
+    private String cardNumber;
+    private String cardHolderName;
+    private String expirationMonth;
+    private String expirationYear;
+    private String cvv;
+    private String billingAddress;
+    private String billingCity;
+    private String billingState;
+    private String billingZipCode;
+    private String billingCountry;
+    
     private String notes;
 }

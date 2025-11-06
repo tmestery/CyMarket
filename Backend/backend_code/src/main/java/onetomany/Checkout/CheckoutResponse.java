@@ -44,7 +44,7 @@ public class CheckoutResponse {
         this.shippingState = checkout.getShippingState();
         this.shippingZipCode = checkout.getShippingZipCode();
         this.shippingCountry = checkout.getShippingCountry();
-        this.paymentMethod = checkout.getPaymentMethod();
+//        this.paymentMethod = checkout.getPaymentMethod();
         this.paymentTransactionId = checkout.getPaymentTransactionId();
         this.notes = checkout.getNotes();
         this.itemCount = checkout.getItemCount();
