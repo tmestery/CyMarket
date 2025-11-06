@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,44 +65,29 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ListingAdapter.ViewHolder holder, int position) {
         Listing item = listings.get(position);
+
         holder.title.setText(item.title);
         holder.description.setText(item.description);
         holder.price.setText("$" + item.price);
         holder.quantity.setText("Quantity: " + item.quantity);
 
-        holder.buyButton.setOnClickListener(v -> {
-            int currentQuantity = item.getQuantity();
-            if (currentQuantity <= 0) { // if no more left, send sold out
-                Toast.makeText(context, "Item is sold out", Toast.LENGTH_SHORT).show();
-                return;
+        holder.buyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (item.getQuantity() <= 0) {
+                    Toast.makeText(context, "Item is sold out", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(context, CheckoutActivity.class);
+                intent.putExtra("title", item.getTitle());
+                intent.putExtra("description", item.getDescription());
+                intent.putExtra("price", item.getPrice());
+                intent.putExtra("quantity", item.getQuantity());
+                intent.putExtra("id", item.getId());
+
+                context.startActivity(intent);
             }
-
-            int newQuantity = currentQuantity - 1;
-            int itemId = item.getId(); // gather the id of the item
-
-            JSONObject updateData = new JSONObject();
-            try {
-                updateData.put("quantity", newQuantity);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            String url = "http://coms-3090-056.class.las.iastate.edu:8080/items/" + itemId;
-
-            JsonObjectRequest putRequest = new JsonObjectRequest(
-                    Request.Method.PUT,
-                    url,
-                    updateData,
-                    response -> {
-                        item.setQuantity(newQuantity); // update local model
-                        notifyItemChanged(holder.getAdapterPosition()); // refresh UI
-                        Toast.makeText(context, "Item Bought!" + newQuantity, Toast.LENGTH_SHORT).show();
-                    },
-                    error -> Toast.makeText(context, "Purchase failed", Toast.LENGTH_SHORT).show()
-            );
-
-            VolleySingleton.getInstance(context).addToRequestQueue(putRequest);
         });
     }
 

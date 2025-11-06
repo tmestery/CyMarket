@@ -40,6 +40,8 @@
         <activity
             android:name=".ListingsActivity"
             android:exported="false" />
+        <activity android:name=".CheckoutActivity"
+            android:exported="false" />
         <activity
             android:name=".BuyActivity"
             android:exported="false" />
