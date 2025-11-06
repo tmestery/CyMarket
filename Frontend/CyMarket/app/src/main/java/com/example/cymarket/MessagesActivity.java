@@ -50,6 +50,9 @@ public class MessagesActivity extends AppCompatActivity {
 
         String groupId = getIntent().getStringExtra("groupId");
         String friendUsername = getIntent().getStringExtra("friendUsername");
+//        SharedPreferences prefs = getSharedPreferences("SavedUsername", MODE_PRIVATE);
+//        prefs.edit().putString("username", username).apply();
+        String username = getIntent().getStringExtra("username");
 
         // Add a fetch function for groupID using one of these on backend:
 //    @GetMapping(path = "/getGroups")
@@ -95,7 +98,7 @@ public class MessagesActivity extends AppCompatActivity {
         //          + getIntent().getStringExtra("friendUsername");
         String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
                 + groupId + "/"
-                + friendUsername;
+                + username;
 
         Intent serviceIntent = new Intent(this, WebSocketService.class);
         serviceIntent.setAction("WS_CONNECT");

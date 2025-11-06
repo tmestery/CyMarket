@@ -2,6 +2,7 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -77,6 +78,8 @@ public class SignupActivity extends AppCompatActivity {
                         public void onSuccess() {
                             Toast.makeText(getApplicationContext(), "Signing Up", Toast.LENGTH_LONG).show();
                             signUpUser(firstName, lastName, email, username, password);
+                            SharedPreferences prefs = getSharedPreferences("SavedUsername", MODE_PRIVATE);
+                            prefs.edit().putString("username", username).apply();
                         }
 
                         @Override
