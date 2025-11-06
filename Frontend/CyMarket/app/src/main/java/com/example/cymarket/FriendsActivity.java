@@ -2,7 +2,6 @@ package com.example.cymarket;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -15,9 +14,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FriendsActivity extends AppCompatActivity {
+
     private Button messagesButton;
     private RecyclerView recyclerView;
     private FriendsAdapter adapter;
+    private int groupID;
+    private String groupName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,7 +30,23 @@ public class FriendsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewFriends);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        groupID = getIntent().getIntExtra("groupID", -1);
+        groupName = getIntent().getStringExtra("groupName");
+
+        if (groupID == -1 || groupName == null) {
+            Toast.makeText(this, "Error: Missing group info", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         fetchUsers();
+
+        messagesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(FriendsActivity.this, MessagesActivity.class);
+            intent.putExtra("groupID", groupID);
+            intent.putExtra("groupName", groupName);
+            startActivity(intent);
+        });
     }
 
     private void fetchUsers() {
@@ -39,16 +57,27 @@ public class FriendsActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     List<User> users = response.body();
 
-                    // Set profile image URL
+                    // Assign each user's profile image URL
                     for (User user : users) {
-                        user.setProfileImageUrl("http://coms-3090-056.class.las.iastate.edu:8080/users/" + user.getUsername() + "/profile-image");
+                        user.setProfileImageUrl(
+                                "http://coms-3090-056.class.las.iastate.edu:8080/users/"
+                                        + user.getUsername()
+                                        + "/profile-image"
+                        );
                     }
 
+                    // Set up RecyclerView adapter
                     adapter = new FriendsAdapter(users, user -> {
-                        Intent intent = new Intent(FriendsActivity.this, CreateGroupActivity.class);
-                        intent.putExtra("friendUsername", user.getUsername()); // Pass clicked friend
+                        addUserToGroup(groupID, user.getUsername());
+
+                        // Go to MessagesActivity with the selected friend
+                        Intent intent = new Intent(FriendsActivity.this, MessagesActivity.class);
+                        intent.putExtra("groupID", groupID);
+                        intent.putExtra("friendUsername", user.getUsername());
+                        intent.putExtra("groupName", groupName);
                         startActivity(intent);
                     });
+
                     recyclerView.setAdapter(adapter);
                 } else {
                     Toast.makeText(FriendsActivity.this, "Failed to fetch users", Toast.LENGTH_SHORT).show();
@@ -61,13 +90,24 @@ public class FriendsActivity extends AppCompatActivity {
                 Toast.makeText(FriendsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-        messagesButton.setOnClickListener(new View.OnClickListener() {
+    private void addUserToGroup(int groupID, String username) {
+        ApiService apiService = RetroClient.getApiService();
+        apiService.addUserToGroup(groupID, username).enqueue(new Callback<Void>() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FriendsActivity.this, CreateGroupActivity.class);
-                intent.putExtra("friend_username", "someFriendUsername");
-                startActivity(intent);
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(FriendsActivity.this, "Failed to add user", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FriendsActivity.this, username + " added to group!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(FriendsActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

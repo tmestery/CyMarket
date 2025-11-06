@@ -96,6 +96,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                         }
 
                         JSONObject groupObj = new JSONObject(response);
+//                        int groupId = groupObj.getInt("groupID");
                         int groupId = 11;
 
                         // Build list of users to add
@@ -125,6 +126,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                             Intent intent = new Intent(CreateGroupActivity.this, MessagesActivity.class);
                             // pass both forms used in your app to be safe
                             intent.putExtra("groupID", String.valueOf(groupId));
+                            intent.putExtra("groupId", String.valueOf(groupId));
                             intent.putExtra("friendUsername", friendUsername != null ? friendUsername : "");
                             startActivity(intent);
 

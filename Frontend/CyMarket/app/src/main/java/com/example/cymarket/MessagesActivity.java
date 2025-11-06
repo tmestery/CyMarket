@@ -37,8 +37,9 @@ public class MessagesActivity extends AppCompatActivity {
         // These are the intents that are being passed:
         //  intent.putExtra("chat_with", username);
         //  intent.putExtra("groupId", groupId); // pass the correct group ID
-        //        String groupchatName = getIntent().getStringExtra("groupID");
-        //        String friendUsername = getIntent().getStringExtra("friendUsername");
+
+//        String groupchatName = getIntent().getStringExtra("groupID");
+//        String friendUsername = getIntent().getStringExtra("friendUsername");
 
         reportButton = findViewById(R.id.reportButton);
         sendButton = findViewById(R.id.sendButton);
@@ -69,12 +70,8 @@ public class MessagesActivity extends AppCompatActivity {
         groupchatPersonName.setText(friendUsername);
 
         sendButton.setOnClickListener(v -> {
-            if (!socketReady) {
-                Log.w(TAG, "Socket not ready yet");
-                return;
-            }
             String message = messageInput.getText().toString().trim();
-            if (message.isEmpty()) return;
+            if(message.isEmpty()) return;
 
             Intent intent = new Intent("WS_SEND");
             intent.putExtra("key", CHAT_KEY);
@@ -120,26 +117,13 @@ public class MessagesActivity extends AppCompatActivity {
         }
     };
 
-    private boolean socketReady = false;
-
-    private final BroadcastReceiver socketReadyReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
-                socketReady = true;
-                runOnUiThread(() -> sendButton.setEnabled(true));
-                Log.d(TAG, "WebSocket ready!");
-            }
-        }
-    };
 
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
-        lbm.registerReceiver(receiver, new IntentFilter("WS_MSG"));
-        lbm.registerReceiver(socketReadyReceiver, new IntentFilter("WS_READY"));
-        sendButton.setEnabled(false);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                receiver,new IntentFilter("WS_MSG")
+        );
     }
 
     @Override
