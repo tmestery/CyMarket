@@ -45,8 +45,17 @@ public class Checkout {
     private String shippingZipCode;
     private String shippingCountry;
 
-    private String paymentMethod;
+    // Card payment information
+    private String cardLastFour; // Only store last 4 digits
+    private String cardHolderName;
     private String paymentTransactionId;
+    
+    // Billing address
+    private String billingAddress;
+    private String billingCity;
+    private String billingState;
+    private String billingZipCode;
+    private String billingCountry;
 
     private String notes;
 
@@ -99,5 +108,13 @@ public class Checkout {
         return items.stream()
                 .mapToInt(CheckoutItem::getQuantity)
                 .sum();
+    }
+    
+    // Helper method to set card info and store last 4
+    public void setCardInfo(String cardNumber, String cardHolderName) {
+        if (cardNumber != null && cardNumber.length() >= 4) {
+            this.cardLastFour = cardNumber.substring(cardNumber.length() - 4);
+        }
+        this.cardHolderName = cardHolderName;
     }
 }

@@ -35,6 +35,9 @@ public class CheckoutService {
 
     @Transactional
     public Checkout createCheckout(CheckoutRequest request) {
+        // Validate card payment
+        validateCardPaymentFields(request);
+        
         User user = userRepository.findById(request.getUserId());
         if (user == null) {
             throw new IllegalArgumentException("User not found with id: " + request.getUserId());
@@ -48,7 +51,17 @@ public class CheckoutService {
                 request.getShippingZipCode(),
                 request.getShippingCountry()
         );
-        checkout.setPaymentMethod(request.getPaymentMethod());
+        
+        // Set card payment information store last 4
+        checkout.setCardInfo(request.getCardNumber(), request.getCardHolderName());
+        
+        // Set billing address
+        checkout.setBillingAddress(request.getBillingAddress());
+        checkout.setBillingCity(request.getBillingCity());
+        checkout.setBillingState(request.getBillingState());
+        checkout.setBillingZipCode(request.getBillingZipCode());
+        checkout.setBillingCountry(request.getBillingCountry());
+        
         checkout.setNotes(request.getNotes());
 
         for (CheckoutItemRequest itemRequest : request.getItems()) {
@@ -101,7 +114,7 @@ public class CheckoutService {
             User sellerUser = seller.getUserLogin() != null ? seller.getUserLogin().getUser() : null;
             if (sellerUser != null) {
                 String sellerMsg = "Your item '" + item.getName() + "' was purchased by " + user.getUsername()
-                        + " (qty " + itemRequest.getQuantity() + ").";
+                        + " (qty " + itemRequest.getQuantity() + ") via card payment.";
                 notificationService.createAndSendNotification(
                         sellerUser,
                         NotificationType.TRANSACTION_PENDING,
@@ -114,14 +127,18 @@ public class CheckoutService {
             checkAndNotifyLowStock(item, 5);
         }
 
-        checkout.setPaymentTransactionId("TXN-" + UUID.randomUUID());
+        // Process card payment
+        String transactionId = processCardPayment(request, checkout.getTotalPrice());
+        checkout.setPaymentTransactionId(transactionId);
         checkout.setStatus(OrderStatus.PROCESSING);
 
         Checkout savedCheckout = checkoutRepository.save(checkout);
 
         // Order confirmation
         String orderMessage = "Order #" + savedCheckout.getId()
-                + " created and is being processed. Total items: " + savedCheckout.getItems().size();
+                + " created and is being processed. Card ending in " + savedCheckout.getCardLastFour() 
+                + " charged $" + String.format("%.2f", savedCheckout.getTotalPrice()) 
+                + ". Total items: " + savedCheckout.getItems().size();
         notificationService.createAndSendNotification(
                 user,
                 NotificationType.TRANSACTION_PENDING,
@@ -328,6 +345,99 @@ public class CheckoutService {
                     "ITEM",
                     null
             );
+        }
+    }
+
+    private void validateCardPaymentFields(CheckoutRequest request) {
+        if (request.getCardNumber() == null || request.getCardNumber().trim().isEmpty()) {
+            throw new IllegalArgumentException("Card number is required");
+        }
+        
+        if (request.getCardHolderName() == null || request.getCardHolderName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Card holder name is required");
+        }
+        
+        if (request.getExpirationMonth() == null || request.getExpirationMonth().trim().isEmpty()) {
+            throw new IllegalArgumentException("Expiration month is required");
+        }
+        
+        if (request.getExpirationYear() == null || request.getExpirationYear().trim().isEmpty()) {
+            throw new IllegalArgumentException("Expiration year is required");
+        }
+        
+        if (request.getCvv() == null || request.getCvv().trim().isEmpty()) {
+            throw new IllegalArgumentException("CVV is required");
+        }
+        
+        // Validate card number format (basic validation)
+        String cardNumber = request.getCardNumber().replaceAll("\\s+", "");
+        if (!cardNumber.matches("\\d{13,19}")) {
+            throw new IllegalArgumentException("Invalid card number format");
+        }
+        
+        // Validate expiration month
+        try {
+            int month = Integer.parseInt(request.getExpirationMonth());
+            if (month < 1 || month > 12) {
+                throw new IllegalArgumentException("Invalid expiration month");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid expiration month format");
+        }
+        
+        // Validate expiration year
+        try {
+            int year = Integer.parseInt(request.getExpirationYear());
+            int currentYear = java.time.Year.now().getValue();
+            if (year < currentYear) {
+                throw new IllegalArgumentException("Card has expired");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid expiration year format");
+        }
+        
+        // Validate CVV
+        if (!request.getCvv().matches("\\d{3,4}")) {
+            throw new IllegalArgumentException("Invalid CVV format");
+        }
+        
+        // Validate billing address fields
+        if (request.getBillingAddress() == null || request.getBillingAddress().trim().isEmpty()) {
+            throw new IllegalArgumentException("Billing address is required");
+        }
+        
+        if (request.getBillingCity() == null || request.getBillingCity().trim().isEmpty()) {
+            throw new IllegalArgumentException("Billing city is required");
+        }
+        
+        if (request.getBillingState() == null || request.getBillingState().trim().isEmpty()) {
+            throw new IllegalArgumentException("Billing state is required");
+        }
+        
+        if (request.getBillingZipCode() == null || request.getBillingZipCode().trim().isEmpty()) {
+            throw new IllegalArgumentException("Billing zip code is required");
+        }
+        
+        if (request.getBillingCountry() == null || request.getBillingCountry().trim().isEmpty()) {
+            throw new IllegalArgumentException("Billing country is required");
+        }
+    }
+    
+    private String processCardPayment(CheckoutRequest request, Double totalAmount) {
+        // Simulate payment processing
+        try {
+            String cardNumber = request.getCardNumber().replaceAll("\\s+", "");
+            
+            // Generate a mock transaction ID
+            String transactionId = "CARD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+            System.out.println("Processing card payment: $" + totalAmount + 
+                             " for card ending in " + cardNumber.substring(cardNumber.length() - 4));
+            
+            return transactionId;
+            
+        } catch (Exception e) {
+            throw new IllegalStateException("Payment processing failed: " + e.getMessage());
         }
     }
 }
