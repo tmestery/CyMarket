@@ -1,245 +1,130 @@
 package onetomany.Notifications;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import onetomany.Users.User;
 import onetomany.Users.UserRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
 
-    @Autowired
-    private NotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-     // Create and send notification to a user with webSocket
-    public Notification createAndSendNotification(User user, NotificationType type, String message) {
-        Notification notification = new Notification(user, type, message);
-        notification = notificationRepository.save(notification);
-        sendNotificationToUser(user.getUsername(), notification);
-        
-        return notification;
+    public NotificationService(NotificationRepository notificationRepository,
+                               UserRepository userRepository) {
+        this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
     }
 
-     // Create and send a notification with entity details
-    public Notification createAndSendNotification(User user, NotificationType type, String message, 
-                                                 Long relatedEntityId, String relatedEntityType) {
-        Notification notification = new Notification(user, type, message, relatedEntityId, relatedEntityType);
-        notification = notificationRepository.save(notification);
-        sendNotificationToUser(user.getUsername(), notification);
-        
-        return notification;
-    }
-
-    // Send notification to a specific user with webSocket
-    private void sendNotificationToUser(String username, Notification notification) {
-        NotificationDTO dto = new NotificationDTO(notification);
-        messagingTemplate.convertAndSendToUser(
-            username, 
-            "/queue/notifications", 
-            dto
-        );
-    }
-
-
-     // get all notifications
-    public List<NotificationDTO> getUserNotifications(String username) {
+    public List<NotificationDTO> getAllForUser(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        
-        List<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user);
-        return notifications.stream()
-                .map(NotificationDTO::new)
-                .collect(Collectors.toList());
+        if (user == null) return List.of();
+        return notificationRepository.findByUserOrderByCreatedAtDesc(user)
+                .stream().map(NotificationDTO::from).toList();
     }
 
-
-     // Get all notifications paginated
-    public Page<NotificationDTO> getUserNotifications(String username, Pageable pageable) {
+    public Page<NotificationDTO> getPageForUser(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        
-        Page<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user, pageable);
-        return notifications.map(NotificationDTO::new);
+        if (user == null) return Page.empty(pageable);
+        return notificationRepository.findByUserOrderByCreatedAtDesc(user, pageable)
+                .map(NotificationDTO::from);
     }
 
-
-     // Get unread notifications
-    public List<NotificationDTO> getUnreadNotifications(String username) {
+    public long countUnread(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        
-        List<Notification> notifications = notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user);
-        return notifications.stream()
-                .map(NotificationDTO::new)
-                .collect(Collectors.toList());
-    }
-
-
-     // Get unread notification count
-    public long getUnreadCount(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return 0;
-        }
-        
+        if (user == null) return 0L;
         return notificationRepository.countByUserAndIsReadFalse(user);
     }
 
-
-     // Mark a notification as read
     @Transactional
-    public boolean markAsRead(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId).orElse(null);
-        if (notification == null) {
-            return false;
+    public void markRead(Long id) {
+        Notification n = notificationRepository.findById(id).orElse(null);
+        if (n != null && !n.isRead()) {
+            n.setRead(true);
+            notificationRepository.save(n);
         }
-        
-        notification.setRead(true);
-        notificationRepository.save(notification);
-        return true;
     }
 
-
-     // Mark all notifications as read
     @Transactional
-    public boolean markAllAsRead(String username) {
+    public int markAllRead(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return false;
-        }
-        
-        List<Notification> unreadNotifications = notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user);
-        for (Notification notification : unreadNotifications) {
-            notification.setRead(true);
-        }
-        notificationRepository.saveAll(unreadNotifications);
-        return true;
-    }
-     // Delete notification
-    @Transactional
-    public boolean deleteNotification(Long notificationId) {
-        if (!notificationRepository.existsById(notificationId)) {
-            return false;
-        }
-        
-        notificationRepository.deleteById(notificationId);
-        return true;
+        if (user == null) return 0;
+        List<Notification> list = notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user);
+        list.forEach(n -> n.setRead(true));
+        notificationRepository.saveAll(list);
+        return list.size();
     }
 
-
-     // Delete all notifications
     @Transactional
-    public boolean deleteAllUserNotifications(String username) {
+    public void delete(Long id) {
+        if (notificationRepository.existsById(id)) {
+            notificationRepository.deleteById(id);
+        }
+    }
+
+    @Transactional
+    public int deleteAllForUser(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return false;
-        }
-        
-        notificationRepository.deleteByUser(user);
-        return true;
+        if (user == null) return 0;
+        List<Notification> list = notificationRepository.findByUserOrderByCreatedAtDesc(user);
+        int count = list.size();
+        if (count > 0) notificationRepository.deleteAll(list);
+        return count;
     }
 
-
-     // Send notification announcement to everyone
     @Transactional
-    public void sendSystemAnnouncement(String message) {
-        List<User> allUsers = userRepository.findAll();
-        for (User user : allUsers) {
-            createAndSendNotification(user, NotificationType.SYSTEM_ANNOUNCEMENT, message);
+    public NotificationDTO createAndSendNotification(
+            User user,
+            NotificationType type,
+            String message,
+            Long relatedEntityId,
+            String relatedEntityType,
+            String actionUrl
+    ) {
+        if (user == null) throw new IllegalArgumentException("User required");
+        Notification n = new Notification();
+        n.setUser(user);
+        n.setType(type);
+        n.setMessage(message);
+        n.setRelatedEntityId(relatedEntityId);
+        n.setRelatedEntityType(relatedEntityType);
+        n.setActionUrl(actionUrl);
+
+        n = notificationRepository.save(n);
+        NotificationDTO dto = NotificationDTO.from(n);
+
+        String username = user.getUsername();
+        if (username != null && !username.isBlank()) {
+            NotificationWebSocket.sendToUser(username, dto);
         }
+        return dto;
     }
 
-// Notify when item is liked
-    public void notifyItemLiked(User itemOwner, String likerUsername, Long itemId, String itemName) {
-        String message = likerUsername + " liked your item: " + itemName;
-        createAndSendNotification(itemOwner, NotificationType.ITEM_LIKED, message, itemId, "ITEM");
+    public NotificationDTO createAndSendNotification(
+            String username,
+            NotificationType type,
+            String message
+    ) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) throw new IllegalArgumentException("User not found: " + username);
+        return createAndSendNotification(user, type, message, null, null, null);
     }
 
-// Notify when item is sold
-    public void notifyItemSold(User seller, Long itemId, String itemName, String buyerUsername) {
-        String message = "Your item '" + itemName + "' was purchased by " + buyerUsername;
-        createAndSendNotification(seller, NotificationType.ITEM_SOLD, message, itemId, "ITEM");
-    }
-    // Notify when item is purchased
-    public void notifyItemPurchased(User buyer, Long itemId, String itemName) {
-        String message = "You successfully purchased: " + itemName;
-        createAndSendNotification(buyer, NotificationType.ITEM_PURCHASED, message, itemId, "ITEM");
-    }
-
-//  Notify on new message
-    public void notifyNewMessage(User recipient, String senderUsername, Long conversationId) {
-        String message = "New message from " + senderUsername;
-        createAndSendNotification(recipient, NotificationType.NEW_MESSAGE, message, conversationId, "MESSAGE");
-    }
-
-// Notify on transaction status change
-    public void notifyTransactionUpdate(User user, NotificationType type, Long transactionId, String details) {
-        createAndSendNotification(user, type, details, transactionId, "TRANSACTION");
-    }
-
-    // Notify when order is created
-    public void notifyOrderCreated(User buyer, Long orderId, int itemCount, double totalAmount) {
-        String message = "Your order #" + orderId + " has been created successfully. " + itemCount + " items, Total: $" + String.format("%.2f", totalAmount);
-        createAndSendNotification(buyer, NotificationType.TRANSACTION_PENDING, message, orderId, "ORDER");
-    }
-
-    // Notify when order status changes
-    public void notifyOrderStatusChange(User user, Long orderId, String status, String details) {
-        NotificationType type = switch (status.toUpperCase()) {
-            case "COMPLETED" -> NotificationType.TRANSACTION_COMPLETED;
-            case "CANCELLED" -> NotificationType.TRANSACTION_CANCELLED;
-            case "SHIPPED" -> NotificationType.ORDER_SHIPPED;
-            default -> NotificationType.TRANSACTION_PENDING;
-        };
-        createAndSendNotification(user, type, details, orderId, "ORDER");
-    }
-
-    // Notify seller about new sale
-    public void notifySellerNewSale(User seller, String itemName, String buyerUsername, Long orderId, int quantity) {
-        String message = buyerUsername + " purchased " + quantity + " unit(s) of your item '" + itemName + "' (Order #" + orderId + ")";
-        createAndSendNotification(seller, NotificationType.ITEM_SOLD, message, orderId, "ORDER");
-    }
-
-    // Notify low stock
-    public void notifyLowStock(User seller, String itemName, int currentStock, Long itemId) {
-        String message = "Low stock alert: '" + itemName + "' has only " + currentStock + " units remaining";
-        createAndSendNotification(seller, NotificationType.LOW_STOCK_ALERT, message, itemId, "ITEM");
-    }
-
-    // Notify out of stock
-    public void notifyOutOfStock(User seller, String itemName, Long itemId) {
-        String message = "Your item '" + itemName + "' is now out of stock";
-        createAndSendNotification(seller, NotificationType.OUT_OF_STOCK_ALERT, message, itemId, "ITEM");
-    }
-
-    // Notify payment received for sellers
-    public void notifyPaymentReceived(User seller, Long orderId, double amount, String itemName) {
-        String message = "Payment received for order #" + orderId + " - '" + itemName + "': $" + String.format("%.2f", amount);
-        createAndSendNotification(seller, NotificationType.PAYMENT_RECEIVED, message, orderId, "ORDER");
-    }
-
-    // Notify refund processed
-    public void notifyRefundProcessed(User buyer, Long orderId, double amount) {
-        String message = "Refund of $" + String.format("%.2f", amount) + " has been processed for order #" + orderId;
-        createAndSendNotification(buyer, NotificationType.REFUND_PROCESSED, message, orderId, "ORDER");
+    public NotificationDTO createAndSendNotification(
+            String username,
+            NotificationType type,
+            String message,
+            Long relatedEntityId,
+            String relatedEntityType,
+            String actionUrl
+    ) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) throw new IllegalArgumentException("User not found: " + username);
+        return createAndSendNotification(user, type, message, relatedEntityId, relatedEntityType, actionUrl);
     }
 }

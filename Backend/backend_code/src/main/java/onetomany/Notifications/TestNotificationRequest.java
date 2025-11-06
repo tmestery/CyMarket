@@ -5,7 +5,7 @@ public class TestNotificationRequest {
     private String message;
     private Long relatedEntityId;
     private String relatedEntityType;
-
+    private String actionUrl;
     public TestNotificationRequest() {
     }
 
@@ -41,6 +41,9 @@ public class TestNotificationRequest {
 
     public String getRelatedEntityType() {
         return relatedEntityType;
+    }
+    public String getActionUrl() {
+        return actionUrl;
     }
 
     public void setRelatedEntityType(String relatedEntityType) {

@@ -17,16 +17,18 @@ public class NotificationDTO {
     public NotificationDTO() {
     }
 
-    public NotificationDTO(Notification notification) {
-        this.id = notification.getId();
-        this.username = notification.getUser().getUsername();
-        this.type = notification.getType();
-        this.message = notification.getMessage();
-        this.relatedEntityId = notification.getRelatedEntityId();
-        this.relatedEntityType = notification.getRelatedEntityType();
-        this.isRead = notification.isRead();
-        this.createdAt = notification.getCreatedAt();
-        this.actionUrl = notification.getActionUrl();
+    public static NotificationDTO from(Notification n) {
+        NotificationDTO dto = new NotificationDTO();
+        dto.id = n.getId();
+        dto.username = (n.getUser() != null) ? n.getUser().getUsername() : null;
+        dto.type = n.getType();
+        dto.message = n.getMessage();
+        dto.relatedEntityId = n.getRelatedEntityId();
+        dto.relatedEntityType = n.getRelatedEntityType();
+        dto.isRead = n.isRead();
+        dto.createdAt = n.getCreatedAt();
+        dto.actionUrl = n.getActionUrl();
+        return dto;
     }
 
     // getters and setters

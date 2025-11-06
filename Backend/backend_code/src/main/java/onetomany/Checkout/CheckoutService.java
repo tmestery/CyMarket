@@ -75,24 +75,42 @@ public class CheckoutService {
             CheckoutItem checkoutItem = new CheckoutItem(item, itemRequest.getQuantity(), seller);
             checkout.addItem(checkoutItem);
 
+            // update inventory
             item.setQuantity(item.getQuantity() - itemRequest.getQuantity());
             if (item.getQuantity() == 0) {
                 item.setIfAvailable(false);
             }
             itemsRepository.save(item);
 
+            // update seller sales count
             seller.setTotalSales(seller.getTotalSales() + itemRequest.getQuantity());
             sellerRepository.save(seller);
 
-            // Send notifications for item purchase
-            notificationService.notifyItemPurchased(user, Long.valueOf(item.getId()), item.getName());
-            
+            // Notify buyer that item was added or purchased
+            String buyerMsg = "Added '" + item.getName() + "' x" + itemRequest.getQuantity() + " to your order.";
+            notificationService.createAndSendNotification(
+                    user,
+                    NotificationType.TRANSACTION_PENDING,
+                    buyerMsg,
+                    null,
+                    "ITEM",
+                    null
+            );
+
+            // Notify seller item was purchased
             User sellerUser = seller.getUserLogin() != null ? seller.getUserLogin().getUser() : null;
             if (sellerUser != null) {
-                notificationService.notifyItemSold(sellerUser, Long.valueOf(item.getId()), item.getName(), user.getUsername());
+                String sellerMsg = "Your item '" + item.getName() + "' was purchased by " + user.getUsername()
+                        + " (qty " + itemRequest.getQuantity() + ").";
+                notificationService.createAndSendNotification(
+                        sellerUser,
+                        NotificationType.TRANSACTION_PENDING,
+                        sellerMsg,
+                        Long.valueOf(item.getId()),
+                        "ITEM",
+                        null
+                );
             }
-
-            // Check and notify about low stock at 5 items
             checkAndNotifyLowStock(item, 5);
         }
 
@@ -101,14 +119,16 @@ public class CheckoutService {
 
         Checkout savedCheckout = checkoutRepository.save(checkout);
 
-        // Send order confirmation notification to buyer
-        String orderMessage = "Order #" + savedCheckout.getId() + " has been created and is being processed. Total items: " + savedCheckout.getItems().size();
+        // Order confirmation
+        String orderMessage = "Order #" + savedCheckout.getId()
+                + " created and is being processed. Total items: " + savedCheckout.getItems().size();
         notificationService.createAndSendNotification(
-            user, 
-            NotificationType.TRANSACTION_PENDING, 
-            orderMessage,
-            savedCheckout.getId(),
-            "ORDER"
+                user,
+                NotificationType.TRANSACTION_PENDING,
+                orderMessage,
+                savedCheckout.getId(),
+                "ORDER",
+                null
         );
 
         return savedCheckout;
@@ -137,7 +157,7 @@ public class CheckoutService {
 
         Checkout savedCheckout = checkoutRepository.save(checkout);
 
-        // Send status update notifications
+        //  status update
         sendOrderStatusNotification(savedCheckout, previousStatus, status);
 
         return savedCheckout;
@@ -165,16 +185,18 @@ public class CheckoutService {
             seller.setTotalSales(seller.getTotalSales() - checkoutItem.getQuantity());
             sellerRepository.save(seller);
 
-            // Notify seller about order cancellation
+            // Notify for cancellation (seller)
             User sellerUser = seller.getUserLogin() != null ? seller.getUserLogin().getUser() : null;
             if (sellerUser != null) {
-                String cancelMessage = "Order #" + checkout.getId() + " containing your item '" + item.getName() + "' has been cancelled";
+                String cancelMessage = "Order #" + checkout.getId()
+                        + " containing your item '" + item.getName() + "' has been cancelled.";
                 notificationService.createAndSendNotification(
-                    sellerUser,
-                    NotificationType.TRANSACTION_CANCELLED,
-                    cancelMessage,
-                    checkout.getId(),
-                    "ORDER"
+                        sellerUser,
+                        NotificationType.TRANSACTION_CANCELLED,
+                        cancelMessage,
+                        checkout.getId(),
+                        "ORDER",
+                        null
                 );
             }
         }
@@ -183,13 +205,15 @@ public class CheckoutService {
         Checkout savedCheckout = checkoutRepository.save(checkout);
 
         // Notify buyer about cancellation
-        String buyerMessage = "Your order #" + checkout.getId() + " has been cancelled. Items have been returned to inventory.";
+        String buyerMessage = "Your order #" + checkout.getId()
+                + " has been cancelled. Items have been returned to inventory.";
         notificationService.createAndSendNotification(
-            checkout.getUser(),
-            NotificationType.TRANSACTION_CANCELLED,
-            buyerMessage,
-            checkout.getId(),
-            "ORDER"
+                checkout.getUser(),
+                NotificationType.TRANSACTION_CANCELLED,
+                buyerMessage,
+                checkout.getId(),
+                "ORDER",
+                null
         );
 
         return savedCheckout;
@@ -216,93 +240,94 @@ public class CheckoutService {
         checkoutRepository.delete(checkout);
     }
 
-     // Send notification based on order status change
     private void sendOrderStatusNotification(Checkout checkout, OrderStatus previousStatus, OrderStatus newStatus) {
         User buyer = checkout.getUser();
         String orderReference = "Order #" + checkout.getId();
-        
+
         switch (newStatus) {
-            case PROCESSING:
+            case PROCESSING -> {
                 if (previousStatus != OrderStatus.PROCESSING) {
-                    String message = orderReference + " is now being processed";
+                    String message = orderReference + " is now being processed.";
                     notificationService.createAndSendNotification(
-                        buyer, 
-                        NotificationType.TRANSACTION_PENDING, 
-                        message,
-                        checkout.getId(),
-                        "ORDER"
+                            buyer,
+                            NotificationType.TRANSACTION_PENDING,
+                            message,
+                            checkout.getId(),
+                            "ORDER",
+                            null
                     );
                 }
-                break;
-                
-            case SHIPPED:
-                String shippedMessage = orderReference + " has been shipped to " + checkout.getShippingAddress();
+            }
+            case SHIPPED -> {
+                String shippedMessage = orderReference + " has been shipped to " + checkout.getShippingAddress() + ".";
                 notificationService.createAndSendNotification(
-                    buyer, 
-                    NotificationType.TRANSACTION_PENDING, 
-                    shippedMessage,
-                    checkout.getId(),
-                    "ORDER"
+                        buyer,
+                        NotificationType.TRANSACTION_PENDING,
+                        shippedMessage,
+                        checkout.getId(),
+                        "ORDER",
+                        null
                 );
-                break;
-                
-            case COMPLETED:
+            }
+            case COMPLETED -> {
                 String completedMessage = orderReference + " has been completed. Thank you for your purchase!";
                 notificationService.createAndSendNotification(
-                    buyer, 
-                    NotificationType.TRANSACTION_COMPLETED, 
-                    completedMessage,
-                    checkout.getId(),
-                    "ORDER"
+                        buyer,
+                        NotificationType.TRANSACTION_COMPLETED,
+                        completedMessage,
+                        checkout.getId(),
+                        "ORDER",
+                        null
                 );
-                
-                // Notify all sellers about completed sale
+
                 for (CheckoutItem item : checkout.getItems()) {
-                    User sellerUser = item.getSeller().getUserLogin() != null ? item.getSeller().getUserLogin().getUser() : null;
+                    User sellerUser = item.getSeller().getUserLogin() != null
+                            ? item.getSeller().getUserLogin().getUser() : null;
                     if (sellerUser != null) {
-                        String sellerMessage = "Your item '" + item.getItem().getName() + "' from order #" + checkout.getId() + " has been delivered successfully";
+                        String sellerMessage = "Your item '" + item.getItem().getName()
+                                + "' from " + orderReference + " has been delivered successfully.";
                         notificationService.createAndSendNotification(
-                            sellerUser,
-                            NotificationType.TRANSACTION_COMPLETED,
-                            sellerMessage,
-                            checkout.getId(),
-                            "ORDER"
+                                sellerUser,
+                                NotificationType.TRANSACTION_COMPLETED,
+                                sellerMessage,
+                                checkout.getId(),
+                                "ORDER",
+                                null
                         );
                     }
                 }
-                break;
-                
-            case CANCELLED:
-                break;
+            }
+            case CANCELLED -> { /* already handled in cancelOrder */ }
         }
     }
 
-    // Notify seller about low stock
+    // Low stock notification (seller)
     public void checkAndNotifyLowStock(Item item, int threshold) {
+        User sellerUser = item.getSeller().getUserLogin() != null
+                ? item.getSeller().getUserLogin().getUser() : null;
+        if (sellerUser == null) return;
+
         if (item.getQuantity() <= threshold && item.getQuantity() > 0) {
-            User sellerUser = item.getSeller().getUserLogin() != null ? item.getSeller().getUserLogin().getUser() : null;
-            if (sellerUser != null) {
-                String message = "Low stock alert: Your item '" + item.getName() + "' has only " + item.getQuantity() + " units remaining";
-                notificationService.createAndSendNotification(
+            String message = "Low stock alert: Your item '" + item.getName()
+                    + "' has only " + item.getQuantity() + " units remaining.";
+            notificationService.createAndSendNotification(
                     sellerUser,
                     NotificationType.SYSTEM_ANNOUNCEMENT,
                     message,
                     Long.valueOf(item.getId()),
-                    "ITEM"
-                );
-            }
+                    "ITEM",
+                    null
+            );
         } else if (item.getQuantity() == 0) {
-            User sellerUser = item.getSeller().getUserLogin() != null ? item.getSeller().getUserLogin().getUser() : null;
-            if (sellerUser != null) {
-                String message = "Your item '" + item.getName() + "' is now out of stock";
-                notificationService.createAndSendNotification(
+            String message = "Your item '" + item.getName() + "' is now out of stock.";
+            notificationService.createAndSendNotification(
                     sellerUser,
                     NotificationType.SYSTEM_ANNOUNCEMENT,
                     message,
                     Long.valueOf(item.getId()),
-                    "ITEM"
-                );
-            }
+                    "ITEM",
+                    null
+            );
         }
     }
 }
