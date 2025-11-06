@@ -20,6 +20,12 @@ public class Listing {
         return id;
     }
 
+    public String getTitle() { return title; }
+
+    public String getDescription() { return description; }
+
+    public double getPrice() { return price; }
+
     public int getQuantity() {
         return quantity;
     }

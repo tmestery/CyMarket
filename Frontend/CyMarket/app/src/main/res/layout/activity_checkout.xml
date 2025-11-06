@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- back button carrot -->
+        <Button
+            android:id="@+id/checkout_back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;"
+            android:textSize="24sp"
+            android:background="@android:color/transparent"
+            android:textColor="#000000" />
+
+        <!-- cardholder name -->
+        <EditText
+            android:id="@+id/card_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cardholder Name" />
+
+        <!-- card number -->
+        <EditText
+            android:id="@+id/card_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Card Number"
+            android:inputType="number" />
+
+        <!-- expiration date -->
+        <EditText
+            android:id="@+id/card_expiry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="MM/YY"
+            android:inputType="text" />
+
+        <!-- CVC -->
+        <EditText
+            android:id="@+id/card_cvc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="CVC"
+            android:inputType="numberPassword" />
+
+        <!-- billing address -->
+        <EditText
+            android:id="@+id/card_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Billing Address" />
+
+        <!-- ZIP code -->
+        <EditText
+            android:id="@+id/card_zip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="ZIP Code"
+            android:inputType="number" />
+
+        <!-- confirm purchase button -->
+        <Button
+            android:id="@+id/checkout_confirm_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirm Purchase"
+            android:layout_marginTop="24dp" />
+    </LinearLayout>
+</ScrollView>

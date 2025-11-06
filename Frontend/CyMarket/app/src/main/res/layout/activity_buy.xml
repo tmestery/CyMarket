@@ -30,12 +30,6 @@
         tools:listitem="@layout/item_listing_card" >
     </androidx.recyclerview.widget.RecyclerView>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-    </Space>
-
     <!-- clear all button, for admins/temp-->
     <Button
         android:id="@+id/buy_clear_all_btn"
