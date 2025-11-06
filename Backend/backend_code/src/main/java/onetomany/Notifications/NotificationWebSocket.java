@@ -6,6 +6,7 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
@@ -19,6 +20,13 @@ public class NotificationWebSocket {
 
     private static final Map<Session, String> sessionUsernameMap = new Hashtable<>();
     private static final Map<String, Session> usernameSessionMap = new Hashtable<>();
+
+    private static NotificationService notificationServiceStatic;
+    
+    @Autowired
+    public void setNotificationService(NotificationService notificationService) {
+        notificationServiceStatic = notificationService;
+    }
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) throws IOException {
