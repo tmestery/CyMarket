@@ -32,10 +32,13 @@ public class GroupController {
         return groupRepository.findByName(name);
     }
     @PostMapping(path = "/create/{groupName}")
-    public ResponseEntity<String> createGroup(@PathVariable String groupName) {
+    public int createGroup(@PathVariable String groupName) {
+        if (groupRepository.findByName(groupName) != null) {
+            return -1; // Indicate that the group already exists
+        }
         Group group = new Group(groupName);
         groupRepository.save(group);
-        return ResponseEntity.ok("{\"message\":\"Group created successfully\"}");
+        return groupRepository.findByName(groupName).getId();
     }
 
     @PostMapping(path = "/group/add-user/{id}/{username}")

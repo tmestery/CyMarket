@@ -1,5 +1,6 @@
 onetomany/Main.class
 onetomany/Notifications/Notification.class
+onetomany/Checkout/CheckoutService$1.class
 onetomany/Users/PasswordResetRequest.class
 onetomany/Notifications/NotificationType.class
 onetomany/Items/ItemsRepository.class
