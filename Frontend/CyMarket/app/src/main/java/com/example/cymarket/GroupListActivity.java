@@ -45,9 +45,9 @@ public class GroupListActivity extends AppCompatActivity {
 
         loadGroups();
 
-        // Load the friends activity that then takes you to create group that then goes to messages
         createGroupBtn.setOnClickListener(v -> {
-            startActivity(new Intent(GroupListActivity.this, FriendsActivity.class));
+            // Go to create new group
+            startActivity(new Intent(GroupListActivity.this, CreateGroupActivity.class));
         });
 
         setupBottomNav();
