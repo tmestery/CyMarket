@@ -9,7 +9,6 @@
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Checkout/Checkout.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/WebSocketAdminNot/chatNot.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Notifications/NotificationDTO.java
-/Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Notifications/WebSocketConfig.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Notifications/Notification.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Group/GroupRepository.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Notifications/NotificationService.java
@@ -29,7 +28,6 @@
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Items/ItemsRepository.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/adminUser/adminUserRepository.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Notifications/NotificationController.java
-/Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Notifications/WebSocketEventListener.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Reports/ReportsController.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Users/UserRepository.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Sellers/SellerRepository.java
@@ -48,6 +46,7 @@
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Items/ItemImage.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Checkout/CheckoutController.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/WebSocketAdminNot/adminChat.java
+/Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Notifications/NotificationWebSocket.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/Users/UserController.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/adminUser/adminUser.java
 /Users/danielpinilla/coms309/4_kundan_3/Backend/backend_code/src/main/java/onetomany/WebSocketAdminNot/Message.java

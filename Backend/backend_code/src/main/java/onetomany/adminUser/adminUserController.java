@@ -84,6 +84,14 @@ public class adminUserController {
         return userRepository.findAll();
     }
 
+    @GetMapping(path = "/adminUser/getUsername/{email}")
+    String getUsersName(@PathVariable String email){
+        adminUser temp= adminUserRepository.findByEmailId(email);
+        if (temp == null)
+            return null;
+        return temp.getUsername();
+    }
+
 
     @GetMapping("/adminUser/getUser/{id}/{email}/{password}/")
     User getUserbyId(@PathVariable String email, @PathVariable String password, @PathVariable int id){
