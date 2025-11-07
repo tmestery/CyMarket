@@ -1,5 +1,6 @@
 package com.example.cymarket;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,19 +33,25 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         Message message = messages.get(position);
         holder.messageText.setText(message.getContent());
 
-        // Set different background based on sender
+        // Background based on sender
         holder.messageText.setBackgroundResource(
                 message.isSentByMe(currentUser)
                         ? R.drawable.bg_message_sent
                         : R.drawable.bg_message_recieved
         );
-
-        // Optional: Align messages left/right
         holder.messageText.setTextAlignment(
                 message.isSentByMe(currentUser)
                         ? View.TEXT_ALIGNMENT_TEXT_END
                         : View.TEXT_ALIGNMENT_TEXT_START
         );
+
+        // Long press to report a user
+        holder.itemView.setOnLongClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), ReportUserActivity.class);
+            intent.putExtra("reportedUser", message.getSender());
+            holder.itemView.getContext().startActivity(intent);
+            return true;
+        });
     }
 
     @Override

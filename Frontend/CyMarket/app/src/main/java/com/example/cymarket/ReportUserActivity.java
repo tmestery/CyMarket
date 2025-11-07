@@ -26,7 +26,10 @@ public class ReportUserActivity extends AppCompatActivity {
         fileReport = findViewById(R.id.reportButton);
         reportText = findViewById(R.id.reportInput);
 
-        fileReport.setOnClickListener(v -> sendReportToBackend());
+        // Get the reported user/group
+        String reportedUser = getIntent().getStringExtra("reportedUser");
+
+        fileReport.setOnClickListener(v -> sendReportToBackend(reportedUser));
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -42,7 +45,7 @@ public class ReportUserActivity extends AppCompatActivity {
         });
     }
 
-    private void sendReportToBackend() {
+    private void sendReportToBackend(String reportedUser) {
         String text = reportText.getText().toString().trim();
         if (text.isEmpty()) {
             Toast.makeText(this, "Enter report text", Toast.LENGTH_SHORT).show();
@@ -63,6 +66,10 @@ public class ReportUserActivity extends AppCompatActivity {
 
             body.put("report", text);
             body.put("user", userObj);
+
+            // Add reported user info
+            body.put("reportedUser", reportedUser);
+
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to build report", Toast.LENGTH_SHORT).show();

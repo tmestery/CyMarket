@@ -76,10 +76,9 @@ public class MessagesActivity extends AppCompatActivity {
             messageInput.setText("");
         });
 
-        // --- Report button ---
         reportButton.setOnClickListener(v -> {
             Intent intent = new Intent(MessagesActivity.this, ReportUserActivity.class);
-            intent.putExtra("reportedUser", "Group Chat"); // or specific username if DM
+            intent.putExtra("reportedUser", "Group Chat: " + groupName);
             startActivity(intent);
         });
 
