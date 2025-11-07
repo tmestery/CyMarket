@@ -104,18 +104,13 @@ public class LoginActivity extends AppCompatActivity {
                         String fetchedEmail = response.optString("email", email);
                         String type = response.optString("type", "U");
 
+                        // save email and password first
                         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                         prefs.edit().putString("email", fetchedEmail).apply();
                         prefs.edit().putString("password", password).apply();
 
-                        boolean isAdmin = type.equalsIgnoreCase("A");
-
-                        Intent intent = new Intent(
-                                LoginActivity.this,
-                                isAdmin ? AdminDashboardActivity.class : MainActivity.class
-                        );
-                        startActivity(intent);
-                        finish();
+                        // then fetch username from backend
+                        fetchAndSaveUsername(fetchedEmail, type);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -127,5 +122,42 @@ public class LoginActivity extends AppCompatActivity {
         );
 
         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+    }
+
+    private void fetchAndSaveUsername(String email, String type) {
+        String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/userslogin/getUsername/" + encodedEmail;
+
+
+        com.android.volley.toolbox.StringRequest usernameRequest = new com.android.volley.toolbox.StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    String username = response.trim(); // plain text, not JSON
+                    SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                    prefs.edit().putString("username", username).apply();
+
+                    boolean isAdmin = type.equalsIgnoreCase("A");
+                    Intent intent = new Intent(
+                            LoginActivity.this,
+                            isAdmin ? AdminDashboardActivity.class : MainActivity.class
+                    );
+                    startActivity(intent);
+                    finish();
+                },
+                error -> {
+                    Toast.makeText(getApplicationContext(), "Couldn't fetch username", Toast.LENGTH_SHORT).show();
+
+                    boolean isAdmin = type.equalsIgnoreCase("A");
+                    Intent intent = new Intent(
+                            LoginActivity.this,
+                            isAdmin ? AdminDashboardActivity.class : MainActivity.class
+                    );
+                    startActivity(intent);
+                    finish();
+                }
+        );
+
+        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(usernameRequest);
     }
 }
