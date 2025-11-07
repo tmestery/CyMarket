@@ -73,18 +73,18 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-<!--    <TextView-->
-<!--        android:id="@+id/messagesRecyclerView"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:padding="16dp"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="16sp"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/headerBar"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/messageInputLayout"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/messagesRecyclerView"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:padding="16dp"-->
+    <!--        android:textColor="@color/black"-->
+    <!--        android:textSize="16sp"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/headerBar"-->
+    <!--        app:layout_constraintBottom_toTopOf="@id/messageInputLayout"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesRecyclerView"

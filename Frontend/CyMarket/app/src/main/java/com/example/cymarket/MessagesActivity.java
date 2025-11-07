@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,8 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class MessagesActivity extends AppCompatActivity {
@@ -45,23 +42,26 @@ public class MessagesActivity extends AppCompatActivity {
         groupChatName = findViewById(R.id.groupChatName);
         reportButton = findViewById(R.id.reportButton);
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
-        messageAdapter = new MessageAdapter(messages, username);
-        messagesRecyclerView.setAdapter(messageAdapter);
-        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // --- Get username ---
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         username = prefs.getString("username", "");
 
-        // --- Get group info ---
+        // --- Adapter ---
+        messageAdapter = new MessageAdapter(messages, username);           // <-- NOW VALID
+        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        messagesRecyclerView.setAdapter(messageAdapter);                   // <-- NOW VALID
+
+        // --- Group info ---
         groupId = getIntent().getIntExtra("groupID", -1);
         groupName = getIntent().getStringExtra("groupName");
-
-        // --- Set chat key for group ---
         CHAT_KEY = "groupChat_" + groupId;
 
-        // --- Display group info ---
         groupChatName.setText(groupName != null ? groupName : "Group #" + groupId);
+
+        // Testing:
+//        messages.add(new Message("DEBUG", "If this shows, UI is working"));
+//        messageAdapter.notifyItemInserted(messages.size() - 1);
 
         // --- Send message handler ---
         sendButton.setOnClickListener(v -> {
@@ -98,42 +98,26 @@ public class MessagesActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
-                String msg = intent.getStringExtra("message");
-                Log.d("MessagesActivity", "Received msg: " + msg);
-                runOnUiThread(() -> {
-                    try {
-                        JSONObject obj = new JSONObject(msg);
-                        String sender = obj.getString("sender");
-                        String content = obj.getString("content");
-                        messages.add(new Message(sender, content));
-                        messageAdapter.notifyItemInserted(messages.size() - 1);
-                        messagesRecyclerView.scrollToPosition(messages.size() - 1);
-                    } catch (Exception e) {
-                        Log.e("MessagesActivity", "JSON parse error: " + e.getMessage());
-                    }
-                });
-            }
-        }
+            if (!CHAT_KEY.equals(intent.getStringExtra("key"))) return;
 
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
-//                String msg = intent.getStringExtra("message");
-//                runOnUiThread(() -> {
-//                    try {
-//                        JSONObject obj = new JSONObject(msg);
-//                        String sender = obj.getString("sender");
-//                        String content = obj.getString("content");
-//                        messageAdapter.addMessage(new Message(sender, content));
-//                        messagesRecyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
-//                    } catch (Exception e) {
-//                        messageAdapter.addMessage(new Message("System", msg));
-//                        messagesRecyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
-//                    }
-//                });
-//            }
-//        }
+            String raw = intent.getStringExtra("message");
+            if (raw == null) return;  // <-- prevent NPE
+
+            Log.d("WS_RAW", "Received raw message = " + raw);
+
+            String sender = "Unknown";
+            String content = raw;
+
+            if (raw.contains(":")) {
+                String[] parts = raw.split(":", 2);
+                sender = parts[0].trim();
+                content = parts[1].trim();
+            }
+
+            messages.add(new Message(sender, content));
+            messageAdapter.notifyItemInserted(messages.size() - 1);
+            messagesRecyclerView.scrollToPosition(messages.size() - 1);
+        }
     };
 
     @Override

@@ -1,9 +1,12 @@
 package com.example.cymarket;
 
 import android.content.Intent;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,20 +33,27 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        Log.d("ADAPTER_TEST", "Binding: " + messages.get(position).getContent());
+        holder.messageText.setWidth(200);
+        holder.messageText.setHeight(80);
         Message message = messages.get(position);
-        holder.messageText.setText(message.getContent());
 
-        // Background based on sender
-        holder.messageText.setBackgroundResource(
-                message.isSentByMe(currentUser)
-                        ? R.drawable.bg_message_sent
-                        : R.drawable.bg_message_recieved
-        );
-        holder.messageText.setTextAlignment(
-                message.isSentByMe(currentUser)
-                        ? View.TEXT_ALIGNMENT_TEXT_END
-                        : View.TEXT_ALIGNMENT_TEXT_START
-        );
+        // layout params for bubble alignment
+        LinearLayout.LayoutParams params =
+                (LinearLayout.LayoutParams) holder.messageText.getLayoutParams();
+
+        if (message.isSentByMe(currentUser)) {
+            params.gravity = Gravity.END;
+            holder.messageText.setBackgroundResource(R.drawable.bg_message_sent);
+            holder.messageText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+        } else {
+            params.gravity = Gravity.START;
+            holder.messageText.setBackgroundResource(R.drawable.bg_message_recieved);
+            holder.messageText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+        }
+
+        holder.messageText.setLayoutParams(params);
+        holder.messageText.setText(message.getContent());
 
         // Long press to report a user
         holder.itemView.setOnLongClickListener(v -> {
