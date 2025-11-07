@@ -45,9 +45,9 @@ public class GroupListActivity extends AppCompatActivity {
 
         loadGroups();
 
-        // Load the friends activity that then takes you to create group that then goes to messages
         createGroupBtn.setOnClickListener(v -> {
-            startActivity(new Intent(GroupListActivity.this, FriendsActivity.class));
+            // Go to create new group
+            startActivity(new Intent(GroupListActivity.this, CreateGroupActivity.class));
         });
 
         setupBottomNav();
@@ -76,13 +76,24 @@ public class GroupListActivity extends AppCompatActivity {
     private void updateGroupList(JSONArray response) {
         try {
             groups.clear();
+
+            if (response == null || response.length() == 0) {
+                Toast.makeText(this, "No groups found", Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
+                return;
+            }
+
             for (int i = 0; i < response.length(); i++) {
                 JSONObject group = response.getJSONObject(i);
-                groups.add(group.getString("name")); // <-- use "name", not "groupName"
+                // Use "name" field — safe even if users list exists
+                if (group.has("name")) {
+                    groups.add(group.getString("name"));
+                }
             }
+
             adapter.notifyDataSetChanged();
         } catch (Exception e) {
-            Toast.makeText(this, "Parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
