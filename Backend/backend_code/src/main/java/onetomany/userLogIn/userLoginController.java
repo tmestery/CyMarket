@@ -83,6 +83,17 @@ public class userLoginController {
         }
         return temp.getUser();
     }
+
+ @GetMapping(path = "/userslogin/getUsername/{email}")
+    String getUserName(@PathVariable String email){
+        userLogin temp= userLoginRepository.findByEmail(email);
+        if (temp == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        
+        return temp.getUserName();
+    }
+
      @GetMapping(path = "/userslogin/getSeller/{username}/{password}")
     Seller getSellerUserLogin(@PathVariable String username, @PathVariable String password){
         userLogin temp= userLoginRepository.findByUserName(username);
