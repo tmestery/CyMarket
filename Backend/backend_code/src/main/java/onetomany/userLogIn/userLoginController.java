@@ -84,16 +84,14 @@ public class userLoginController {
         return temp.getUser();
     }
 
- @GetMapping(path = "/userslogin/getUsername/{email}")
-    String getUserName(@PathVariable String email){
+    @GetMapping(path = "/userslogin/getUserType/{email}")
+    char getUserTypeByEmail(@PathVariable String email){
         userLogin temp= userLoginRepository.findByEmail(email);
         if (temp == null) {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
-        
-        return temp.getUserName();
+        return temp.getType();
     }
-
      @GetMapping(path = "/userslogin/getSeller/{username}/{password}")
     Seller getSellerUserLogin(@PathVariable String username, @PathVariable String password){
         userLogin temp= userLoginRepository.findByUserName(username);
@@ -186,10 +184,32 @@ public class userLoginController {
 
     }
 
+    @DeleteMapping(path = "/userslogin/{id}")
+@Transactional
+public String deleteLogin(@PathVariable int id) {
+    userLogin login = userLoginRepository.findById(id);
+    if (login == null) 
+        return failure;
+    
+    Seller s = login.getSeller();
+    if (s != null) {
+        
+        login.setSeller(null);
+        s.setUserLogin(null);
 
+        sellerRepository.delete(s);   
+    }
 
+    User u = login.getUser();
+    if (u != null) {
+        login.setUser(null);
+        u.setUserLogin(null);
+        userRepository.delete(u);
+    }
 
-
+    userLoginRepository.delete(login);
+    return success;
+}
 
 
 

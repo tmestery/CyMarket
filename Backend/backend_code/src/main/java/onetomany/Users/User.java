@@ -49,7 +49,7 @@ public class User {
 
      @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
-            name = "user_items",
+            name = "user_liked_items",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
