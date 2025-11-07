@@ -13,7 +13,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +22,7 @@ public class GroupListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private GroupListAdapter adapter;
-    private ArrayList<String> groups = new ArrayList<>();
+    private ArrayList<Group> groups = new ArrayList<>();
     private RequestQueue queue;
     private Button createGroupBtn;
 
@@ -38,23 +37,28 @@ public class GroupListActivity extends AppCompatActivity {
         createGroupBtn = findViewById(R.id.createGroupBtn);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new GroupListAdapter(groups, groupName -> openGroupChat(groupName));
+
+        adapter = new GroupListAdapter(groups, group -> {
+            Intent intent = new Intent(GroupListActivity.this, MessagesActivity.class);
+            intent.putExtra("groupID", group.getId());
+            intent.putExtra("groupName", group.getName());
+            startActivity(intent);
+        });
         recyclerView.setAdapter(adapter);
 
         queue = Volley.newRequestQueue(this);
 
         loadGroups();
 
-        createGroupBtn.setOnClickListener(v -> {
-            // Go to create new group
-            startActivity(new Intent(GroupListActivity.this, CreateGroupActivity.class));
-        });
+        createGroupBtn.setOnClickListener(v ->
+                startActivity(new Intent(GroupListActivity.this, CreateGroupActivity.class))
+        );
 
         setupBottomNav();
     }
 
     private void loadGroups() {
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE); // match LoginActivity
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String username = prefs.getString("username", null);
 
         if (username == null || username.isEmpty()) {
@@ -83,24 +87,26 @@ public class GroupListActivity extends AppCompatActivity {
                 return;
             }
 
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject group = response.getJSONObject(i);
-                // Use "name" field — safe even if users list exists
-                if (group.has("name")) {
-                    groups.add(group.getString("name"));
-                }
-            }
+            // Debug: log full JSON
+            System.out.println("GROUPS JSON: " + response.toString());
 
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject groupObj = response.getJSONObject(i);
+                int id = groupObj.getInt("id");        // might fail if "id" is missing
+                String name = groupObj.getString("name");
+                groups.add(new Group(id, name));
+            }
             adapter.notifyDataSetChanged();
         } catch (Exception e) {
             Toast.makeText(this, "Parse error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 
-    private void openGroupChat(String groupName) {
+    private void openGroupChat(Group group) {
         Intent intent = new Intent(GroupListActivity.this, MessagesActivity.class);
-        intent.putExtra("groupName", groupName);
-        // add get group ID
+        intent.putExtra("groupID", group.getId());
+        intent.putExtra("groupName", group.getName());
         startActivity(intent);
     }
 
