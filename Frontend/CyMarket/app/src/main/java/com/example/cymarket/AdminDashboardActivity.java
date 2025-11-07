@@ -1,6 +1,7 @@
 package com.example.cymarket;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -137,12 +138,19 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
     private void fetchReports() {
-        ApiService apiService = RetroClient.getApiService();
-        String email = "admin@email.com";   // <- replace with stored admin login
-        String password = "adminPass";      // <- replace with stored admin login
-        int id = 1; // or whichever report id you want
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        String email = prefs.getString("email", "");
+        String password = prefs.getString("password", "");
 
-        apiService.getReports(id, email, password).enqueue(new Callback<Reports>() {
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Missing admin login credentials", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ApiService apiService = RetroClient.getApiService();
+
+        // Your endpoint: /adminUser/getAllReports/{email}
+        apiService.getAllReports(email, password).enqueue(new Callback<Reports>() {
             @Override
             public void onResponse(Call<Reports> call, Response<Reports> response) {
                 if (response.isSuccessful() && response.body() != null) {

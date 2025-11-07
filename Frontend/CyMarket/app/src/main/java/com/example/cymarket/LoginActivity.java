@@ -85,11 +85,15 @@ public class LoginActivity extends AppCompatActivity {
                 null,
                 response -> {
                     try {
-                        String fetchedEmail = response.optString("emailId", email);
-
+                        String fetchedEmail = response.optString("email", email);
+                        String username = response.optString("userName", "");
                         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                        prefs.edit().putString("email", fetchedEmail).apply();
-                        prefs.edit().putString("password", password).apply();
+                        prefs.edit()
+                                .putInt("userId", response.optInt("id", -1))
+                                .putString("email", fetchedEmail)
+                                .putString("password", password)
+                                .putString("username", username)
+                                .apply();
 
                         fetchUserTypeAndRedirect(fetchedEmail);
 
