@@ -4,14 +4,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-
+import android.widget.Toast;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-    private Button profileText; // define profile text button
-    private Button settingsText; // define settings text button
+    private Button profileText;
+    private Button settingsText;
+    private RequestQueue queue;
+
+    private static final String BASE_URL = "http://coms-3090-056.class.las.iastate.edu:8080";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,41 +26,39 @@ public class MainActivity extends AppCompatActivity {
 
         profileText = findViewById(R.id.main_profile_btn);
         settingsText = findViewById(R.id.main_settings_btn);
+        queue = Volley.newRequestQueue(this);
 
+        // Try to load username and email
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String tempUsername = getIntent().getStringExtra("username");
         if (tempUsername == null) {
-            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
             tempUsername = prefs.getString("username", null);
         }
+        String email = prefs.getString("email", null);
+
+        // Fetch from backend if username missing but email present
+        if ((tempUsername == null || tempUsername.isEmpty()) && email != null) {
+            fetchUsername(email);
+        }
+
         final String username = tempUsername;
 
-        profileText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                String email = prefs.getString("email", null);
-                String password = prefs.getString("password", null);
-
-                Intent intent = new Intent(MainActivity.this, ProfilesActivity.class);
-                intent.putExtra("username", username);
-                intent.putExtra("email", email);
-                intent.putExtra("password", password);
-                startActivity(intent);
-            }
+        profileText.setOnClickListener(v -> {
+            String password = prefs.getString("password", null);
+            Intent intent = new Intent(MainActivity.this, ProfilesActivity.class);
+            intent.putExtra("username", username);
+            intent.putExtra("email", email);
+            intent.putExtra("password", password);
+            startActivity(intent);
         });
 
-        settingsText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                String email = prefs.getString("email", null);
-                String password = prefs.getString("password", null);
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                intent.putExtra("username", username);
-                intent.putExtra("email", email);
-                intent.putExtra("password", password);
-                startActivity(intent);
-            }
+        settingsText.setOnClickListener(v -> {
+            String password = prefs.getString("password", null);
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            intent.putExtra("username", username);
+            intent.putExtra("email", email);
+            intent.putExtra("password", password);
+            startActivity(intent);
         });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
@@ -72,5 +76,28 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    private void fetchUsername(String email) {
+        String url = BASE_URL + "/users/getName/" + email;
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    String username = response.replace("\"", "").trim();
+
+                    // Save username in prefs
+                    SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("username", username);
+                    editor.apply();
+
+                    Toast.makeText(this, "Welcome, " + username + "!", Toast.LENGTH_SHORT).show();
+                },
+                error -> Toast.makeText(this, "Failed to fetch username", Toast.LENGTH_SHORT).show()
+        );
+
+        queue.add(request);
     }
 }

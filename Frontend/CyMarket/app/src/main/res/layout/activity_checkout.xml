@@ -42,12 +42,12 @@
             android:hint="MM/YY"
             android:inputType="text" />
 
-        <!-- CVC -->
+        <!-- CVV -->
         <EditText
-            android:id="@+id/card_cvc"
+            android:id="@+id/card_cvv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="CVC"
+            android:hint="CVV"
             android:inputType="numberPassword" />
 
         <!-- billing address -->

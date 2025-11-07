@@ -20,11 +20,12 @@
         android:textColor="#fc0303">
     </TextView>
 
-    <Space
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notifications_recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-    </Space>
+        android:layout_weight="1"
+        android:padding="16dp" />
 
     <Button
         android:id="@+id/notifs_back_btn"

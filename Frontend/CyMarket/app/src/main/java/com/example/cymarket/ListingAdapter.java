@@ -20,9 +20,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-/**
- * TODO - Make buy button function properly, not just reduce quantity. Quantity reduction is for framework/PUT demonstration.
- */
+
 // this class will bind listing information to the views set in item_listing_card.xml
 public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHolder> {
 
@@ -84,7 +82,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHold
                 intent.putExtra("description", item.getDescription());
                 intent.putExtra("price", item.getPrice());
                 intent.putExtra("quantity", item.getQuantity());
-                intent.putExtra("id", item.getId());
+                intent.putExtra("id", item.getID());
 
                 context.startActivity(intent);
             }
