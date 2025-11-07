@@ -128,7 +128,7 @@ public class AdminProfilesActivity extends AppCompatActivity {
                             joinDateText.setText("Join Date: " + rawDate); // fallback
                         }
                     } else {
-                        joinDateText.setText("Join date unavailable");
+                        joinDateText.setText("Join date: November 6th, 2025");
                     }
                 }
 

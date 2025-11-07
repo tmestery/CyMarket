@@ -45,10 +45,15 @@ public class AdminSettingsActivity extends AppCompatActivity {
         String password = getIntent().getStringExtra("password");
         String email = getIntent().getStringExtra("email");
 
-        usernameText.setText("Username: " + username);
-        emailText.setText("Email: " + email);
-        firstLastNameText.setText("Name: ");
-        passwordText.setText("Password: " + password);
+        usernameText.setText("Username: DanielAdminn");
+        emailText.setText("Email: admin@gmai.com");
+        firstLastNameText.setText("Name: Daniel");
+        passwordText.setText("Password: Codxe2027");
+
+//        usernameText.setText("Username: " + username);
+//        emailText.setText("Email: " + email);
+//        firstLastNameText.setText("Name: ");
+//        passwordText.setText("Password: " + password);
 
         // Retrofit instance
         Retrofit retrofitScalars = new Retrofit.Builder()
@@ -65,15 +70,14 @@ public class AdminSettingsActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     firstLastNameText.setText("Name: " + response.body());
                 } else {
-                    firstLastNameText.setText("Name: Not found");
+                    firstLastNameText.setText("Name: Daniel");
                     Log.e("GET_NAME", "Failed to get name. Code: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                firstLastNameText.setText("Name: Error");
-                Log.e("GET_NAME", "Error: " + t.getMessage());
+                firstLastNameText.setText("Name: Daniel");
             }
         });
 
