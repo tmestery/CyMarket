@@ -16,7 +16,7 @@ public class Listing {
         this.quantity = quantity;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 
