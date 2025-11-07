@@ -42,10 +42,12 @@ public class FriendsActivity extends AppCompatActivity {
         fetchUsers();
 
         messagesButton.setOnClickListener(v -> {
+            // Navigate to MessagesActivity with current group
             Intent intent = new Intent(FriendsActivity.this, MessagesActivity.class);
             intent.putExtra("groupID", groupID);
             intent.putExtra("groupName", groupName);
             startActivity(intent);
+            finish();
         });
     }
 
@@ -68,14 +70,8 @@ public class FriendsActivity extends AppCompatActivity {
 
                     // Set up RecyclerView adapter
                     adapter = new FriendsAdapter(users, user -> {
+                        // Add user to the current group
                         addUserToGroup(groupID, user.getUsername());
-
-                        // Go to MessagesActivity with the selected friend
-                        Intent intent = new Intent(FriendsActivity.this, MessagesActivity.class);
-                        intent.putExtra("groupID", groupID);
-                        intent.putExtra("friendUsername", user.getUsername());
-                        intent.putExtra("groupName", groupName);
-                        startActivity(intent);
                     });
 
                     recyclerView.setAdapter(adapter);

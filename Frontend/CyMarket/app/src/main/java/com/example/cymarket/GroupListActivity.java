@@ -100,6 +100,7 @@ public class GroupListActivity extends AppCompatActivity {
     private void openGroupChat(String groupName) {
         Intent intent = new Intent(GroupListActivity.this, MessagesActivity.class);
         intent.putExtra("groupName", groupName);
+        // add get group ID
         startActivity(intent);
     }
 

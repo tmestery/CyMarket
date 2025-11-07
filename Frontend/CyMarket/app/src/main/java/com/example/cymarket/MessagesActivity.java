@@ -42,11 +42,11 @@ public class MessagesActivity extends AppCompatActivity {
         groupChatName = findViewById(R.id.groupChatName);
         reportButton = findViewById(R.id.reportButton);
 
-        // ✅ Get username from shared prefs
+        // Get username from shared prefs
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         username = prefs.getString("username", "");
 
-        // ✅ Receive group info and friend name
+        // Receive group info and friend name
         groupId = getIntent().getIntExtra("groupID", -1);
         groupName = getIntent().getStringExtra("groupName");
         friendUsername = getIntent().getStringExtra("friendUsername");
@@ -56,14 +56,22 @@ public class MessagesActivity extends AppCompatActivity {
             return;
         }
 
-        // Set chat key here:
-        CHAT_KEY = "groupChat_" + groupId;
+        // Determine chat key
+        if (friendUsername != null && !friendUsername.isEmpty()) {
+            CHAT_KEY = "dm_" + username + "_" + friendUsername; // 1-on-1 chat
+            groupchatPersonName.setText(friendUsername);
+            groupChatName.setText("Direct Message");
+        } else {
+            CHAT_KEY = "groupChat_" + groupId; // group chat
+            groupchatPersonName.setText("Group Chat");
+            groupChatName.setText(groupName != null ? groupName : "Group #" + groupId);
+        }
 
-        // ✅ Display info
+        // Display info
         groupChatName.setText(groupName != null ? groupName : "Group #" + groupId);
         groupchatPersonName.setText(friendUsername != null ? friendUsername : "Group Chat");
 
-        // ✅ Handle sending messages
+        // Handle sending messages
         sendButton.setOnClickListener(v -> {
             String message = messageInput.getText().toString().trim();
             if (message.isEmpty()) return;
@@ -76,14 +84,14 @@ public class MessagesActivity extends AppCompatActivity {
             messageInput.setText("");
         });
 
-        // ✅ Report button
+        // Report button
         reportButton.setOnClickListener(v -> {
             Intent intent = new Intent(MessagesActivity.this, ReportUserActivity.class);
             intent.putExtra("reportedUser", groupchatPersonName.getText().toString());
             startActivity(intent);
         });
 
-        // ✅ Connect to WebSocket
+        // Connect to WebSocket
         String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
                 + groupId + "/" + username;
 
