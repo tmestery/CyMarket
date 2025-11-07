@@ -35,7 +35,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class ProfilesActivity extends AppCompatActivity {
 
-    private Button homeButton, settingsButton;
+    private Button homeButton, settingsButton, notifsButton;
     private TextView usernameText, joinDateText;
     private ImageView profileImage;
     private static final int PICK_IMAGE = 1;
@@ -52,6 +52,7 @@ public class ProfilesActivity extends AppCompatActivity {
         joinDateText = findViewById(R.id.textView2);
         homeButton = findViewById(R.id.prfls_home_page_btn);
         settingsButton = findViewById(R.id.prfls_setting_btn);
+        notifsButton = findViewById(R.id.prfls_notifications_btn);
 
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String username = prefs.getString("username", null);
@@ -138,6 +139,7 @@ public class ProfilesActivity extends AppCompatActivity {
 
         // Buttons
         homeButton.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+        notifsButton.setOnClickListener(v -> startActivity(new Intent(this, NotificationsActivity.class)));
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(ProfilesActivity.this, SettingsActivity.class);
             intent.putExtra("username", username);

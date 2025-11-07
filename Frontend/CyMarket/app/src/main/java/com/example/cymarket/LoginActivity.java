@@ -104,8 +104,12 @@ public class LoginActivity extends AppCompatActivity {
                         String fetchedEmail = response.optString("email", email);
                         String type = response.optString("type", "U");
 
-                        // save email and password first
+                        // save user ID on login
+                        int userId = response.optInt("id", -1);
                         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                        prefs.edit().putInt("userId", userId).apply();
+
+                        // save email and password first
                         prefs.edit().putString("email", fetchedEmail).apply();
                         prefs.edit().putString("password", password).apply();
 
