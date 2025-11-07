@@ -47,17 +47,29 @@ public class NotificationsActivity extends AppCompatActivity {
             String key = intent.getStringExtra("key");
             String message = intent.getStringExtra("message");
 
-            // only handles messages that are tagged as notifications
             if ("notifications".equals(key) && message.startsWith("NOTIFICATION:")) {
-                // parse JSON into a notification object
                 String json = message.substring("NOTIFICATION:".length());
-                Notification notification = gson.fromJson(json, Notification.class);
+                try {
+                    Notification notification = gson.fromJson(json, Notification.class);
+                    Toast.makeText(context, "notif " + notification.message, Toast.LENGTH_LONG).show();
+                    notificationList.add(0, notification);
+                    adapter.notifyItemInserted(0);
+                    recyclerView.scrollToPosition(0);
+                } catch (Exception e) {
+                    Toast.makeText(context, "Parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
 
-                // show toast and live update the screen
-                Toast.makeText(context, "notif " + notification.message, Toast.LENGTH_LONG).show();
-                notificationList.add(0, notification);
-                adapter.notifyItemInserted(0);
-                recyclerView.scrollToPosition(0);
+
+    // makes sure socket is ready for new notif
+    private final BroadcastReceiver socketReadyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String key = intent.getStringExtra("key");
+            if ("notifications".equals(key)) {
+                Toast.makeText(context, "WebSocket connected", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -75,6 +87,7 @@ public class NotificationsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.notifs_back_btn);
         recyclerView = findViewById(R.id.notifications_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new NotificationAdapter(notificationList);
         recyclerView.setAdapter(adapter);
         fetchPastNotifications(); // loads notif history
 
@@ -96,7 +109,7 @@ public class NotificationsActivity extends AppCompatActivity {
         Intent connectIntent = new Intent(this, WebSocketService.class);
         connectIntent.setAction("WS_CONNECT");
         connectIntent.putExtra("key", "notifications");
-        connectIntent.putExtra("url", "ws://coms-309-056.class.las.iastate.edu:8080/ws/notifications/" + username);
+        connectIntent.putExtra("url", "ws://coms-3090-056.class.las.iastate.edu:8080/ws/notifications/" + username);
         startService(connectIntent);
     }
 
@@ -106,6 +119,9 @@ public class NotificationsActivity extends AppCompatActivity {
         // register receiver to listen for incoming WebSocket messages for live update
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(notificationReceiver, new IntentFilter("WS_MSG"));
+
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(notificationReceiver, new IntentFilter("WS_READY"));
     }
 
     @Override
@@ -114,10 +130,13 @@ public class NotificationsActivity extends AppCompatActivity {
         // unregister receiver to avoid memory leaks
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(notificationReceiver);
+
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(socketReadyReceiver);
     }
 
     private void fetchPastNotifications() {
-        String url = "http://coms-309-056.class.las.iastate.edu:8080/notifications/" + username;
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/notifications/" + username;
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
                 response -> {

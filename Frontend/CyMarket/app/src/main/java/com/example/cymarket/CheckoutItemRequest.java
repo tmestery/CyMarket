@@ -1,20 +1,20 @@
 package com.example.cymarket;
 
 public class CheckoutItemRequest {
-    private int itemID;
+    private int itemId;
     private int quantity;
 
-    public CheckoutItemRequest(int itemID, int quantity) {
-        this.itemID = itemID;
+    public CheckoutItemRequest(int itemId, int quantity) {
+        this.itemId = itemId;
         this.quantity = quantity;
     }
 
     public int getItemID() {
-        return itemID;
+        return itemId;
     }
 
     public void setItemID(int itemID) {
-        this.itemID = itemID;
+        this.itemId = itemID;
     }
 
     public int getQuantity() {

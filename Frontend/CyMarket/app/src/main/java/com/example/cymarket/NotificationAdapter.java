@@ -50,7 +50,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             notifyItemRemoved(position);
 
             // send backend request to delete if functional
-            String url = "http://coms-309-056.class.las.iastate.edu:8080/notifications/" + n.id;
+            String url = "http://coms-3090-056.class.las.iastate.edu:8080/notifications/" + n.id;
             StringRequest deleteRequest = new StringRequest(Request.Method.DELETE, url,
                     response -> Toast.makeText(v.getContext(), "Deleted", Toast.LENGTH_SHORT).show(),
                     error -> Toast.makeText(v.getContext(), "Delete failed", Toast.LENGTH_SHORT).show()

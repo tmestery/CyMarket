@@ -3,7 +3,7 @@ package com.example.cymarket;
 import java.util.List;
 public class CheckoutRequest {
 
-    private int userID;
+    private int userId;
     private List<CheckoutItemRequest> items;
     private String shippingAddress;
     private String shippingCity;
@@ -22,7 +22,7 @@ public class CheckoutRequest {
     private String billingCountry;
     private String notes;
 
-    public CheckoutRequest(int userID,
+    public CheckoutRequest(int userId,
                            List<CheckoutItemRequest> items,
                            String shippingAddress,
                            String shippingCity,
@@ -40,7 +40,7 @@ public class CheckoutRequest {
                            String billingZipCode,
                            String billingCountry,
                            String notes ) {
-        this.userID = userID;
+        this.userId = userId;
         this.items = items;
         this.shippingAddress = shippingAddress;
         this.shippingCity = shippingCity;
