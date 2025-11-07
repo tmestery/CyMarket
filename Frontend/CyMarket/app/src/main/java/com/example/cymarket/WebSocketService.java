@@ -2,6 +2,7 @@ package com.example.cymarket;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
@@ -26,6 +27,8 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("WS", "onStartCommand: action=" + (intent != null ? intent.getAction() : "null") +
+                ", key=" + (intent != null ? intent.getStringExtra("key") : "null"));
         if (intent == null) return START_STICKY;
 
         String action = intent.getAction();
@@ -41,11 +44,16 @@ public class WebSocketService extends Service {
     }
 
     private void connect(String key, String url) {
-        if (sockets.containsKey(key)) return;
+        Log.d("WS", "Attempting to connect: key=" + key + ", url=" + url);
+        if (sockets.containsKey(key)) {
+            Log.d("WS", "Already connected for key: " + key);
+            return;
+        }
 
         WebSocketClient client = new WebSocketClient(URI.create(url)) {
             @Override
             public void onOpen(ServerHandshake handshake) {
+                Log.d("WS", "Connected: " + key);
                 Intent ready = new Intent("WS_READY");
                 ready.putExtra("key", key);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(ready);
@@ -53,15 +61,21 @@ public class WebSocketService extends Service {
 
             @Override
             public void onMessage(String msg) {
+                Log.d("WS", "Received: " + msg);
                 Intent intent = new Intent("WS_MSG");
                 intent.putExtra("key", key);
                 intent.putExtra("message", msg);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
             }
 
-            @Override public void onClose(int code, String reason, boolean remote) {}
-            @Override public void onError(Exception ex) {
-                Log.e("WS", "error: " + ex.getMessage());
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+                Log.d("WS", "Closed: " + key + " Reason: " + reason);
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                Log.e("WS", "Error: " + ex.getMessage());
             }
         };
 
@@ -71,21 +85,32 @@ public class WebSocketService extends Service {
 
     private final BroadcastReceiver sendReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(android.content.Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent) {
             String key = intent.getStringExtra("key");
             String msg = intent.getStringExtra("message");
 
             WebSocketClient ws = sockets.get(key);
-            if (ws != null && ws.isOpen()) ws.send(msg);
+            if (ws != null) {
+                if (ws.isOpen()) {
+                    ws.send(msg);
+                    Log.d("WS", "Sent: " + msg);
+                } else {
+                    Log.d("WS", "WS not open yet, message not sent");
+                }
+            }
         }
     };
 
     private void disconnect(String key) {
-        if (!sockets.containsKey(key)) return;
-        sockets.get(key).close();
-        sockets.remove(key);
+        WebSocketClient ws = sockets.get(key);
+        if (ws != null) {
+            ws.close();
+            sockets.remove(key);
+        }
     }
 
     @Override
-    public IBinder onBind(Intent intent) { return null; }
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 }

@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,9 +45,9 @@ public class MessagesActivity extends AppCompatActivity {
         groupChatName = findViewById(R.id.groupChatName);
         reportButton = findViewById(R.id.reportButton);
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
-        messageAdapter = new MessageAdapter(messages);
-        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        messageAdapter = new MessageAdapter(messages, username);
         messagesRecyclerView.setAdapter(messageAdapter);
+        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // --- Get username ---
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
@@ -100,20 +101,40 @@ public class MessagesActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
                 String msg = intent.getStringExtra("message");
+                Log.d("MessagesActivity", "Received msg: " + msg);
                 runOnUiThread(() -> {
                     try {
                         JSONObject obj = new JSONObject(msg);
                         String sender = obj.getString("sender");
                         String content = obj.getString("content");
-                        messageAdapter.addMessage(new Message(sender, content));
-                        messagesRecyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+                        messages.add(new Message(sender, content));
+                        messageAdapter.notifyItemInserted(messages.size() - 1);
+                        messagesRecyclerView.scrollToPosition(messages.size() - 1);
                     } catch (Exception e) {
-                        messageAdapter.addMessage(new Message("System", msg));
-                        messagesRecyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+                        Log.e("MessagesActivity", "JSON parse error: " + e.getMessage());
                     }
                 });
             }
         }
+
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (CHAT_KEY.equals(intent.getStringExtra("key"))) {
+//                String msg = intent.getStringExtra("message");
+//                runOnUiThread(() -> {
+//                    try {
+//                        JSONObject obj = new JSONObject(msg);
+//                        String sender = obj.getString("sender");
+//                        String content = obj.getString("content");
+//                        messageAdapter.addMessage(new Message(sender, content));
+//                        messagesRecyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+//                    } catch (Exception e) {
+//                        messageAdapter.addMessage(new Message("System", msg));
+//                        messagesRecyclerView.scrollToPosition(messageAdapter.getItemCount() - 1);
+//                    }
+//                });
+//            }
+//        }
     };
 
     @Override

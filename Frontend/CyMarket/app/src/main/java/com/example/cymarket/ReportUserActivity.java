@@ -33,15 +33,12 @@ public class ReportUserActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_buy) {
                 startActivity(new Intent(this, BuyActivity.class));
-                return true;
             } else if (id == R.id.nav_sell) {
                 startActivity(new Intent(this, SellActivity.class));
-                return true;
             } else if (id == R.id.nav_chat) {
                 startActivity(new Intent(this, FriendsActivity.class));
-                return true;
             }
-            return false;
+            return true;
         });
     }
 
@@ -52,22 +49,24 @@ public class ReportUserActivity extends AppCompatActivity {
             return;
         }
 
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         int userId = prefs.getInt("userId", -1);
         if (userId == -1) {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        JSONObject userObj = new JSONObject();
         JSONObject body = new JSONObject();
-
         try {
+            JSONObject userObj = new JSONObject();
             userObj.put("id", userId);
+
             body.put("report", text);
             body.put("user", userObj);
         } catch (JSONException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Failed to build report", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         String url = "http://coms-3090-056.class.las.iastate.edu:8080/reports/";
@@ -78,10 +77,9 @@ public class ReportUserActivity extends AppCompatActivity {
                 body,
                 response -> {
                     Toast.makeText(this, "Report submitted", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(this, FriendsActivity.class));
-                    finish();
+                    finish(); // close activity
                 },
-                error -> Toast.makeText(this, "Failed: " + error.getMessage(), Toast.LENGTH_SHORT).show()
+                error -> Toast.makeText(this, "Failed: " + (error.getMessage() != null ? error.getMessage() : "Network error"), Toast.LENGTH_SHORT).show()
         );
 
         VolleySingleton.getInstance(this).addToRequestQueue(req);
