@@ -32,29 +32,47 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/prfls_home_page_btn"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
+                android:layout_width="0dp"
                 android:layout_height="44dp"
+                android:layout_weight="1"
                 android:text="Home"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:textColor="@color/white"
                 android:backgroundTint="#E63946"
                 app:cornerRadius="20dp"
                 android:elevation="6dp"
-                android:layout_marginEnd="100dp"
+                android:layout_marginEnd="8dp"
                 android:contentDescription="Profile Navigation" />
+
+            <!-- Notifications Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/prfls_notifications_btn"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:text="Notifs"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:backgroundTint="#E63946"
+                app:cornerRadius="20dp"
+                android:elevation="6dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Notifications Navigation" />
 
             <!-- Settings Button (right) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/prfls_setting_btn"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="108dp"
+                android:layout_width="0dp"
                 android:layout_height="44dp"
+                android:layout_weight="1"
                 android:backgroundTint="#E63946"
                 android:contentDescription="Settings Navigation"
                 android:elevation="6dp"
                 android:text="Settings"
                 android:textColor="@color/white"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 app:cornerRadius="20dp" />
         </LinearLayout>
     </LinearLayout>

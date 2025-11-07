@@ -121,6 +121,15 @@ public class adminUserController {
             return null;
         return reportsRepository.findById(id);
     }
+    @GetMapping("/adminUser/getALlReports/{email}")
+    List<adminActivityReport> getAllAdminReports(@PathVariable String email){
+        adminUser temp= adminUserRepository.findByEmailId(email);
+        if (temp == null)
+            return null;
+       
+        return temp.getAdminActivityReportList();
+    }
+
 
     @PostMapping(path = "/adminUser/{adminPassword}/")
     String createUser(@RequestBody adminUser user){
