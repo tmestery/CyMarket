@@ -10,14 +10,15 @@ import java.util.ArrayList;
 
 public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.ViewHolder> {
 
-    public interface GroupClickListener {
-        void onGroupClick(String groupName);
-    }
-
-    private ArrayList<String> groups;
+    private ArrayList<Group> groups;
     private GroupClickListener listener;
 
-    public GroupListAdapter(ArrayList<String> groups, GroupClickListener listener) {
+    public interface GroupClickListener {
+        void onGroupClick(Group group);
+    }
+
+    // Constructor now takes ArrayList<Group>
+    public GroupListAdapter(ArrayList<Group> groups, GroupClickListener listener) {
         this.groups = groups;
         this.listener = listener;
     }
@@ -32,8 +33,8 @@ public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String group = groups.get(position);
-        holder.text.setText(group);
+        Group group = groups.get(position);
+        holder.text.setText(group.getName());
         holder.itemView.setOnClickListener(v -> listener.onGroupClick(group));
     }
 

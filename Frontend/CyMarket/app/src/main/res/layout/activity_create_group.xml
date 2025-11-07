@@ -1,29 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="24dp"
+    android:padding="32dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:gravity="center_horizontal">
 
+    <!-- Title -->
     <TextView
         android:text="Create a New Group"
-        android:textSize="24sp"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"/>
 
+    <!-- Group Name Input -->
     <EditText
         android:id="@+id/groupNameInput"
         android:hint="Enter group name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:layout_height="50dp"
+        android:layout_marginBottom="24dp"
+        android:padding="16dp"
+        android:background="#1C1C1C"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#AAAAAA"
+        android:textSize="16sp"
+        android:inputType="textPersonName"
+        android:cursorVisible="true"
+        android:scrollHorizontally="false"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/createGroupBtn"
-        android:text="Create Group"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"/>
-
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:text="Create Group"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:fontFamily="sans-serif-medium"
+        app:backgroundTint="#FF0000"
+        app:cornerRadius="8dp"/>
 </LinearLayout>

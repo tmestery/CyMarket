@@ -1,52 +1,67 @@
 package com.example.cymarket;
 
+import android.content.Intent;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
-    private final List<MessageModel> messages;
-    private static final int TYPE_ME = 0;
-    private static final int TYPE_THEM = 1;
+    private final List<Message> messages;
+    private final String currentUser;
 
-
-    public MessageAdapter(List<MessageModel> messages) {
+    public MessageAdapter(List<Message> messages, String currentUser) {
         this.messages = messages;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return messages.get(position).isSentByMe() ? TYPE_ME : TYPE_THEM;
+        this.currentUser = currentUser;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ME) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_me, parent, false);
-            return new MeViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_message_them, parent, false);
-            return new ThemViewHolder(view);
-        }
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_message, parent, false);
+        return new MessageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        MessageModel message = messages.get(position);
-        if (holder instanceof MeViewHolder) {
-            ((MeViewHolder) holder).message.setText(message.getMessage());
+    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        Log.d("ADAPTER_TEST", "Binding: " + messages.get(position).getContent());
+        holder.messageText.setWidth(200);
+        holder.messageText.setHeight(80);
+        Message message = messages.get(position);
+
+        // layout params for bubble alignment
+        LinearLayout.LayoutParams params =
+                (LinearLayout.LayoutParams) holder.messageText.getLayoutParams();
+
+        if (message.isSentByMe(currentUser)) {
+            params.gravity = Gravity.END;
+            holder.messageText.setBackgroundResource(R.drawable.bg_message_sent);
+            holder.messageText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
         } else {
-            ((ThemViewHolder) holder).message.setText(message.getMessage());
+            params.gravity = Gravity.START;
+            holder.messageText.setBackgroundResource(R.drawable.bg_message_recieved);
+            holder.messageText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
         }
+
+        holder.messageText.setLayoutParams(params);
+        holder.messageText.setText(message.getContent());
+
+        // Long press to report a user
+        holder.itemView.setOnLongClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), ReportUserActivity.class);
+            intent.putExtra("reportedUser", message.getSender());
+            holder.itemView.getContext().startActivity(intent);
+            return true;
+        });
     }
 
     @Override
@@ -54,23 +69,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return messages.size();
     }
 
-    // ViewHolder for messages sent by me
-    static class MeViewHolder extends RecyclerView.ViewHolder {
-        TextView message;
-
-        public MeViewHolder(@NonNull View itemView) {
-            super(itemView);
-            message = itemView.findViewById(R.id.textViewMessage);
-        }
+    public void addMessage(Message message) {
+        messages.add(message);
+        notifyItemInserted(messages.size() - 1);
     }
 
-    // ViewHolder for messages sent by others
-    static class ThemViewHolder extends RecyclerView.ViewHolder {
-        TextView message;
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText;
 
-        public ThemViewHolder(@NonNull View itemView) {
+        public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            message = itemView.findViewById(R.id.textViewMessage);
+            messageText = itemView.findViewById(R.id.textViewMessage);
         }
     }
 }

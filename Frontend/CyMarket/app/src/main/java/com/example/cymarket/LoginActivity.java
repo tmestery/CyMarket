@@ -11,17 +11,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText emailEditText; // define username edittext variable
-    private EditText passwordEditText; // define password edittext variable
-    private Button loginButton;  // define login button variable
-    private TextView signupButton;  // define signup textview variable
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private Button loginButton;
+    private TextView signupButton;
     private TextView forgotPassword;
     private TextView secretAdmin;
 
@@ -30,7 +28,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        /* initialize UI elements */
         emailEditText = findViewById(R.id.login_email_edt);
         passwordEditText = findViewById(R.id.login_password_edt);
         loginButton = findViewById(R.id.login_login_btn);
@@ -38,37 +35,26 @@ public class LoginActivity extends AppCompatActivity {
         forgotPassword = findViewById(R.id.forgot_password);
         secretAdmin = findViewById(R.id.admin_hidden_entry);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim();
+        loginButton.setOnClickListener(v -> {
+            String email = emailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
 
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(getApplicationContext(),
-                            "Please enter both email and password", Toast.LENGTH_SHORT).show();
-                } else {
-                    checkUserCredentials(email, password);
-                }
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(getApplicationContext(),
+                        "Please enter both email and password", Toast.LENGTH_SHORT).show();
+            } else {
+                checkUserCredentials(email, password);
             }
         });
 
-        /* click listener on forgot password button */
-        forgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent2 = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-                startActivity(intent2);
-            }
+        forgotPassword.setOnClickListener(v -> {
+            Intent intent2 = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+            startActivity(intent2);
         });
 
-        /* click listener on signup button pressed */
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                startActivity(intent);
-            }
+        signupButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+            startActivity(intent);
         });
 
         secretAdmin.setOnClickListener(new View.OnClickListener() {
@@ -77,8 +63,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tapCount++;
-
-                // 10 taps unlock admin (kept your original behavior)
                 if (tapCount == 10) {
                     tapCount = 0;
                     Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
@@ -95,49 +79,50 @@ public class LoginActivity extends AppCompatActivity {
         String url = "http://coms-3090-056.class.las.iastate.edu:8080/login/e/"
                 + encodedEmail + "/" + encodedPassword;
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest loginRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
                 null,
                 response -> {
                     try {
                         String fetchedEmail = response.optString("email", email);
-                        String type = response.optString("type", "U");
-
-                        // save email and password first
+                        String username = response.optString("userName", "");
                         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                        prefs.edit().putString("email", fetchedEmail).apply();
-                        prefs.edit().putString("password", password).apply();
+                        prefs.edit()
+                                .putInt("userId", response.optInt("id", -1))
+                                .putString("email", fetchedEmail)
+                                .putString("password", password)
+                                .putString("username", username)
+                                .apply();
 
-                        // then fetch username from backend
-                        fetchAndSaveUsername(fetchedEmail, type);
+                        fetchUserTypeAndRedirect(fetchedEmail);
 
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "Error logging in", Toast.LENGTH_SHORT).show();
                     }
                 },
-                error -> Toast.makeText(getApplicationContext(),
-                        "Invalid Email or Password", Toast.LENGTH_SHORT).show()
+                error -> Toast.makeText(getApplicationContext(), "Invalid Email or Password", Toast.LENGTH_SHORT).show()
         );
 
-        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(loginRequest);
     }
 
-    private void fetchAndSaveUsername(String email, String type) {
+    private void fetchUserTypeAndRedirect(String email) {
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/userslogin/getUsername/" + encodedEmail;
+        String typeUrl = "http://coms-3090-056.class.las.iastate.edu:8080/userslogin/getUserType/" + encodedEmail;
 
-
-        com.android.volley.toolbox.StringRequest usernameRequest = new com.android.volley.toolbox.StringRequest(
+        com.android.volley.toolbox.StringRequest typeRequest = new com.android.volley.toolbox.StringRequest(
                 Request.Method.GET,
-                url,
+                typeUrl,
                 response -> {
-                    String username = response.trim(); // plain text, not JSON
-                    SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                    prefs.edit().putString("username", username).apply();
+                    if (response == null || response.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "Empty response from server", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-                    boolean isAdmin = type.equalsIgnoreCase("A");
+                    String cleanedResponse = response.replaceAll("\"", "").trim().toLowerCase();
+                    boolean isAdmin = cleanedResponse.equals("n"); // n means admin from backend
                     Intent intent = new Intent(
                             LoginActivity.this,
                             isAdmin ? AdminDashboardActivity.class : MainActivity.class
@@ -146,18 +131,12 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 },
                 error -> {
-                    Toast.makeText(getApplicationContext(), "Couldn't fetch username", Toast.LENGTH_SHORT).show();
-
-                    boolean isAdmin = type.equalsIgnoreCase("A");
-                    Intent intent = new Intent(
-                            LoginActivity.this,
-                            isAdmin ? AdminDashboardActivity.class : MainActivity.class
-                    );
-                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Couldn't fetch user type", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 }
         );
 
-        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(usernameRequest);
+        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(typeRequest);
     }
 }

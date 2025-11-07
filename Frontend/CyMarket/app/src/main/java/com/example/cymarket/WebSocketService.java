@@ -88,4 +88,14 @@ public class WebSocketService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) { return null; }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(sendReceiver);
+        for (WebSocketClient client : sockets.values()) {
+            client.close();
+        }
+        sockets.clear();
+    }
 }

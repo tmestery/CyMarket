@@ -23,6 +23,12 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
         return new ReportViewHolder(view);
     }
 
+    public void setReports(List<Report> newReports) {
+        this.reports = newReports;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public void onBindViewHolder(@NonNull ReportViewHolder holder, int position) {
         Report report = reports.get(position);
