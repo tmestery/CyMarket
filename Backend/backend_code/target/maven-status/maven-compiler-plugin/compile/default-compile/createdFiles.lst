@@ -25,7 +25,6 @@ onetomany/WebSocketAdminNot/chatNot.class
 onetomany/AdminActivityReport/adminActivityReport.class
 onetomany/WebSocketAdminNot/Message.class
 onetomany/Sellers/Seller.class
-onetomany/Notifications/WebSocketConfig.class
 onetomany/Group/GroupRepository.class
 onetomany/Users/UserController.class
 onetomany/Group/GroupController.class
@@ -34,6 +33,7 @@ onetomany/Notifications/NotificationDTO.class
 onetomany/Reports/ReportsController.class
 onetomany/Users/PasswordRecoveryService.class
 onetomany/Checkout/CheckoutRequest.class
+onetomany/Notifications/NotificationWebSocket.class
 onetomany/userLogIn/userLoginController.class
 onetomany/Items/ItemImageRepository.class
 onetomany/WebSocketAdminNot/adminChat.class
@@ -44,7 +44,6 @@ onetomany/Items/Item.class
 onetomany/Notifications/NotificationRepository.class
 onetomany/Notifications/NotificationService.class
 onetomany/Users/PasswordRecoveryRequest.class
-onetomany/Notifications/WebSocketEventListener.class
 onetomany/Reports/Reports.class
 onetomany/Checkout/CheckoutItem.class
 onetomany/Checkout/CheckoutResponse.class
