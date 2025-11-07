@@ -10,15 +10,17 @@ import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHolder> {
 
-    private final List<MessageModel> messages;
+    private final List<Message> messages;
+    private final String username; // current user
 
-    public ChatAdapter(List<MessageModel> messages) {
+    public ChatAdapter(List<Message> messages, String username) {
         this.messages = messages;
+        this.username = username;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return messages.get(position).isSentByMe() ? 1 : 2;
+        return messages.get(position).getSender().equals(username) ? 1 : 2;
     }
 
     @NonNull
@@ -31,11 +33,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        MessageModel m = messages.get(position);
-        holder.messageText.setText(m.getMessage());
+        Message m = messages.get(position);
+        holder.messageText.setText(m.getContent());
 
         holder.messageText.setBackgroundResource(
-                m.isSentByMe() ? R.drawable.bg_message_sent : R.drawable.bg_message_recieved
+                m.getSender().equals(username) ? R.drawable.bg_message_sent : R.drawable.bg_message_recieved
         );
     }
 
