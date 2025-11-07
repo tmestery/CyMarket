@@ -32,10 +32,10 @@ public class Item {
     @Column(unique = true)
     private String username;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
-    @JsonIgnore
-    private Seller seller;
+   @ManyToOne(optional = false)
+@JoinColumn(name = "seller_id", nullable = false)
+@JsonIgnore
+private Seller seller;
 
     @ManyToMany
     @JoinTable(
