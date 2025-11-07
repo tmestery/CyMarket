@@ -3,13 +3,16 @@ package onetomany.userLogIn;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import onetomany.AdminActivityReport.adminActivityReport;
+import onetomany.AdminActivityReport.adminActivityReportRepository;
 import onetomany.Reports.Reports;
 import onetomany.Reports.ReportsRepository;
 import onetomany.Sellers.Seller;
 import onetomany.Sellers.SellerRepository;
 import onetomany.Users.User;
 import onetomany.Users.UserRepository;
+import onetomany.adminUser.adminUser;
+import onetomany.adminUser.adminUserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,6 +46,8 @@ public class userLoginController {
     SellerRepository sellerRepository;
     @Autowired
     ReportsRepository reportsRepository;
+    @Autowired
+    adminUserRepository addminUserRepository;
 
 
     private String success = "{\"message\":\"success\"}";
@@ -144,8 +149,22 @@ public class userLoginController {
     seller.addReport(newReport);
 
   
-    reportsRepository.save(newReport);
+    Reports reportId = reportsRepository.save(newReport);
+    
 
+    List<adminUser> admins = addminUserRepository.findAll();
+    
+    adminUser temp = admins.get(0);
+
+    for (adminUser admin : admins) {
+        if (admin.getAdminActivityReportList().size() < temp.getAdminActivityReportList().size()) {
+            temp = admin;
+        }
+    }
+    temp.addAminActivityReport(new adminActivityReport(temp.getEmailId(), temp.getUsername(), reportId.getId(), reportId.getReport()));
+    
+    addminUserRepository.save(temp);
+    
     return success;
 }
     
@@ -159,7 +178,15 @@ public class userLoginController {
         userLogin temp= userLoginRepository.findByUserName(user.getUserName());
         if (temp == null)
             return failure;
-
+        
+        if (temp.getType() == 'a') {
+            adminUser newAdmin = new adminUser(temp.getName(), temp.getEmail(), temp.getPassword(), temp.getUserName());;
+            newAdmin.setUserLogin(temp);
+            addminUserRepository.save(newAdmin);
+            userLoginRepository.findByEmail(temp.getEmail()).setAdminUser(addminUserRepository.findByEmailId(temp.getEmail()));
+            return success;
+        }
+        
         User newUser = new User(temp);
         userRepository.save(newUser);
         temp.setUser(userRepository.findByEmailId(temp.email));
