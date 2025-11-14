@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -109,7 +110,8 @@ public class NotificationsActivity extends AppCompatActivity {
         Intent connectIntent = new Intent(this, WebSocketService.class);
         connectIntent.setAction("WS_CONNECT");
         connectIntent.putExtra("key", "notifications");
-        connectIntent.putExtra("url", "ws://coms-3090-056.class.las.iastate.edu:8080/ws/notifications/" + username);
+        connectIntent.putExtra("url", "ws://coms-3090-056.class.las.iastate.edu:8080/notifications/" + username);
+        Log.d("Connecting to websocket", "Connected");
         startService(connectIntent);
     }
 

@@ -3,6 +3,7 @@ package com.example.cymarket;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -103,8 +104,15 @@ public class SellActivity extends AppCompatActivity {
                     descriptionEditText.setText("");
                     quantityEditText.setText("");
                 },
-                error -> Toast.makeText(getApplicationContext(),
-                        "Listing failed: " + error.toString(), Toast.LENGTH_SHORT).show()
+                error -> {
+                    String body = "";
+                        body = new String(error.networkResponse.data);
+                        Log.e("SELL", "Error response: " + body);
+
+                    Toast.makeText(getApplicationContext(),
+                            "Listing failed: " + error.toString(), Toast.LENGTH_SHORT).show();
+
+                }
         );
 
         // add request to queue
