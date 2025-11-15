@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;   // ✅ NEW
 
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -20,40 +21,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller      // this is needed for this to be an endpoint to springboot
 @ServerEndpoint(value = "/chat/{id}/{username}")  // this is Websocket url
 public class chatNot {
 
-    // cannot autowire static directly (instead we do it by the below
-    // method
     private static MessageRepository msgRepo;
-
     private static GroupRepository groupRepository;
 
-    /*
-     * Grabs the MessageRepository singleton from the Spring Application
-     * Context.  This works because of the @Controller annotation on this
-     * class and because the variable is declared as static.
-     * There are other ways to set this. However, this approach is
-     * easiest.
-     */
     @Autowired
     public void setMessageRepository(MessageRepository repo) {
-        msgRepo = repo;  // we are setting the static variable
+        msgRepo = repo;
     }
+
     @Autowired
     public void setGruopRepository(GroupRepository groupRepo) {
-        groupRepository = groupRepo;  // we are setting the static variable
+        groupRepository = groupRepo;
     }
 
     // Store all socket session and their corresponding username.
-    private static Map<Session, String> sessionUsernameMap = new Hashtable<>();
-    private static Map<String, Session> usernameSessionMap = new Hashtable<>();
-    private static Map<Session, Integer> sessionGroupIdMap = new Hashtable<>();
+    // 🔴 CHANGED: use ConcurrentHashMap instead of Hashtable (safer)
+    private static Map<Session, String> sessionUsernameMap = new ConcurrentHashMap<>();
+    private static Map<String, Session> usernameSessionMap = new ConcurrentHashMap<>();
+    private static Map<Session, Integer> sessionGroupIdMap = new ConcurrentHashMap<>();
 
-    private final Logger logger = LoggerFactory.getLogger(chatSocket.class);
+    // 🔴 CHANGED: use correct class in logger
+    private final Logger logger = LoggerFactory.getLogger(chatNot.class);
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username, @PathParam("id") int id)
@@ -63,19 +56,15 @@ public class chatNot {
 
         Group group = groupRepository.findById(id);
         if (group == null) {
-            // Group not found, handle error or send appropriate message
             logger.error("Group with ID {} not found", id);
             return;
         }
 
-        // Store connecting user information
         sessionUsernameMap.put(session, username);
         usernameSessionMap.put(username, session);
         sessionGroupIdMap.put(session, id); // Store groupId for the session
 
-
-
-        //Send chat history to the newly connected user
+        // Send chat history to the newly connected user
         sendMessageToPArticularUser(username, getChatHistory(id));
 
         // broadcast that new user joined
@@ -83,15 +72,17 @@ public class chatNot {
         broadcast(message);
     }
 
-
     @OnMessage
     public void onMessage(Session session, String message) throws IOException {
 
         logger.info("Entered into Message: Got Message:" + message);
         String username = sessionUsernameMap.get(session);
-        int groupId = sessionGroupIdMap.get(session); // Get groupId for the session
+        Integer groupId = sessionGroupIdMap.get(session);
 
-        // Handle messages here...
+        if (username == null || groupId == null) {
+            logger.warn("Session {} has no username or groupId stored", session.getId());
+            return;
+        }
 
         // Broadcast message to the same group
         broadcastToGroup(username + ": " + message, groupId);
@@ -100,81 +91,134 @@ public class chatNot {
         msgRepo.save(new Message(username, message, groupId));
     }
 
-
     @OnClose
     public void onClose(Session session) throws IOException {
         logger.info("Entered into Close");
 
-        // remove the user connection information
-        String username = sessionUsernameMap.get(session);
-        sessionUsernameMap.remove(session);
-        usernameSessionMap.remove(username);
+        String username = sessionUsernameMap.remove(session);
+        if (username != null) {
+            usernameSessionMap.remove(username);
+        }
 
-        // broadcase that the user disconnected
-        String message = username + " disconnected";
-        broadcast(message);
+        // ✅ NEW: also remove from sessionGroupIdMap
+        sessionGroupIdMap.remove(session);
+
+        if (username != null) {
+            String message = username + " disconnected";
+            broadcast(message);
+        }
     }
-
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        // Do error handling here
-        logger.info("Entered into Error");
-        throwable.printStackTrace();
+        logger.info("Entered into Error", throwable);
+
+        // ✅ NEW: clean up here as well (same as onClose)
+        cleanupSession(session);
     }
 
+    // ✅ NEW: helper to clean up all maps for a session
+    private void cleanupSession(Session session) {
+        if (session == null) return;
+
+        String username = sessionUsernameMap.remove(session);
+        if (username != null) {
+            usernameSessionMap.remove(username);
+        }
+        sessionGroupIdMap.remove(session);
+
+        logger.info("Cleaned up session {}", session.getId());
+    }
 
     private void sendMessageToPArticularUser(String username, String message) {
         try {
-            usernameSessionMap.get(username).getBasicRemote().sendText(message);
-        }
-        catch (IOException e) {
-            logger.info("Exception: " + e.getMessage().toString());
+            Session session = usernameSessionMap.get(username);
+            if (session == null) {
+                logger.warn("No session for username {} when sending private message", username);
+                return;
+            }
+
+            // ✅ NEW: check open
+            if (!session.isOpen()) {
+                logger.warn("Session for username {} is closed; cleaning up", username);
+                cleanupSession(session);
+                return;
+            }
+
+            session.getBasicRemote().sendText(message);
+
+        } catch (IOException e) {
+            logger.info("Exception sending private message: " + e.getMessage());
             e.printStackTrace();
+        } catch (IllegalStateException e) {   // ✅ NEW
+            logger.warn("Tried to send to a closed session for username {}", username, e);
         }
     }
-
 
     private void broadcast(String message) {
+        // iterate over a snapshot to avoid concurrent modification issues
         sessionUsernameMap.forEach((session, username) -> {
+            if (session == null) return;
+
+            // ✅ NEW: skip closed sessions
+            if (!session.isOpen()) {
+                logger.warn("Skipping closed session {}", session.getId());
+                cleanupSession(session);
+                return;
+            }
+
             try {
                 session.getBasicRemote().sendText(message);
-            }
-            catch (IOException e) {
-                logger.info("Exception: " + e.getMessage().toString());
+            } catch (IllegalStateException e) {   // ✅ NEW
+                logger.warn("IllegalStateException when broadcasting to {}. Cleaning up session {}", username, session.getId(), e);
+                cleanupSession(session);
+            } catch (IOException e) {
+                logger.info("IOException when broadcasting to " + username + ": " + e.getMessage());
                 e.printStackTrace();
+                cleanupSession(session);  // optional, but usually you want to drop broken sessions
             }
-
         });
-
     }
-
-
 
     // Gets the Chat history from the repository
     private String getChatHistory(int id) {
         List<Message> messages = msgRepo.findByGroupID(id);
 
-        // convert the list to a string
         StringBuilder sb = new StringBuilder();
-        if(messages != null && messages.size() != 0) {
+        if (messages != null && !messages.isEmpty()) {
             for (Message message : messages) {
-                sb.append(message.getUserName() + ": " + message.getContent() + "\n");
+                sb.append(message.getUserName()).append(": ")
+                  .append(message.getContent()).append("\n");
             }
         }
         return sb.toString();
     }
+
     private void broadcastToGroup(String message, int groupId) {
+        // iterate over snapshot of the map to avoid concurrent modification
         sessionGroupIdMap.forEach((session, group) -> {
-            if (group == groupId) { // Check if the session belongs to the same group
-                try {
-                    session.getBasicRemote().sendText(message);
-                } catch (IOException e) {
-                    // Handle exception
-                    logger.error("Error broadcasting message to group {}", groupId, e);
-                }
+            if (session == null) return;
+
+            if (group != groupId) {
+                return;
+            }
+
+            // ✅ NEW: check open
+            if (!session.isOpen()) {
+                logger.warn("Skipping closed session {} in group {}", session.getId(), groupId);
+                cleanupSession(session);
+                return;
+            }
+
+            try {
+                session.getBasicRemote().sendText(message);
+            } catch (IllegalStateException e) {   // ✅ NEW
+                logger.warn("IllegalStateException broadcasting to group {} on session {}. Cleaning up", groupId, session.getId(), e);
+                cleanupSession(session);
+            } catch (IOException e) {
+                logger.error("I/O Error broadcasting message to group {}", groupId, e);
+                cleanupSession(session);  // drop broken session
             }
         });
     }
-
 }

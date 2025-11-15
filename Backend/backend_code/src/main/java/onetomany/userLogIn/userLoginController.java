@@ -48,6 +48,8 @@ public class userLoginController {
     ReportsRepository reportsRepository;
     @Autowired
     adminUserRepository addminUserRepository;
+    @Autowired
+    adminActivityReportRepository adddminActivityReportRepository;
 
 
     private String success = "{\"message\":\"success\"}";
@@ -161,9 +163,12 @@ public class userLoginController {
             temp = admin;
         }
     }
-    temp.addAminActivityReport(new adminActivityReport(temp.getEmailId(), temp.getUsername(), reportId.getId(), reportId.getReport()));
+    adminActivityReport newReportt = new adminActivityReport(temp.getEmailId(), temp.getUsername(), reportId.getId(), reportId.getReport());
     
-    addminUserRepository.save(temp);
+    
+   adminActivityReport test=  adddminActivityReportRepository.save(newReportt);
+    temp.addAminActivityReport(newReportt);
+   addminUserRepository.save(temp).getId();
     
     return success;
 }
