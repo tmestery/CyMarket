@@ -4,67 +4,162 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
-    <!-- Top-bar -->
-    <LinearLayout
-        android:id="@+id/top_nav"
+    <!-- Top AppBar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/top_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:background="?attr/colorSurface"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp"
-        android:elevation="6dp">
+        android:background="@color/white"
+        android:elevation="6dp"
+        android:title="Marketplace"
+        android:titleTextColor="@color/black"
+        app:navigationIcon="@drawable/profile_art"
+        app:menu="@menu/top_appbar_menu"
+        app:titleCentered="true" />
 
-        <!-- Profile Button (left) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/main_profile_btn"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:text="Profile"
-            android:textSize="14sp"
-            android:textColor="@color/white"
-            android:backgroundTint="#E63946"
-            app:cornerRadius="20dp"
-            android:elevation="6dp"
-            android:layout_marginEnd="180dp"
-            android:contentDescription="Profile Navigation" />
-
-        <!-- Settings Button (right) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/main_settings_btn"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:text="Settings"
-            android:textSize="14sp"
-            android:textColor="@color/white"
-            android:backgroundTint="#E63946"
-            app:cornerRadius="20dp"
-            android:elevation="6dp"
-            android:contentDescription="Settings Navigation" />
-    </LinearLayout>
-
-    <!-- Logo -->
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_below="@id/top_nav"
+    <!-- Scrollable categories -->
+    <ScrollView
+        android:id="@+id/categories_scroll"
+        android:layout_below="@id/top_appbar"
         android:layout_above="@id/bottom_nav"
-        android:layout_width="220dp"
-        android:layout_height="400dp"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
-        app:srcCompat="@drawable/logo2"
-        android:scaleType="centerInside"
-        android:transitionName="logo_transition"
-        android:contentDescription="App Logo" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <!-- Category cards with white background & black outline -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/category_textbooks"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="2dp"
+                android:backgroundTint="@android:color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Textbooks"
+                    android:textColor="@android:color/black"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/inter"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/category_furniture"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="2dp"
+                android:backgroundTint="@android:color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Furniture"
+                    android:textColor="@android:color/black"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/inter"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/category_appliances"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="2dp"
+                android:backgroundTint="@android:color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Appliances"
+                    android:textColor="@android:color/black"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/inter"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/category_clothing"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="2dp"
+                android:backgroundTint="@android:color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Clothing"
+                    android:textColor="@android:color/black"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/inter"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/category_misc"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="2dp"
+                android:backgroundTint="@android:color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Miscellaneous"
+                    android:textColor="@android:color/black"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/inter"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
@@ -76,4 +171,86 @@
         app:itemRippleColor="@color/buttons_2_color"
         app:menu="@menu/bottom_nav_menu"
         android:elevation="12dp" />
+
 </RelativeLayout>
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="@color/background_light"-->
+<!--    tools:context=".MainActivity">-->
+
+<!--    &lt;!&ndash; Top-bar &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/top_nav"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center_horizontal"-->
+<!--        android:background="?attr/colorSurface"-->
+<!--        android:paddingHorizontal="12dp"-->
+<!--        android:paddingVertical="8dp"-->
+<!--        android:elevation="6dp">-->
+
+<!--        &lt;!&ndash; Profile Button (left) &ndash;&gt;-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/main_profile_btn"-->
+<!--            style="@style/Widget.MaterialComponents.Button"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="44dp"-->
+<!--            android:text="Profile"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:backgroundTint="#E63946"-->
+<!--            app:cornerRadius="20dp"-->
+<!--            android:elevation="6dp"-->
+<!--            android:layout_marginEnd="180dp"-->
+<!--            android:contentDescription="Profile Navigation" />-->
+
+<!--        &lt;!&ndash; Settings Button (right) &ndash;&gt;-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/main_settings_btn"-->
+<!--            style="@style/Widget.MaterialComponents.Button"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="44dp"-->
+<!--            android:text="Settings"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:backgroundTint="#E63946"-->
+<!--            app:cornerRadius="20dp"-->
+<!--            android:elevation="6dp"-->
+<!--            android:contentDescription="Settings Navigation" />-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; Logo &ndash;&gt;-->
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView"-->
+<!--        android:layout_below="@id/top_nav"-->
+<!--        android:layout_above="@id/bottom_nav"-->
+<!--        android:layout_width="220dp"-->
+<!--        android:layout_height="400dp"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:layout_marginTop="24dp"-->
+<!--        android:layout_marginBottom="24dp"-->
+<!--        app:srcCompat="@drawable/logo2"-->
+<!--        android:scaleType="centerInside"-->
+<!--        android:transitionName="logo_transition"-->
+<!--        android:contentDescription="App Logo" />-->
+
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/bottom_nav"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:background="@color/white"-->
+<!--        app:itemIconTint="@color/nav_item_color"-->
+<!--        app:itemTextColor="@color/nav_item_color"-->
+<!--        app:itemRippleColor="@color/buttons_2_color"-->
+<!--        app:menu="@menu/bottom_nav_menu"-->
+<!--        android:elevation="12dp" />-->
+<!--</RelativeLayout>-->

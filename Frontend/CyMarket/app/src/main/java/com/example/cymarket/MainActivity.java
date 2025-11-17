@@ -4,17 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-    private Button profileText;
-    private Button settingsText;
     private RequestQueue queue;
 
     private static final String BASE_URL = "http://coms-3090-056.class.las.iastate.edu:8080";
@@ -24,8 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        profileText = findViewById(R.id.main_profile_btn);
-        settingsText = findViewById(R.id.main_settings_btn);
+
         queue = Volley.newRequestQueue(this);
 
         // Try to load username and email
@@ -43,22 +40,36 @@ public class MainActivity extends AppCompatActivity {
 
         final String username = tempUsername;
 
-        profileText.setOnClickListener(v -> {
-            String password = prefs.getString("password", null);
+        // Set up the top app bar
+        MaterialToolbar topAppBar = findViewById(R.id.top_appbar);
+        topAppBar.setNavigationOnClickListener(v -> {
+            // Navigation icon (profile) click
+            String username1 = prefs.getString("username", null);
+            String email1 = prefs.getString("email", null);
+            String password1 = prefs.getString("password", null);
+
             Intent intent = new Intent(MainActivity.this, ProfilesActivity.class);
-            intent.putExtra("username", username);
-            intent.putExtra("email", email);
-            intent.putExtra("password", password);
+            intent.putExtra("username", username1);
+            intent.putExtra("email", email1);
+            intent.putExtra("password", password1);
             startActivity(intent);
         });
 
-        settingsText.setOnClickListener(v -> {
-            String password = prefs.getString("password", null);
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            intent.putExtra("username", username);
-            intent.putExtra("email", email);
-            intent.putExtra("password", password);
-            startActivity(intent);
+        topAppBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_settings) {
+                SharedPreferences prefs1 = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                String username1 = prefs.getString("username", null);
+                String email1 = prefs.getString("email", null);
+                String password = prefs.getString("password", null);
+
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                intent.putExtra("username", username);
+                intent.putExtra("email", email);
+                intent.putExtra("password", password);
+                startActivity(intent);
+                return true;
+            }
+            return false;
         });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);

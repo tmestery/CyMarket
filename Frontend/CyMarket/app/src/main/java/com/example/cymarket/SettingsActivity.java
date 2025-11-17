@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import retrofit2.Call;
@@ -23,7 +24,6 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView usernameText;
     private TextView emailText;
     private Button logoutButton;
-    private TextView firstLastNameText;
     private TextView passwordText;
 
     private static final String BASE_URL = "http://coms-3090-056.class.las.iastate.edu:8080/";
@@ -33,13 +33,19 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        // Initialize the top AppBar
+        MaterialToolbar topAppBar = findViewById(R.id.settings_top_appbar);
+        topAppBar.setNavigationOnClickListener(v -> {
+            // Optional: handle navigation icon click (e.g., go back)
+            finish();
+        });
+
         deleteAccount = findViewById(R.id.delete_btn);
         removePFP = findViewById(R.id.remove_pfp_btn);
         logoutButton = findViewById(R.id.logout_btn);
 
         usernameText = findViewById(R.id.username_text);
         emailText = findViewById(R.id.email_text);
-        firstLastNameText = findViewById(R.id.first_last_name_label);
         passwordText = findViewById(R.id.password_text);
 
         // Get user info passed from previous activity
@@ -49,7 +55,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         usernameText.setText("Username: " + username);
         emailText.setText("Email: " + email);
-        firstLastNameText.setText("Name: ");
         passwordText.setText("Password: " + password);
 
         // Retrofit instance
@@ -64,18 +69,10 @@ public class SettingsActivity extends AppCompatActivity {
         getNameCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    firstLastNameText.setText("Name: " + response.body());
-                } else {
-                    firstLastNameText.setText("Name: Not found");
-                    Log.e("GET_NAME", "Failed to get name. Code: " + response.code());
-                }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                firstLastNameText.setText("Name: Error");
-                Log.e("GET_NAME", "Error: " + t.getMessage());
             }
         });
 

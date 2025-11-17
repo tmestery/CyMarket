@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Settings Icon -->
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/settings_art"
+        android:title="Settings" />
+</menu>
