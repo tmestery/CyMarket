@@ -44,8 +44,15 @@ public class MessagesActivity extends AppCompatActivity {
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
 
         // --- Get username ---
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        username = prefs.getString("username", "");
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        username = prefs.getString("username", null);
+        if (username == null) {
+            Log.e("USERNAME_CHECK", "Username is null! Cannot connect to WebSocket.");
+            return;
+        }
+
+        Log.d("USERNAME_CHECK", "Username = " + username);
+
 
         // --- Adapter ---
         messageAdapter = new MessageAdapter(messages, username);           // <-- NOW VALID
@@ -55,13 +62,9 @@ public class MessagesActivity extends AppCompatActivity {
         // --- Group info ---
         groupId = getIntent().getIntExtra("groupID", -1);
         groupName = getIntent().getStringExtra("groupName");
-        CHAT_KEY = "groupChat_" + groupId;
+        CHAT_KEY = "group_" + groupId;
 
         groupChatName.setText(groupName != null ? groupName : "Group #" + groupId);
-
-        // Testing:
-//        messages.add(new Message("DEBUG", "If this shows, UI is working"));
-//        messageAdapter.notifyItemInserted(messages.size() - 1);
 
         // --- Send message handler ---
         sendButton.setOnClickListener(v -> {
@@ -86,6 +89,8 @@ public class MessagesActivity extends AppCompatActivity {
         String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
                 + groupId + "/" + username;
 
+        Log.d("WS_URL", "Connecting to WebSocket URL: " + wsUrl);
+
         Intent serviceIntent = new Intent(this, WebSocketService.class);
         serviceIntent.setAction("WS_CONNECT");
         serviceIntent.putExtra("key", CHAT_KEY);
@@ -98,12 +103,11 @@ public class MessagesActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d("WS_RECEIVER", "Intent received with key=" + intent.getStringExtra("key"));
             if (!CHAT_KEY.equals(intent.getStringExtra("key"))) return;
 
             String raw = intent.getStringExtra("message");
-            if (raw == null) return;  // <-- prevent NPE
-
-            Log.d("WS_RAW", "Received raw message = " + raw);
+            Log.d("WS_RECEIVER", "Message content = " + raw);
 
             String sender = "Unknown";
             String content = raw;
@@ -112,6 +116,9 @@ public class MessagesActivity extends AppCompatActivity {
                 String[] parts = raw.split(":", 2);
                 sender = parts[0].trim();
                 content = parts[1].trim();
+            } else {
+                sender = "System";
+                content = raw;
             }
 
             messages.add(new Message(sender, content));

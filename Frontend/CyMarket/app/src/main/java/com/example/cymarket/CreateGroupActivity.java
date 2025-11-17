@@ -25,7 +25,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
 
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         username = prefs.getString("username", "");
 
         groupNameInput = findViewById(R.id.groupNameInput);
@@ -113,7 +113,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                 }
 
                 // Save groupID and navigate to FriendsActivity
-                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
                 prefs.edit().putInt("currentGroupID", groupId).apply();
 
                 runOnUiThread(() -> {

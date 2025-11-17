@@ -29,6 +29,9 @@
         <activity
             android:name=".ProfilesActivity"
             android:exported="false" />
+        <service
+            android:name=".WebSocketService"
+            android:exported="false" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,15 +34,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        Log.d("ADAPTER_TEST", "Binding: " + messages.get(position).getContent());
-        holder.messageText.setWidth(200);
-        holder.messageText.setHeight(80);
         Message message = messages.get(position);
+        Log.d("ADAPTER_TEST", "Binding: " + message.getContent());
 
-        // layout params for bubble alignment
+        holder.messageText.setText(message.getContent());
+
+        // Use LinearLayout.LayoutParams since root is LinearLayout
         LinearLayout.LayoutParams params =
                 (LinearLayout.LayoutParams) holder.messageText.getLayoutParams();
 
+        // Gravity for left/right alignment
         if (message.isSentByMe(currentUser)) {
             params.gravity = Gravity.END;
             holder.messageText.setBackgroundResource(R.drawable.bg_message_sent);
@@ -53,7 +55,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
 
         holder.messageText.setLayoutParams(params);
-        holder.messageText.setText(message.getContent());
 
         // Long press to report a user
         holder.itemView.setOnLongClickListener(v -> {
