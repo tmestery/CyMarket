@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.AndroidExample" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Change the status bar color -->
-        <item name="android:statusBarColor">@color/foreground</item>
+        <item name="android:statusBarColor">@color/white</item>
         <!-- Optional: set dark or light status bar icons -->
         <item name="android:windowLightStatusBar">true</item>
     </style>
