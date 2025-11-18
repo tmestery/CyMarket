@@ -7,16 +7,34 @@
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp1/AndroidExample" />
         <option name="gradleJvm" value="jbr-21" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp1/AndroidExample" />
+            <option value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp1/AndroidExample/app" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp2/AndroidExample" />
         <option name="gradleJvm" value="jbr-21" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp2/AndroidExample" />
+            <option value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp2/AndroidExample/app" />
+          </set>
+        </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp3/AndroidExample" />
         <option name="gradleJvm" value="jbr-21" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp3/AndroidExample" />
+            <option value="$PROJECT_DIR$/Experiments/tmestery_experiments/exp3/AndroidExample/app" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
