@@ -6,6 +6,7 @@ stages:
   - androidtest
 
 maven-build:
+  image: maven:3.9.6-eclipse-temurin-21
   stage: mavenbuild
   tags:
     - main_backend      # Updated to your registered runner tag
