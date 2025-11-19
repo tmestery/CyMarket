@@ -4,8 +4,10 @@ import onetomany.Users.User;
 import onetomany.Users.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.fasterxml.jackson.databind.ObjectMapper; // Add this import
 
 import java.util.List;
 
@@ -14,11 +16,15 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final NotificationWebSocket notificationWebSocket;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // Add object mapper
 
     public NotificationService(NotificationRepository notificationRepository,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               @Lazy NotificationWebSocket notificationWebSocket) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.notificationWebSocket = notificationWebSocket;
     }
 
     public List<NotificationDTO> getAllForUser(String username) {
@@ -100,7 +106,13 @@ public class NotificationService {
 
         String username = user.getUsername();
         if (username != null && !username.isBlank()) {
-            NotificationWebSocket.sendToUser(username, dto);
+            try {
+                String jsonMessage = objectMapper.writeValueAsString(dto);
+                notificationWebSocket.sendNotificationToUser(username, jsonMessage);
+            } catch (Exception e) {
+                // Prevent WebSocket failures (common in tests/CI) from rolling back the transaction
+                System.err.println("Warning: Failed to send real-time notification to user " + username + ": " + e.getMessage());
+            }
         }
         return dto;
     }
