@@ -1,90 +1,82 @@
 package onetomany.Notifications;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.websocket.*;
-import jakarta.websocket.server.PathParam;
-import jakarta.websocket.server.ServerEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
-@Controller
-@ServerEndpoint("/ws/notifications/{username}")
+
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
+import jakarta.websocket.server.ServerEndpoint;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@ServerEndpoint("/notifications/{username}")
+@Component
 public class NotificationWebSocket {
 
-    private static final Logger log = LoggerFactory.getLogger(NotificationWebSocket.class);
+    // Store session mappings
+    private static Map<Session, String> sessionUsernameMap = new Hashtable<>();
+    private static Map<String, Session> usernameSessionMap = new Hashtable<>();
 
-    private static final Map<Session, String> sessionUsernameMap = new Hashtable<>();
-    private static final Map<String, Session> usernameSessionMap = new Hashtable<>();
-
-    private static NotificationService notificationServiceStatic;
-    
-    @Autowired
-    public void setNotificationService(NotificationService notificationService) {
-        notificationServiceStatic = notificationService;
-    }
+    private final Logger logger = LoggerFactory.getLogger(NotificationWebSocket.class);
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) throws IOException {
-        if (username == null || username.isBlank()) {
-            session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "Username required"));
-            return;
-        }
+        logger.info("Notification WebSocket opened for User: " + username);
+
         sessionUsernameMap.put(session, username);
         usernameSessionMap.put(username, session);
-        log.info("[Notifications] OPEN {} -> {}", session.getId(), username);
-        session.getBasicRemote().sendText("CONNECTED: notifications for " + username);
     }
 
     @OnMessage
-    public void onMessage(Session session, String msg) {
-        String u = sessionUsernameMap.get(session);
-        log.debug("[Notifications] MSG from {}: {}", u, msg);
+    public void onMessage(Session session, String message) throws IOException {
+        // Handle incoming messages from client if necessary
+        logger.info("Received message from " + sessionUsernameMap.get(session) + ": " + message);
     }
 
     @OnClose
-    public void onClose(Session session, CloseReason reason) {
-        String username = sessionUsernameMap.remove(session);
+    public void onClose(Session session) throws IOException {
+        logger.info("Notification WebSocket closed");
+
+        String username = sessionUsernameMap.get(session);
         if (username != null) {
+            sessionUsernameMap.remove(session);
             usernameSessionMap.remove(username);
-            log.info("[Notifications] CLOSE {} ({})", username, reason);
-        } else {
-            log.info("[Notifications] CLOSE (unknown) ({})", reason);
         }
     }
 
     @OnError
-    public void onError(Session session, Throwable error) {
-        String username = (session != null ? sessionUsernameMap.get(session) : null);
-        log.error("[Notifications] ERROR for {}: {}", username, error.toString(), error);
+    public void onError(Session session, Throwable throwable) {
+        logger.error("Notification WebSocket error");
+        throwable.printStackTrace();
     }
 
-    public static void sendToUser(String username, NotificationDTO dto) {
-        Session s = usernameSessionMap.get(username);
-        if (s == null || !s.isOpen()) {
-            log.info("[Notifications] {} not connected; skipping push", username);
-            return;
-        }
+    // Utility method to send a notification to a specific user
+    public void sendNotificationToUser(String username, String message) {
         try {
-            String json = new ObjectMapper().writeValueAsString(dto);
-            s.getBasicRemote().sendText("NOTIFICATION:" + json);
-            log.info("[Notifications] pushed to {}", username);
-        } catch (Exception e) {
-            log.error("[Notifications] push failed to {}", username, e);
+            Session session = usernameSessionMap.get(username);
+            if (session != null && session.isOpen()) {
+                session.getBasicRemote().sendText(message);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public static boolean isUserConnected(String username) {
-        Session s = usernameSessionMap.get(username);
-        return s != null && s.isOpen();
-    }
-
-    public static int getConnectedUsersCount() {
-        return sessionUsernameMap.size();
+    public void broadcast(String message) {
+        sessionUsernameMap.forEach((session, username) -> {
+            try {
+                session.getBasicRemote().sendText(message);
+            } catch (IOException e) {
+                logger.error("Error broadcasting message", e);
+            }
+        });
     }
 }
 
