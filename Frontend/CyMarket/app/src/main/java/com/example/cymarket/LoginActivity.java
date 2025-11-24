@@ -45,7 +45,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;  // define login button variable
     private TextView signupButton;  // define signup textview variable
     private TextView forgotPassword;
-    private TextView secretAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +62,6 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_login_btn);
         signupButton = findViewById(R.id.login_signup_txt);
         forgotPassword = findViewById(R.id.forgot_password);
-        secretAdmin = findViewById(R.id.admin_hidden_entry);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,22 +94,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 startActivity(intent);
-            }
-        });
-
-        secretAdmin.setOnClickListener(new View.OnClickListener() {
-            int tapCount = 0;
-
-            @Override
-            public void onClick(View v) {
-                tapCount++;
-
-                // 10 taps unlock admin (kept your original behavior)
-                if (tapCount == 10) {
-                    tapCount = 0;
-                    Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
-                    startActivity(intent);
-                }
             }
         });
     }
