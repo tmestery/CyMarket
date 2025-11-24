@@ -21,6 +21,26 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * ------------------------------------------------------------
+ *  CyMarket Frontend - Class Documentation
+ * ------------------------------------------------------------
+ *
+ *  Class: SignupActivity
+ *  Author: Tyler Mestery
+ *  Project: CyMarket Android App
+ *
+ *  Description:
+ *  Handles new user registration. Validates input, checks username
+ *  availability, and sends account creation requests to backend.
+ *
+ *  Endpoints Used:
+ *   - GET /users/u/{username}
+ *   - POST /usersLogin/U
+ *
+ *  Last Updated: 2025-11-21
+ * ------------------------------------------------------------
+ */
 public class SignupActivity extends AppCompatActivity {
     private EditText firstNameText;   // define email edit
     private EditText lastNameText;   // define email edit

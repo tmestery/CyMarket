@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.Request;
@@ -16,6 +18,26 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * ------------------------------------------------------------
+ *  CyMarket Frontend - Class Documentation
+ * ------------------------------------------------------------
+ *
+ *  Class: LoginActivity
+ *  Author: Tyler Mestery
+ *  Project: CyMarket Android App
+ *
+ *  Description:
+ *  Authenticates users using backend login endpoints, loads saved
+ *  profile data, and routes to either the main menu or admin panel.
+ *
+ *  Endpoints Used:
+ *   - GET /login/e/{email}/{password}
+ *   - GET /userslogin/getUsername/{email}
+ *
+ *  Last Updated: 2025-11-21
+ * ------------------------------------------------------------
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private EditText emailEditText; // define username edittext variable
@@ -29,6 +51,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // set up user/admin selection here:
+        RadioGroup roleGroup = findViewById(R.id.login_role_group);
+        RadioButton userRoleBtn = findViewById(R.id.role_user);
+        RadioButton adminRoleBtn = findViewById(R.id.role_admin);
 
         /* initialize UI elements */
         emailEditText = findViewById(R.id.login_email_edt);
@@ -48,7 +75,8 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             "Please enter both email and password", Toast.LENGTH_SHORT).show();
                 } else {
-                    checkUserCredentials(email, password);
+                    String selectedRole = userRoleBtn.isChecked() ? "U" : "n";
+                    checkUserCredentials(email, password, selectedRole);
                 }
             }
         });
@@ -88,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void checkUserCredentials(String email, String password) {
+    private void checkUserCredentials(String email, String password, String selectedRole) {
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         String encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
 
@@ -115,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
 
                         // then fetch username from backend
-                        fetchAndSaveUsername(fetchedEmail, type);
+                        fetchAndSaveUsername(fetchedEmail, selectedRole);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -129,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
     }
 
-    private void fetchAndSaveUsername(String email, String type) {
+    private void fetchAndSaveUsername(String email, String selectedRole) {
         String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
         String url = "http://coms-3090-056.class.las.iastate.edu:8080/userslogin/getUsername/" + encodedEmail;
 
@@ -142,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                     prefs.edit().putString("username", username).apply();
 
-                    boolean isAdmin = type.equalsIgnoreCase("A");
+                    boolean isAdmin = selectedRole.equalsIgnoreCase("n");
                     Intent intent = new Intent(
                             LoginActivity.this,
                             isAdmin ? AdminDashboardActivity.class : MainActivity.class
@@ -153,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                 error -> {
                     Toast.makeText(getApplicationContext(), "Couldn't fetch username", Toast.LENGTH_SHORT).show();
 
-                    boolean isAdmin = type.equalsIgnoreCase("A");
+                    boolean isAdmin = selectedRole.equalsIgnoreCase("n");
                     Intent intent = new Intent(
                             LoginActivity.this,
                             isAdmin ? AdminDashboardActivity.class : MainActivity.class

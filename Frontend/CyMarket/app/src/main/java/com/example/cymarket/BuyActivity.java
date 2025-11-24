@@ -21,6 +21,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * ------------------------------------------------------------
+ *  CyMarket Frontend - Class Documentation
+ * ------------------------------------------------------------
+ *
+ *  Class: BuyActivity
+ *  Author: Xander
+ *  Project: CyMarket Android App
+ *
+ *  Description:
+ *  Handles displaying marketplace listings, fetching items from
+ *  the backend, clearing listings, and navigating back to main menu.
+ *
+ *  Key Responsibilities:
+ *   - Fetches all listings from /items (GET)
+ *   - Deletes listings using /items/{id} (DELETE)
+ *   - Displays data using RecyclerView + ListingAdapter
+ *   - Manages navigation within the app
+ *
+ *  Last Updated: 2025-11-21
+ * ------------------------------------------------------------
+ */
+/**
  * TODO - Let users actually buy items
  * TODO - Clicking on an item takes you to a screen dedicated to that item?
  * TODO - User cannot buy their own items
