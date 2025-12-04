@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -29,6 +31,7 @@ public class MessagesActivity extends AppCompatActivity {
 
     // A list of all the group members in the group-chat:
     private ArrayList<String> groupMembers = new ArrayList<>();
+    private TextView groupchatPerson;
     private Button sendButton;
     private EditText messageInput;
     private TextView groupChatName;
@@ -46,12 +49,12 @@ public class MessagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
 
-
         // --- Views ---
         sendButton = findViewById(R.id.sendButton);
         messageInput = findViewById(R.id.messageInput);
         groupChatName = findViewById(R.id.groupChatName);
         reportButton = findViewById(R.id.reportButton);
+        groupchatPerson = findViewById(R.id.groupchatPerson);
         messagesRecyclerView = findViewById(R.id.messagesRecyclerView);
 
         // --- Get username ---
@@ -90,11 +93,7 @@ public class MessagesActivity extends AppCompatActivity {
             messageInput.setText("");
         });
 
-        reportButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MessagesActivity.this, ReportUserActivity.class);
-            intent.putExtra("reportedUser", "Group Chat: " + groupName);
-            startActivity(intent);
-        });
+        reportButton.setOnClickListener(v -> showReportUserDialog());
 
         // --- Connect to WebSocket ---
         String wsUrl = "ws://coms-3090-056.class.las.iastate.edu:8080/chat/"
@@ -109,6 +108,39 @@ public class MessagesActivity extends AppCompatActivity {
         startService(serviceIntent);
 
         setupBottomNav();
+
+        // Collect a list of users in the group:
+        fetchGroupMembers();
+    }
+
+    // A list of users, the user is able to report:
+    private void showReportUserDialog() {
+        // Filter out yourself
+        ArrayList<String> reportableUsers = new ArrayList<>();
+        for (String user : groupMembers) {
+            if (!user.equals(username)) {
+                reportableUsers.add(user);
+            }
+        }
+
+        if (reportableUsers.isEmpty()) {
+            Log.e("REPORT", "No users available to report");
+            return;
+        }
+
+        String[] userArray = reportableUsers.toArray(new String[0]);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Report User")
+                .setItems(userArray, (dialog, which) -> {
+                    String selectedUser = userArray[which];
+
+                    Intent intent = new Intent(MessagesActivity.this, ReportUserActivity.class);
+                    intent.putExtra("reportedUser", selectedUser);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -152,30 +184,89 @@ public class MessagesActivity extends AppCompatActivity {
                 .unregisterReceiver(receiver);
     }
 
-    private void fetchGroupMembers() {
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/groups/" + groupName;
+    // Parse for group members, since no exact API was given to collect the list...
+    private ArrayList<String> parseGroupMembers(
+            String response,
+            int targetGroupId,
+            String currentUsername
+    ) {
+        ArrayList<String> members = new ArrayList<>();
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        try {
+            JSONArray groups = new JSONArray(response);
+
+            for (int i = 0; i < groups.length(); i++) {
+                JSONObject group = groups.getJSONObject(i);
+
+                int groupId = group.getInt("id");
+                if (groupId != targetGroupId) continue;
+
+                JSONArray users = group.getJSONArray("users");
+
+                for (int j = 0; j < users.length(); j++) {
+                    JSONObject user = users.getJSONObject(j);
+
+                    String username = user.optString("username", null);
+                    if (username == null) continue;
+
+                    // Don’t allow reporting yourself
+                    if (username.equals(currentUsername)) continue;
+
+                    members.add(username);
+                }
+
+                break;
+            }
+        } catch (Exception e) {
+            Log.e("GROUP_MEMBERS", "Parsing failed", e);
+        }
+
+        return members;
+    }
+
+    private void fetchGroupMembers() {
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/groups";
+
+        StringRequest request = new StringRequest(
                 Request.Method.GET,
                 url,
-                null,
                 response -> {
                     try {
-                        JSONArray users = response.getJSONArray("users");
+                        Log.d("GROUP_MEMBERS", "RAW RESPONSE:\n" + response);
+
+                        JSONObject group = new JSONObject(response);
+                        JSONArray users = group.getJSONArray("users");
+
                         groupMembers.clear();
 
                         for (int i = 0; i < users.length(); i++) {
                             JSONObject user = users.getJSONObject(i);
-                            groupMembers.add(user.getString("username"));
+                            String uname = user.getString("username");
+
+                            Log.d("GROUP_MEMBERS", "Found user: " + uname);
+
+                            // skip yourself
+                            if (!uname.equals(username)) {
+                                groupMembers.add(uname);
+                            }
                         }
 
-                        Log.d("GROUP_MEMBERS", groupMembers.toString());
+                        Log.d("GROUP_MEMBERS", "FINAL MEMBER LIST: " + groupMembers);
 
+                        // build a comma-separated string
+                        String membersText = String.join(", ", groupMembers);
+
+                        // if empty, show fallback
+                        if (membersText.isEmpty()) {
+                            groupchatPerson.setText("No other members");
+                        } else {
+                            groupchatPerson.setText(membersText);
+                        }
                     } catch (Exception e) {
                         Log.e("GROUP_MEMBERS", "Parsing error", e);
                     }
                 },
-                error -> Log.e("GROUP_MEMBERS", "Request error", error)
+                error -> Log.e("GROUP_MEMBERS", "Request failed", error)
         );
 
         Volley.newRequestQueue(this).add(request);
