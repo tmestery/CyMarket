@@ -14,11 +14,21 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class MessagesActivity extends AppCompatActivity {
 
+    // A list of all the group members in the group-chat:
+    private ArrayList<String> groupMembers = new ArrayList<>();
     private Button sendButton;
     private EditText messageInput;
     private TextView groupChatName;
@@ -35,6 +45,7 @@ public class MessagesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
+
 
         // --- Views ---
         sendButton = findViewById(R.id.sendButton);
@@ -139,6 +150,35 @@ public class MessagesActivity extends AppCompatActivity {
         super.onStop();
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(receiver);
+    }
+
+    private void fetchGroupMembers() {
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/groups/" + groupName;
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        JSONArray users = response.getJSONArray("users");
+                        groupMembers.clear();
+
+                        for (int i = 0; i < users.length(); i++) {
+                            JSONObject user = users.getJSONObject(i);
+                            groupMembers.add(user.getString("username"));
+                        }
+
+                        Log.d("GROUP_MEMBERS", groupMembers.toString());
+
+                    } catch (Exception e) {
+                        Log.e("GROUP_MEMBERS", "Parsing error", e);
+                    }
+                },
+                error -> Log.e("GROUP_MEMBERS", "Request error", error)
+        );
+
+        Volley.newRequestQueue(this).add(request);
     }
 
     private void setupBottomNav() {
