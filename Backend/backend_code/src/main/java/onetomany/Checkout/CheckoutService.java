@@ -248,6 +248,11 @@ public class CheckoutService {
         return checkoutRepository.countByUserId(userId);
     }
 
+    public Double getTotalSales() {
+        Double total = checkoutRepository.getTotalSales();
+        return total != null ? total : 0.0;
+    }
+
     @Transactional
     public void deleteOrder(Long orderId) {
         Checkout checkout = checkoutRepository.findById(orderId).orElse(null);

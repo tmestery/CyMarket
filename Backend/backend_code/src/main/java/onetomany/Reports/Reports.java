@@ -9,7 +9,7 @@ import onetomany.Sellers.Seller;
 import onetomany.Users.User;
 
 @Entity
-public class Reports {
+public class  Reports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

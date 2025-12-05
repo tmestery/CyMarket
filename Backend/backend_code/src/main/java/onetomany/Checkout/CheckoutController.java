@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/checkout")
+@CrossOrigin(origins = "http://localhost:3000") // Add this annotation
 public class CheckoutController {
 
     @Autowired
@@ -149,22 +150,14 @@ public class CheckoutController {
         }
     }
 
-    // get order count
     @GetMapping("/user/{userId}/count")
     public ResponseEntity<?> getUserOrderCount(@PathVariable int userId) {
-        try {
-            User user = userRepository.findById(userId);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("User not found with id: " + userId);
-            }
+        return new ResponseEntity<>(checkoutService.getUserOrderCount(userId), HttpStatus.OK);
+    }
 
-            long count = checkoutService.getUserOrderCount(userId);
-            return ResponseEntity.ok(count);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error counting orders: " + e.getMessage());
-        }
+    @GetMapping("/sales/total")
+    public ResponseEntity<Double> getTotalSales() {
+        return new ResponseEntity<>(checkoutService.getTotalSales(), HttpStatus.OK);
     }
 
     // Delete order
