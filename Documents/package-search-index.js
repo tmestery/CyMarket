@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.cymarket"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.cymarket"},{"l":"com.example.cymarket.Admin"},{"l":"com.example.cymarket.LoginSignup"},{"l":"com.example.cymarket.Messages"},{"l":"com.example.cymarket.ProfilesSettings"},{"l":"com.example.cymarket.Reporting"},{"l":"com.example.cymarket.Services"}];updateSearchResults();
