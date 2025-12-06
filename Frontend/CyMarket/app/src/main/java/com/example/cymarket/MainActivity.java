@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -14,6 +15,7 @@ import com.example.cymarket.ProfilesSettings.ProfilesActivity;
 import com.example.cymarket.ProfilesSettings.SettingsActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.card.MaterialCardView;
 
 /**
  * MainActivity serves as the landing page for CyMarket.
@@ -32,6 +34,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Find all the category cards:
+        MaterialCardView textbooks = findViewById(R.id.category_textbooks);
+        MaterialCardView furniture = findViewById(R.id.category_furniture);
+        MaterialCardView appliances = findViewById(R.id.category_appliances);
+        MaterialCardView clothing = findViewById(R.id.category_clothing);
+        MaterialCardView misc = findViewById(R.id.category_misc);
 
         queue = Volley.newRequestQueue(this);
 
@@ -81,6 +89,16 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        View.OnClickListener openBuyScreen = v ->
+                startActivity(new Intent(MainActivity.this, BuyActivity.class));
+
+        // Attach listener to all cards
+        textbooks.setOnClickListener(openBuyScreen);
+        furniture.setOnClickListener(openBuyScreen);
+        appliances.setOnClickListener(openBuyScreen);
+        clothing.setOnClickListener(openBuyScreen);
+        misc.setOnClickListener(openBuyScreen);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnItemSelectedListener(item -> {
