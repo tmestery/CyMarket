@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.cymarket.R;
-import com.example.cymarket.User;
+import com.example.cymarket.LoginSignup.User;
 
 import java.util.List;
 

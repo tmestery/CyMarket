@@ -27,13 +27,13 @@
             android:name=".Messages.GeneralMessageViewerActivity"
             android:exported="false"/>
         <activity
-            android:name=".ProfilesActivity"
+            android:name=".ProfilesSettings.ProfilesActivity"
             android:exported="false" />
         <service
             android:name=".WebSocketService"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ProfilesSettings.SettingsActivity"
             android:exported="false" />
         <activity android:name=".NotificationsActivity"
             android:exported="false" />
@@ -52,7 +52,7 @@
             android:name=".LoginSignup.ForgotPasswordActivity"
             android:exported="false"/>
         <activity
-            android:name=".ResetPasswordActivity"
+            android:name=".LoginSignup.ResetPasswordActivity"
             android:exported="false"/>
         <activity
             android:name=".Messages.FriendsActivity"
@@ -79,7 +79,7 @@
             android:name=".Messages.CreateGroupActivity"
             android:exported="false"/>
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".LoginSignup.SplashScreenActivity"
             android:theme="@style/Theme.MyApp.Splash"
             android:exported="true">
             <intent-filter>

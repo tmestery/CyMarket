@@ -10,6 +10,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.cymarket.Messages.GroupListActivity;
+import com.example.cymarket.ProfilesSettings.ProfilesActivity;
+import com.example.cymarket.ProfilesSettings.SettingsActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

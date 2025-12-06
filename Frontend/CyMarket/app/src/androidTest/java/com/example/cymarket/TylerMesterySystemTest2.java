@@ -10,6 +10,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import android.content.Intent;
 
+import com.example.cymarket.ProfilesSettings.SettingsActivity;
+
 @RunWith(AndroidJUnit4.class)
 public class TylerMesterySystemTest2 {
     @Test

@@ -18,7 +18,7 @@ import com.example.cymarket.R;
 import com.example.cymarket.Reporting.Reports;
 import com.example.cymarket.Reporting.ReportsAdapter;
 import com.example.cymarket.RetroClient;
-import com.example.cymarket.User;
+import com.example.cymarket.LoginSignup.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;

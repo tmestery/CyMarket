@@ -1,4 +1,4 @@
-package com.example.cymarket;
+package com.example.cymarket.LoginSignup;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +12,20 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.cymarket.LoginSignup.LoginActivity;
+import com.example.cymarket.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Activity that allows a user to reset their password using a recovery code.
+ * <p>
+ * The user enters the recovery code received via email and their new password.
+ * This is sent to the backend to update the user's password.
+ * </p>
+ *
+ * @author Tyler Mestery
+ */
 public class ResetPasswordActivity extends AppCompatActivity {
 
     private EditText codeInput, newPasswordInput;
@@ -24,6 +33,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
     private RequestQueue requestQueue;
     private String email;
 
+    /**
+     * Initializes the activity and sets up input fields and confirm button.
+     *
+     * @param savedInstanceState The saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +54,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(v -> sendResetPasswordRequest());
     }
 
+    /**
+     * Sends a password reset request to the backend using the recovery code and new password.
+     * Displays a success message and redirects to the login screen if successful.
+     * Displays an error message if the request fails.
+     */
     private void sendResetPasswordRequest() {
         String code = codeInput.getText().toString().trim();
         String newPassword = newPasswordInput.getText().toString().trim();

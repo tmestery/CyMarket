@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cymarket.ApiService;
 import com.example.cymarket.R;
 import com.example.cymarket.RetroClient;
-import com.example.cymarket.User;
+import com.example.cymarket.LoginSignup.User;
 
 import java.util.List;
 import retrofit2.Call;

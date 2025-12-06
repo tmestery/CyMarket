@@ -1,4 +1,4 @@
-package com.example.cymarket;
+package com.example.cymarket.ProfilesSettings;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -8,8 +8,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cymarket.ApiService;
+import com.example.cymarket.BuyActivity;
 import com.example.cymarket.LoginSignup.LoginActivity;
 import com.example.cymarket.Messages.GroupListActivity;
+import com.example.cymarket.R;
+import com.example.cymarket.SellActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -19,6 +23,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Activity for user settings, including account deletion, profile picture removal,
+ * and logout functionality. Displays user information such as username, email,
+ * and password.
+ *
+ * @author Tyler Mestery
+ */
 public class SettingsActivity extends AppCompatActivity {
     private Button deleteAccount;
     private Button removePFP;
@@ -29,6 +40,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     private static final String BASE_URL = "http://coms-3090-056.class.las.iastate.edu:8080/";
 
+    /**
+     * Initializes the settings activity, sets up UI elements, Retrofit calls,
+     * and bottom navigation.
+     *
+     * @param savedInstanceState Bundle containing saved state if any
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,6 +157,9 @@ public class SettingsActivity extends AppCompatActivity {
             });
         });
 
+        /**
+         * Sets up the bottom navigation bar to switch between Buy, Sell, and Chat pages.
+         */
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();

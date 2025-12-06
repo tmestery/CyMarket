@@ -1,4 +1,4 @@
-package com.example.cymarket;
+package com.example.cymarket.ProfilesSettings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,7 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.cymarket.ApiService;
+import com.example.cymarket.BuyActivity;
+import com.example.cymarket.MainActivity;
 import com.example.cymarket.Messages.MessagesActivity;
+import com.example.cymarket.NotificationsActivity;
+import com.example.cymarket.R;
+import com.example.cymarket.SellActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,6 +40,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
+/**
+ * Activity for displaying and managing the user's profile.
+ * Users can view their username, join date, profile picture, and navigate
+ * to other parts of the app. Also allows uploading a new profile image.
+ *
+ * @author Tyler Mestery
+ */
 public class ProfilesActivity extends AppCompatActivity {
 
     private Button homeButton, settingsButton, notifsButton;
@@ -43,6 +56,14 @@ public class ProfilesActivity extends AppCompatActivity {
     private ApiService apiService;
     private ApiService apiServiceScalars;
 
+    /**
+     * Initializes the activity, sets up views, navigation, profile loading,
+     * and image selection/upload functionality.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down, this Bundle contains
+     *                           the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,6 +187,13 @@ public class ProfilesActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Handles result from image picker intent and uploads selected profile image.
+     *
+     * @param requestCode the request code originally supplied to startActivityForResult()
+     * @param resultCode  the result code returned by the child activity
+     * @param data        the intent data returned
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -195,6 +223,13 @@ public class ProfilesActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Reads all bytes from an InputStream.
+     *
+     * @param inputStream the InputStream to read
+     * @return byte array of the InputStream contents
+     * @throws IOException if an I/O error occurs
+     */
     private byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -205,6 +240,12 @@ public class ProfilesActivity extends AppCompatActivity {
         return byteBuffer.toByteArray();
     }
 
+    /**
+     * Uploads a profile image to the backend server.
+     *
+     * @param username the username of the user
+     * @param imageUri the URI of the selected image
+     */
     private void uploadProfilePic(String username, Uri imageUri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(imageUri);
