@@ -20,6 +20,9 @@ public interface CheckoutRepository extends JpaRepository<Checkout, Long> {
     
     @Query("SELECT c FROM Checkout c WHERE c.user.id = :userId AND c.status = :status")
     List<Checkout> findByUserIdAndStatus(@Param("userId") int userId, @Param("status") OrderStatus status);
-    
+
+    @Query("SELECT SUM(c.totalPrice) FROM Checkout c")
+    Double getTotalSales();
+
     long countByUserId(int userId);
 }

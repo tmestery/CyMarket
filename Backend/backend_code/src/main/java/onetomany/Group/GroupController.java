@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,6 +32,16 @@ public class GroupController {
     public Group getGroups(@PathVariable String name){
         return groupRepository.findByName(name);
     }
+
+
+    @GetMapping(path = "/getMembers/{groupId}")
+    public Set<User> getGroupMembers(@PathVariable int groupId){
+        Group temp= groupRepository.findById(groupId);
+        if(temp== null)
+            return null;
+        return temp.getUsers();
+    }
+    
     @PostMapping(path = "/create/{groupName}")
     public int createGroup(@PathVariable String groupName) {
         if (groupRepository.findByName(groupName) != null) {
