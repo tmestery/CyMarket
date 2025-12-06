@@ -1,7 +1,7 @@
 package com.example.cymarket;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,8 +16,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.*;
 public class AlexanderSystemTest {
 
     @Rule
-    public ActivityTestRule<CheckoutActivity> activityRule =
-            new ActivityTestRule<>(CheckoutActivity.class);
+    public ActivityScenarioRule<CheckoutActivity> activityRule =
+            new ActivityScenarioRule<>(CheckoutActivity.class);
 
     // Test 1: Successful Checkout
     @Test
