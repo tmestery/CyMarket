@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cymarket.R;
-import com.example.cymarket.ReportUserActivity;
+import com.example.cymarket.Reporting.ReportUserActivity;
 
 import java.util.List;
 

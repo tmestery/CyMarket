@@ -1,4 +1,4 @@
-package com.example.cymarket;
+package com.example.cymarket.Reporting;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,16 +9,33 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.cymarket.BuyActivity;
 import com.example.cymarket.Messages.FriendsActivity;
+import com.example.cymarket.R;
+import com.example.cymarket.SellActivity;
+import com.example.cymarket.VolleySingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Activity for reporting a user.
+ * <p>
+ * Allows the current user to submit a report against another user, sending the report to the backend.
+ * </p>
+ *
+ * @author Tyler Mestery
+ */
 public class ReportUserActivity extends AppCompatActivity {
 
     private Button fileReport;
     private EditText reportText;
 
+    /**
+     * Initializes the activity, sets up views, handles report submission, and bottom navigation.
+     *
+     * @param savedInstanceState the saved state of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +63,11 @@ public class ReportUserActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sends the report data to the backend server via a POST request.
+     *
+     * @param reportedUser the username of the user being reported
+     */
     private void sendReportToBackend(String reportedUser) {
         String text = reportText.getText().toString().trim();
         if (text.isEmpty()) {

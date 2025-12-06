@@ -19,7 +19,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.cymarket.BuyActivity;
 import com.example.cymarket.R;
-import com.example.cymarket.ReportUserActivity;
+import com.example.cymarket.Reporting.ReportUserActivity;
 import com.example.cymarket.SellActivity;
 import com.example.cymarket.WebSocketService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;

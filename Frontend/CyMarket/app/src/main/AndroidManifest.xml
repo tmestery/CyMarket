@@ -70,7 +70,7 @@
             android:name=".Messages.GroupListActivity"
             android:exported="false"/>
         <activity
-            android:name=".ReportUserActivity"
+            android:name=".Reporting.ReportUserActivity"
             android:exported="false"/>
         <activity
             android:name=".FavoritesActivity"
