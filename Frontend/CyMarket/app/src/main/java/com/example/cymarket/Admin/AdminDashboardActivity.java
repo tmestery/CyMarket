@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,12 +44,12 @@ import retrofit2.Response;
  */
 public class AdminDashboardActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private TextView totalSalesText;
     private Button salesButton;
     private Button usersButton;
     private Button reportButton;
     private RecyclerView reportsRecyclerView;
     private ReportsAdapter reportsAdapter;
-
     private FriendsAdapter adapter;
 
     /**
@@ -68,13 +69,17 @@ public class AdminDashboardActivity extends AppCompatActivity {
         usersButton = findViewById(R.id.users_btn);
         reportButton = findViewById(R.id.report_btn);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+        totalSalesText = findViewById(R.id.total_sales_amount);
 
         // Setting up view reports for admin:
         reportsRecyclerView = findViewById(R.id.recyclerViewReports);
         reportsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // Fetch total sales;
+        fetchTotalSales();
+
         // Set sales and users info displays that will be hidden/brought out:
-        LinearLayout bottomNaveSales = findViewById(R.id.bottom_nav_sales);
+        LinearLayout bottomNaveSales = findViewById(R.id.top_nav_sales);
         LinearLayout bottomNaveSales2 = findViewById(R.id.bottom_nav_sales_2);
         LinearLayout bottomNavUsers = findViewById(R.id.bottom_nav_users);
         LinearLayout bottomReport = findViewById(R.id.bottom_report_users);
@@ -113,6 +118,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 bottomNaveSales.setVisibility(View.VISIBLE);
                 bottomNaveSales2.setVisibility(View.VISIBLE);
                 bottomReport.setVisibility(View.INVISIBLE);
+
+                fetchTotalSales(); // ← THIS WAS MISSING
             }
         });
 
@@ -206,4 +213,30 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Fetches the total sales amount from the backend and displays it.
+     */
+    private void fetchTotalSales() {
+        ApiService apiService = RetroClient.getApiService();
+
+        apiService.getTotalSales().enqueue(new Callback<Double>() {
+            @Override
+            public void onResponse(Call<Double> call, Response<Double> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    double totalSales = response.body();
+
+                    totalSalesText.setText(
+                            String.format("$%,.2f", totalSales)
+                    );
+                } else {
+                    totalSalesText.setText("$0.00");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Double> call, Throwable t) {
+                totalSalesText.setText("$0.00");
+            }
+        });
+    }
 }

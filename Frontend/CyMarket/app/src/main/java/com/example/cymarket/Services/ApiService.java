@@ -124,4 +124,12 @@ import retrofit2.http.Query;
             @Path("email") String email,
             @Query("password") String password
     );
+
+    /**
+     * Gets the total sales across the application.
+     *
+     * @return total sales Double
+     */
+    @GET("/sales/total")
+    Call<Double> getTotalSales();
 }

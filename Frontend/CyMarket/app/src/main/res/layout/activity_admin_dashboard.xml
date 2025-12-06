@@ -86,9 +86,9 @@
             app:cornerRadius="30dp" />
     </LinearLayout>
 
-    <!-- Bottom-Sales-Bar -->
+    <!-- Top-Sales-Bar -->
     <LinearLayout
-        android:id="@+id/bottom_nav_sales"
+        android:id="@+id/top_nav_sales"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -122,46 +122,16 @@
                 android:textColor="@android:color/black" />
 
             <TextView
+                android:id="@+id/total_sales_amount"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:fontFamily="@font/inter"
                 android:textSize="28sp"
-                android:text="$8,638.90"
+                android:text="$1,000"
                 android:textColor="@android:color/black" />
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            app:cardCornerRadius="10dp"
-            app:strokeColor="#F6F6F6"
-            app:strokeWidth="1dp"
-            app:cardBackgroundColor="@android:color/transparent">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="17dp"
-                android:layout_marginTop="6dp"
-                android:gravity="start"
-                android:fontFamily="@font/inter"
-                android:textSize="16sp"
-                android:text="Monthly Sales"
-                android:layout_marginBottom="75dp"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:fontFamily="@font/inter"
-                android:textSize="28sp"
-                android:text="$2,906.50"
-                android:textColor="@android:color/black" />
-        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
     <!-- Bottom-Sales-Bar-2 -->
