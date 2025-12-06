@@ -94,6 +94,8 @@ public class MessagesActivity extends AppCompatActivity {
         groupName = getIntent().getStringExtra("groupName");
         CHAT_KEY = "group_" + groupId;
 
+        Log.d("GROUP_ID_DEBUG", "groupId = " + groupId);
+
         groupChatName.setText(groupName != null ? groupName : "Group #" + groupId);
 
         // --- Send message handler ---
@@ -218,7 +220,9 @@ public class MessagesActivity extends AppCompatActivity {
      * Updates the UI to show all members except the current user.
      */
     private void fetchGroupMembers() {
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/getMembers/" + groupId;
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/groups/getMembers/" + groupId;
+
+        Log.d("REPORT_DEBUG", "Fetching members URL = http://coms-3090-056.class.las.iastate.edu:8080/groups/getMembers/" + groupId);
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,
@@ -234,6 +238,7 @@ public class MessagesActivity extends AppCompatActivity {
                             JSONObject user = users.getJSONObject(i);
                             String uname = user.getString("username");
 
+                            Log.d("REPORT_DEBUG", "Found user from backend = " + uname);
                             if (!uname.equals(username)) {
                                 groupMembers.add(uname);
                             }
