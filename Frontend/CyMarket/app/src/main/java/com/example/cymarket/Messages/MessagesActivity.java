@@ -158,6 +158,8 @@ public class MessagesActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(MessagesActivity.this, ReportUserActivity.class);
                     intent.putExtra("reportedUser", selectedUser);
+                    intent.putExtra("groupId", groupId);
+                    intent.putExtra("currentUser", username);
                     startActivity(intent);
                 })
                 .setNegativeButton("Cancel", null)

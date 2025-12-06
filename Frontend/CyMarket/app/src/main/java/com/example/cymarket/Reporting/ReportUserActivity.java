@@ -1,22 +1,18 @@
 package com.example.cymarket.Reporting;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Request;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.cymarket.BuyActivity;
 import com.example.cymarket.Messages.FriendsActivity;
 import com.example.cymarket.R;
 import com.example.cymarket.SellActivity;
 import com.example.cymarket.Services.VolleySingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Activity for reporting a user.
@@ -44,10 +40,12 @@ public class ReportUserActivity extends AppCompatActivity {
         fileReport = findViewById(R.id.reportButton);
         reportText = findViewById(R.id.reportInput);
 
-        // Get the reported user/group
         String reportedUser = getIntent().getStringExtra("reportedUser");
+        String currentUser = getIntent().getStringExtra("currentUser");
 
-        fileReport.setOnClickListener(v -> sendReportToBackend(reportedUser));
+        fileReport.setOnClickListener(v ->
+                sendReportToBackend(currentUser, reportedUser)
+        );
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -68,50 +66,45 @@ public class ReportUserActivity extends AppCompatActivity {
      *
      * @param reportedUser the username of the user being reported
      */
-    private void sendReportToBackend(String reportedUser) {
+    private void sendReportToBackend(String reporter, String reportedUser) {
         String text = reportText.getText().toString().trim();
         if (text.isEmpty()) {
             Toast.makeText(this, "Enter report text", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        int userId = prefs.getInt("userId", -1);
-        if (userId == -1) {
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        String url =
+                "http://coms-3090-056.class.las.iastate.edu:8080/usersLogin/newReport/"
+                        + reporter + "/" + reportedUser;
 
-        JSONObject body = new JSONObject();
-        try {
-            JSONObject userObj = new JSONObject();
-            userObj.put("id", userId);
+        com.android.volley.toolbox.StringRequest request =
+                new com.android.volley.toolbox.StringRequest(
+                        Request.Method.POST,
+                        url,
+                        response -> {
+                            Toast.makeText(this, "Report submitted", Toast.LENGTH_SHORT).show();
+                            finish();
+                        },
+                        error -> Toast.makeText(
+                                this,
+                                "Failed: " +
+                                        (error.networkResponse != null
+                                                ? error.networkResponse.statusCode
+                                                : "Network error"),
+                                Toast.LENGTH_SHORT
+                        ).show()
+                ) {
+                    @Override
+                    public byte[] getBody() {
+                        return text.getBytes(); // ✅ payload is raw string
+                    }
 
-            body.put("report", text);
-            body.put("user", userObj);
+                    @Override
+                    public String getBodyContentType() {
+                        return "text/plain; charset=utf-8";
+                    }
+                };
 
-            // Add reported user info
-            body.put("reportedUser", reportedUser);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to build report", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/reports/";
-
-        JsonObjectRequest req = new JsonObjectRequest(
-                Request.Method.POST,
-                url,
-                body,
-                response -> {
-                    Toast.makeText(this, "Report submitted", Toast.LENGTH_SHORT).show();
-                    finish(); // close activity
-                },
-                error -> Toast.makeText(this, "Failed: " + (error.getMessage() != null ? error.getMessage() : "Network error"), Toast.LENGTH_SHORT).show()
-        );
-
-        VolleySingleton.getInstance(this).addToRequestQueue(req);
+        VolleySingleton.getInstance(this).addToRequestQueue(request);
     }
 }
