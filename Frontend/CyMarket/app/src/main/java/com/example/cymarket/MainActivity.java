@@ -15,6 +15,13 @@ import com.example.cymarket.ProfilesSettings.SettingsActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+/**
+ * MainActivity serves as the landing page for CyMarket.
+ * It handles top app bar interactions, bottom navigation,
+ * and fetching the username from the backend if missing.
+ *
+ * @author Tyler Mestery
+ */
 public class MainActivity extends AppCompatActivity {
     private RequestQueue queue;
 
@@ -92,6 +99,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Fetches the username from the backend given an email.
+     * Saves the username in SharedPreferences and displays a welcome toast.
+     *
+     * @param email the user's email used to retrieve their username
+     */
     private void fetchUsername(String email) {
         String url = BASE_URL + "/users/getName/" + email;
 

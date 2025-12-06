@@ -14,6 +14,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Service that manages WebSocket connections using Java-WebSocket.
+ *
+ * <p>This service supports connecting, sending messages, and disconnecting multiple WebSocket clients identified by unique keys.</p>
+ *
+ * @author Tyler Mestery
+ */
 public class WebSocketService extends Service {
 
     private final Map<String, WebSocketClient> sockets = new HashMap<>();
@@ -26,6 +33,21 @@ public class WebSocketService extends Service {
                 .registerReceiver(sendReceiver, new IntentFilter("WS_SEND"));
     }
 
+    /**
+     * Called by the system every time a client starts the service using startService(Intent).
+     * Handles WebSocket connection and disconnection requests based on the Intent's action.
+     *
+     * Supported actions:
+     * <ul>
+     *     <li>{@code "WS_CONNECT"}: Connects to a WebSocket. Requires extras "key" and "url".</li>
+     *     <li>{@code "WS_DISCONNECT"}: Disconnects an existing WebSocket. Requires extra "key".</li>
+     * </ul>
+     *
+     * @param intent The Intent supplied to startService(), containing action and extras.
+     * @param flags Additional data about the start request (unused here).
+     * @param startId A unique integer representing this specific request to start.
+     * @return {@link #START_STICKY} to indicate the service should remain running until explicitly stopped.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) return START_STICKY;
@@ -43,6 +65,12 @@ public class WebSocketService extends Service {
         return START_STICKY;
     }
 
+    /**
+     * Connects a WebSocket client for a given key and URL.
+     *
+     * @param key unique identifier for the WebSocket
+     * @param url WebSocket URL
+     */
     private void connect(String key, String url) {
         if (sockets.containsKey(key)) {
             Log.d("WS_SERVICE", "Already connected for key = " + key);
@@ -84,6 +112,9 @@ public class WebSocketService extends Service {
         client.connect();
     }
 
+    /**
+     * Connects a WebSocket client to the given URL and stores it with a key.
+     */
     private final BroadcastReceiver sendReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -105,6 +136,11 @@ public class WebSocketService extends Service {
         }
     };
 
+    /**
+     * Disconnects the WebSocket associated with the given key.
+     *
+     * @param key unique identifier for the WebSocket
+     */
     private void disconnect(String key) {
         if (!sockets.containsKey(key)) {
             Log.d("WS_SERVICE", "No socket to disconnect for key=" + key);

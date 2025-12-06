@@ -16,9 +16,19 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-// Gonna need to update others to use this, can make code more organized
-public interface ApiService {
-    // Can be used to post a profile picture for the user
+/**
+ * Retrofit API service interface for backend communication in CyMarket.
+ * Defines endpoints for user management, profile images, messaging, and reports.
+ *
+ * @author Tyler Mestery
+ */public interface ApiService {
+    /**
+     * Uploads a profile image for a user.
+     *
+     * @param username the username of the user
+     * @param image    the image file to upload
+     * @return Call object for Retrofit
+     */
     @Multipart
     @POST("/users/{username}/profile-image")
     Call<ResponseBody> uploadProfileImage(
@@ -26,36 +36,89 @@ public interface ApiService {
             @Part MultipartBody.Part image
     );
 
-    // Can be used to get user's data for when he signed up for CyMarket
+    /**
+     * Retrieves the join date of a user.
+     *
+     * @param email    the user's email (encoded)
+     * @param password the user's password (encoded)
+     * @return Call object returning the join date as a string
+     */
     @GET("/users/joinDate/{email}/{password}")
     Call<String> getUserJoinDate(
             @Path(value = "email", encoded = true) String email,
             @Path(value = "password", encoded = true) String password
     );
 
-    // Can be used to delete a user from the database
+    /**
+     * Deletes a user from the database.
+     *
+     * @param username the username of the user to delete
+     * @return Call object returning Void
+     */
+
+    /**
+     * Deletes a user's profile image.
+     *
+     * @param username the username of the user
+     * @return Call object returning a string response
+     */
     @DELETE("users/u/{username}")
     Call<Void> deleteUser(@Path("username") String username);
 
-    // Can be used to delete user's profile picture
+    /**
+     * Deletes a user's profile image.
+     *
+     * @param username the username of the user
+     * @return Call object returning a string response
+     */
     @DELETE("users/{username}/profile-" + "image")
     Call<String> deleteProfileImage(@Path("username") String username);
 
-    // Can be used to display all users - for messaging in the future + friends??
+    /**
+     * Retrieves a list of all users.
+     *
+     * @return Call object returning a list of User objects
+     */
     @GET("/users")
     Call<List<User>> getAllUsers();
 
-    // Can be used to get the user's name
+    /**
+     * Retrieves a user's name by email.
+     *
+     * @param email the user's email
+     * @return Call object returning the user's name as a string
+     */
     @GET("users/getName/{email}")
     Call<String> getName(@Path("email") String email);
 
-    // Can be used to get the reports for admin dashboard (determines outcome)
+    /**
+     * Retrieves reports for admin dashboard.
+     *
+     * @param id       admin id
+     * @param email    admin email
+     * @param password admin password
+     * @return Call object returning a Reports object
+     */
     @GET("/adminUser/getReports/{id}/{email}/{password}/")
     Call<Reports> getReports(@Path("id") int id, @Path("email") String email, @Path("password") String password);
 
+    /**
+     * Adds a user to a group.
+     *
+     * @param groupID  the ID of the group
+     * @param username the username to add
+     * @return Call object returning Void
+     */
     @POST("/groups/group/add-user/{id}/{username}")
     Call<Void> addUserToGroup(@Path("id") int groupID, @Path("username") String username);
 
+    /**
+     * Retrieves all reports for an admin.
+     *
+     * @param email    admin email
+     * @param password admin password
+     * @return Call object returning a Reports object
+     */
     @GET("/adminUser/getAllReports/{email}")
     Call<Reports> getAllReports(
             @Path("email") String email,
