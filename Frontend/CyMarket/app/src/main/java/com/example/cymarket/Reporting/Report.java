@@ -1,5 +1,6 @@
 package com.example.cymarket.Reporting;
 
+import com.example.cymarket.LoginSignup.User;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,118 +23,42 @@ public class Report {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("title")
-    private String title;
+    @SerializedName("report")
+    private String report;
 
-    @SerializedName("description")
-    private String description;
+    @SerializedName("user")
+    private User user;
 
-    @SerializedName("date")
-    private String date;
+    @SerializedName("seller")
+    private User seller;
 
-    @SerializedName("username")
-    private String username;
+    @SerializedName("reviewed")
+    private boolean reviewed;
 
-    /**
-     * Constructs a Report object with the given properties.
-     *
-     * @param id the unique identifier of the report
-     * @param title the title or summary of the report
-     * @param description the detailed description of the report
-     * @param date the date the report was submitted
-     * @param username the username of the user who submitted the report
-     */
-    public Report(int id, String title, String description, String date, String username) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.date = date;
-        this.username = username;
-    }
-
-    /**
-     * Returns the ID of the report.
-     *
-     * @return the report ID
-     */
+    // getters and setters
     public int getId() { return id; }
-
-    /**
-     * Sets the ID of the report.
-     *
-     * @param id the report ID to set
-     */
     public void setId(int id) { this.id = id; }
 
-    /**
-     * Returns the title of the report.
-     *
-     * @return the report title
-     */
-    public String getTitle() { return title; }
+    public String getReport() { return report; }
+    public void setReport(String report) { this.report = report; }
 
-    /**
-     * Sets the title of the report.
-     *
-     * @param title the report title to set
-     */
-    public void setTitle(String title) { this.title = title; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    /**
-     * Returns the description of the report.
-     *
-     * @return the report description
-     */
-    public String getDescription() { return description; }
+    public User getSeller() { return seller; }
+    public void setSeller(User seller) { this.seller = seller; }
 
-    /**
-     * Sets the description of the report.
-     *
-     * @param description the report description to set
-     */
-    public void setDescription(String description) { this.description = description; }
+    public boolean isReviewed() { return reviewed; }
+    public void setReviewed(boolean reviewed) { this.reviewed = reviewed; }
 
-    /**
-     * Returns the submission date of the report.
-     *
-     * @return the report date as a String
-     */
-    public String getDate() { return date; }
-
-    /**
-     * Sets the submission date of the report.
-     *
-     * @param date the report date to set
-     */
-    public void setDate(String date) { this.date = date; }
-
-    /**
-     * Returns the username of the user who submitted the report.
-     *
-     * @return the reporter's username
-     */
-    public String getUsername() { return username; }
-
-    /**
-     * Sets the username of the user who submitted the report.
-     *
-     * @param username the reporter's username to set
-     */
-    public void setUsername(String username) { this.username = username; }
-
-    /**
-     * Returns a string representation of the Report object.
-     *
-     * @return a string describing all report properties
-     */
     @Override
     public String toString() {
         return "Report{" +
                 "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", date='" + date + '\'' +
-                ", username='" + username + '\'' +
+                ", report='" + report + '\'' +
+                ", user=" + user +
+                ", seller=" + seller +
+                ", reviewed=" + reviewed +
                 '}';
     }
 }

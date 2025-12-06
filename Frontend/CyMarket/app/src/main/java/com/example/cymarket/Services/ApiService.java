@@ -1,6 +1,7 @@
 package com.example.cymarket.Services;
 
 import com.example.cymarket.LoginSignup.User;
+import com.example.cymarket.Reporting.Report;
 import com.example.cymarket.Reporting.Reports;
 
 import java.util.List;
@@ -119,11 +120,13 @@ import retrofit2.http.Query;
      * @param password admin password
      * @return Call object returning a Reports object
      */
-    @GET("/adminUser/getAllReports/{email}")
-    Call<Reports> getAllReports(
-            @Path("email") String email,
-            @Query("password") String password
-    );
+    // Get all report IDs for admin
+    @GET("/adminUser/getAllReportIds/{email}")
+    Call<List<Integer>> getReportIds(@Path("email") String email, @Query("password") String password);
+
+    // Get single report by ID
+    @GET("/reports/{id}")
+    Call<Report> getReportById(@Path("id") int id);
 
     /**
      * Gets the total sales across the application.

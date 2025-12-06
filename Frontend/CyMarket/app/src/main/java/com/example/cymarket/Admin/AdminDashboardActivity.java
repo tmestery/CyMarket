@@ -3,6 +3,7 @@ package com.example.cymarket.Admin;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cymarket.Reporting.Report;
 import com.example.cymarket.Services.ApiService;
 import com.example.cymarket.Messages.FriendsAdapter;
 import com.example.cymarket.R;
@@ -22,6 +24,7 @@ import com.example.cymarket.Services.RetroClient;
 import com.example.cymarket.LoginSignup.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -182,35 +185,43 @@ public class AdminDashboardActivity extends AppCompatActivity {
      * Uses stored admin credentials from SharedPreferences.
      */
     private void fetchReports() {
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String email = prefs.getString("email", "");
-        String password = prefs.getString("password", "");
-
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Missing admin login credentials", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         ApiService apiService = RetroClient.getApiService();
+        List<Report> allReports = new ArrayList<>();
+        int maxAttempt = 100; // maximum number of IDs to try
+        int startId = 1;
 
-        // Your endpoint: /adminUser/getAllReports/{email}
-        apiService.getAllReports(email, password).enqueue(new Callback<Reports>() {
-            @Override
-            public void onResponse(Call<Reports> call, Response<Reports> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Reports reports = response.body();
-                    reportsAdapter = new ReportsAdapter(reports.getReportList());
-                    reportsRecyclerView.setAdapter(reportsAdapter);
-                } else {
-                    Toast.makeText(AdminDashboardActivity.this, "No reports found", Toast.LENGTH_SHORT).show();
+        for (int id = startId; id <= maxAttempt; id++) {
+            final int currentId = id;
+            Log.d("AdminDashboard", "Fetching report with ID: " + currentId);
+
+            apiService.getReportById(currentId).enqueue(new Callback<Report>() {
+                @Override
+                public void onResponse(Call<Report> call, Response<Report> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Report report = response.body();
+                        Log.d("AdminDashboard", "Fetched report ID " + currentId + ": " + report);
+                        allReports.add(report);
+
+                        // Update RecyclerView
+                        if (reportsAdapter == null) {
+                            reportsAdapter = new ReportsAdapter(allReports);
+                            reportsRecyclerView.setAdapter(reportsAdapter);
+                        } else {
+                            reportsAdapter.setReports(allReports);
+                        }
+                    } else if (response.code() == 404) {
+                        Log.d("AdminDashboard", "Report ID " + currentId + " not found (404).");
+                    } else {
+                        Log.e("AdminDashboard", "Failed to fetch report ID " + currentId + ". Response code: " + response.code());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Reports> call, Throwable t) {
-                Toast.makeText(AdminDashboardActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<Report> call, Throwable t) {
+                    Log.e("AdminDashboard", "Error fetching report ID " + currentId + ": " + t.getMessage());
+                }
+            });
+        }
     }
 
     /**

@@ -62,9 +62,19 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ReportVi
     @Override
     public void onBindViewHolder(@NonNull ReportViewHolder holder, int position) {
         Report report = reports.get(position);
-        holder.title.setText(report.getTitle());
-        holder.description.setText(report.getDescription());
-        holder.date.setText(report.getDate());
+
+        // Display report ID as title
+        holder.title.setText("Report ID: " + report.getId());
+
+        // Display the report content
+        holder.description.setText(report.getReport());
+
+        // Display reporting user's username or email
+        if (report.getUser() != null) {
+            holder.date.setText("By: " + report.getUser().getUsername());
+        } else {
+            holder.date.setText("By: Unknown");
+        }
     }
 
     /**
