@@ -30,7 +30,7 @@
             android:name=".ProfilesSettings.ProfilesActivity"
             android:exported="false" />
         <service
-            android:name=".WebSocketService"
+            android:name=".Services.WebSocketService"
             android:exported="false" />
         <activity
             android:name=".ProfilesSettings.SettingsActivity"

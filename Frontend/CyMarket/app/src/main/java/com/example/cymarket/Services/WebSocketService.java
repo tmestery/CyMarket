@@ -1,4 +1,4 @@
-package com.example.cymarket;
+package com.example.cymarket.Services;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;

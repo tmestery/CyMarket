@@ -13,7 +13,7 @@ import com.example.cymarket.BuyActivity;
 import com.example.cymarket.Messages.FriendsActivity;
 import com.example.cymarket.R;
 import com.example.cymarket.SellActivity;
-import com.example.cymarket.VolleySingleton;
+import com.example.cymarket.Services.VolleySingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONException;
 import org.json.JSONObject;

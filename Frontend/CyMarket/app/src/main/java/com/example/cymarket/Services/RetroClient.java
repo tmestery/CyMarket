@@ -1,4 +1,4 @@
-package com.example.cymarket;
+package com.example.cymarket.Services;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

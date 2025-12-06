@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cymarket.ApiService;
+import com.example.cymarket.Services.ApiService;
 import com.example.cymarket.R;
-import com.example.cymarket.RetroClient;
+import com.example.cymarket.Services.RetroClient;
 import com.example.cymarket.LoginSignup.User;
 
 import java.util.List;

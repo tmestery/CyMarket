@@ -12,12 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cymarket.ApiService;
+import com.example.cymarket.Services.ApiService;
 import com.example.cymarket.Messages.FriendsAdapter;
 import com.example.cymarket.R;
 import com.example.cymarket.Reporting.Reports;
 import com.example.cymarket.Reporting.ReportsAdapter;
-import com.example.cymarket.RetroClient;
+import com.example.cymarket.Services.RetroClient;
 import com.example.cymarket.LoginSignup.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

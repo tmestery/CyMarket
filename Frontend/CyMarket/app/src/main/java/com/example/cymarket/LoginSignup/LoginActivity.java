@@ -16,7 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.cymarket.Admin.AdminDashboardActivity;
 import com.example.cymarket.MainActivity;
 import com.example.cymarket.R;
-import com.example.cymarket.VolleySingleton;
+import com.example.cymarket.Services.VolleySingleton;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

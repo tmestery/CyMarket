@@ -14,7 +14,7 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.example.cymarket.R;
-import com.example.cymarket.VolleySingleton;
+import com.example.cymarket.Services.VolleySingleton;
 
 import org.json.JSONObject;
 import java.util.HashMap;

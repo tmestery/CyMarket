@@ -11,12 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
-import org.json.JSONException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.cymarket.Services.VolleySingleton;
+
 import org.json.JSONObject;
 
 /**

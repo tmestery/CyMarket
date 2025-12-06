@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.cymarket.ApiService;
+import com.example.cymarket.Services.ApiService;
 import com.example.cymarket.BuyActivity;
 import com.example.cymarket.MainActivity;
 import com.example.cymarket.Messages.MessagesActivity;
