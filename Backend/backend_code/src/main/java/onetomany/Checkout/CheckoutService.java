@@ -43,6 +43,24 @@ public class CheckoutService {
             throw new IllegalArgumentException("User not found with id: " + request.getUserId());
         }
 
+        // Calculate total and check balance
+        double estimatedTotal = 0.0;
+        for (CheckoutItemRequest itemRequest : request.getItems()) {
+            Item item = itemsRepository.findById(itemRequest.getItemId()).orElse(null);
+            if (item == null) {
+                throw new IllegalArgumentException("Item not found with id: " + itemRequest.getItemId());
+            }
+            estimatedTotal += item.getPrice() * itemRequest.getQuantity();
+        }
+
+        if (user.getBalance() < estimatedTotal) {
+            throw new IllegalStateException("Insufficient balance. Wallet: $" + String.format("%.2f", user.getBalance()) + ", Total: $" + String.format("%.2f", estimatedTotal));
+        }
+
+        // Deduct balance from buyer
+        user.setBalance(user.getBalance() - estimatedTotal);
+        userRepository.save(user);
+
         Checkout checkout = new Checkout(
                 user,
                 request.getShippingAddress(),
@@ -98,6 +116,14 @@ public class CheckoutService {
             // update seller sales count
             seller.setTotalSales(seller.getTotalSales() + itemRequest.getQuantity());
             sellerRepository.save(seller);
+
+            // Credit seller balance
+            if (seller.getUserLogin() != null && seller.getUserLogin().getUser() != null) {
+                User sellerUser = seller.getUserLogin().getUser();
+                double itemTotal = item.getPrice() * itemRequest.getQuantity();
+                sellerUser.setBalance(sellerUser.getBalance() + itemTotal);
+                userRepository.save(sellerUser);
+            }
 
             // Notify buyer that item was added or purchased
             String buyerMsg = "Added '" + item.getName() + "' x" + itemRequest.getQuantity() + " to your order.";
@@ -192,6 +218,13 @@ public class CheckoutService {
             throw new IllegalStateException("Cannot cancel order with status: " + checkout.getStatus());
         }
 
+        // Refund the Buyer
+        User buyer = checkout.getUser();
+        if (buyer != null) {
+            buyer.setBalance(buyer.getBalance() + checkout.getTotalPrice());
+            userRepository.save(buyer);
+        }
+
         for (CheckoutItem checkoutItem : checkout.getItems()) {
             Item item = checkoutItem.getItem();
             item.setQuantity(item.getQuantity() + checkoutItem.getQuantity());
@@ -201,6 +234,14 @@ public class CheckoutService {
             Seller seller = checkoutItem.getSeller();
             seller.setTotalSales(seller.getTotalSales() - checkoutItem.getQuantity());
             sellerRepository.save(seller);
+
+            // Revert Seller Credit (Debit the seller)
+            if (seller.getUserLogin() != null && seller.getUserLogin().getUser() != null) {
+                User sellerUser = seller.getUserLogin().getUser();
+                double refundAmount = checkoutItem.getPrice() * checkoutItem.getQuantity();
+                sellerUser.setBalance(sellerUser.getBalance() - refundAmount);
+                userRepository.save(sellerUser);
+            }
 
             // Notify for cancellation (seller)
             User sellerUser = seller.getUserLogin() != null ? seller.getUserLogin().getUser() : null;

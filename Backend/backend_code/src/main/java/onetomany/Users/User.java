@@ -42,7 +42,9 @@ public class User {
     @Column(unique = true)
     private String emailId;
 
-     @ManyToMany(mappedBy = "users")
+    private double balance = 0.0;
+
+    @ManyToMany(mappedBy = "users")
     @JsonIgnore
     List<Group> userGroups;
 
@@ -283,5 +285,12 @@ public class User {
         this.userGroups.remove(group);
     }
 
-    
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
 }

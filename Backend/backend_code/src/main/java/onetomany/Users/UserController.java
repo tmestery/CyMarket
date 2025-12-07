@@ -75,6 +75,36 @@ public class UserController {
 
         return  userRepository.findById(id);
     }
+
+    @GetMapping("/users/{id}/balance")
+    public double getBalance(@PathVariable int id) {
+        User user = userRepository.findById(id);
+        if(user != null) {
+            return user.getBalance();
+        }
+        return 0.0;
+    }
+
+    @PutMapping("/users/{id}/balance")
+    public User updateBalance(@PathVariable int id, @RequestBody double amount) {
+        User user = userRepository.findById(id);
+        if(user != null) {
+            user.setBalance(amount);
+            userRepository.save(user);
+        }
+        return user;
+    }
+
+    @PutMapping("/users/{id}/addBalance")
+    public User addBalance(@PathVariable int id, @RequestBody double amount) {
+        User user = userRepository.findById(id);
+        if(user != null) {
+            user.setBalance(user.getBalance() + amount);
+            userRepository.save(user);
+        }
+        return user;
+    }
+
     @GetMapping(path = "/users/getName/{email}")
     String getName(@PathVariable String email){
         User temp =  userRepository.findByEmailId(email);
