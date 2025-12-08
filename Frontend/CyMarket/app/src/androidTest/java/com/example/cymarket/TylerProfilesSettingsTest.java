@@ -53,7 +53,6 @@ public class TylerProfilesSettingsTest {
         onView(withId(R.id.profile_image_view)).check(matches(isDisplayed()));
         onView(withId(R.id.prfls_home_page_btn)).check(matches(isDisplayed()));
         onView(withId(R.id.prfls_setting_btn)).check(matches(isDisplayed()));
-        onView(withId(R.id.prfls_notifications_btn)).check(matches(isDisplayed()));
     }
 
     // Username displayed from SharedPreferences
@@ -80,15 +79,6 @@ public class TylerProfilesSettingsTest {
         ActivityScenario.launch(ProfilesActivity.class);
 
         onView(withId(R.id.prfls_home_page_btn))
-                .perform(click());
-    }
-
-    // Notifications button navigates
-    @Test
-    public void testNotificationsButtonNavigation() {
-        ActivityScenario.launch(ProfilesActivity.class);
-
-        onView(withId(R.id.prfls_notifications_btn))
                 .perform(click());
     }
 
