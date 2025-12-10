@@ -21,6 +21,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Optional; // Ensure this is imported
+import onetomany.Items.ItemImage;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Base64;
+import org.springframework.mock.web.MockMultipartFile;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.util.ReflectionTestUtils;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import onetomany.Items.Item;
 import onetomany.Items.ItemImageRepository;
@@ -117,10 +126,7 @@ public class JasonSystemTest {
                     .andExpect(jsonPath("$.username", is("testUser")));
     }
 
-    /**
-     * This test targets logic within Checkout, Items, Notifications, Sellers, and Users
-     * to ensure high code coverage for these entities and related services.
-     */
+
     @Test
     public void testEntitiesAndCheckoutServiceCoverage() {
         // --- 1. User Entity Coverage ---
@@ -148,6 +154,13 @@ public class JasonSystemTest {
         item.setQuantity(10);
         item.setIfAvailable(true);
         
+        // Item getters coverage
+        assert item.getId() == 101;
+        assert item.getName().equals("Test Item");
+        assert item.getPrice() == 50.0;
+        assert item.getQuantity() == 10;
+        assert item.isIfAvailable();
+
         user.addItem(item);
         assert user.getLikedItems().contains(item);
         assert user.getLikedItemsCount() == 1;
@@ -157,6 +170,9 @@ public class JasonSystemTest {
         user.addItem(item);
         user.removeAllItems();
         assert user.getLikedItems().isEmpty();
+
+        // Coverage for User.getNotifications
+        assert user.getNotifications() == null || user.getNotifications().isEmpty();
 
         // --- 2. Notification Entity Coverage ---
         Notification notif = new Notification(user, NotificationType.TRANSACTION_PENDING, "Test Message");
@@ -191,6 +207,11 @@ public class JasonSystemTest {
         assert checkout.getCardHolderName().equals("Test Holder");
         assert checkout.getShippingZipCode().equals("50010");
         
+        // Coverage for Checkout Default Constructor
+        Checkout emptyCheckout = new Checkout();
+        assert emptyCheckout.getStatus() == OrderStatus.PENDING;
+        assert emptyCheckout.getOrderDate() != null;
+
         // Checkout Item Coverage
         Seller seller = new Seller();
         seller.setId(5L);
@@ -203,6 +224,11 @@ public class JasonSystemTest {
         sellerLogin.setUser(sellerUser);
         seller.setUserLogin(sellerLogin);
         item.setSeller(seller);
+
+        // Seller getters coverage
+        assert seller.getId() == 5L;
+        assert seller.getTotalSales() == 100;
+        assert seller.getUserLogin() == sellerLogin;
 
         CheckoutItem checkoutItem = new CheckoutItem(item, 2, seller);
         checkoutItem.setId(99L);
@@ -221,6 +247,13 @@ public class JasonSystemTest {
         checkout.completeOrder();
         assert checkout.getStatus() == OrderStatus.COMPLETED;
         
+        // Coverage for cancelOrder and getItemCount
+        checkout.cancelOrder();
+        assert checkout.getStatus() == OrderStatus.CANCELLED;
+
+        // getItemCount sums quantities (checkoutItem quantity is 2)
+        assert checkout.getItemCount() == 2;
+
         // --- 4. CheckoutService Logic Coverage ---
         // We manually instantiate the service and inject mocks to test the logic
         CheckoutService service = new CheckoutService();
@@ -295,6 +328,7 @@ public class JasonSystemTest {
         });
         
         when(itemsRepository.findAll()).thenReturn(itemList);
+        when(itemsRepository.findById(anyInt())).thenReturn(new Item());
 
         String jsonItem = "{\"name\":\"Gaming Console\", \"description\":\"New\", \"price\":499.99}";
 
@@ -306,8 +340,130 @@ public class JasonSystemTest {
 
         System.out.println("Items count: " + itemList.size());
     }
-    
 
+    @Test
+    public void testItemControllerAdditionalMethods() throws Exception {
+        // Setup Item and Seller
+        Item item = new Item();
+        item.setId(200);
+        item.setName("Specific Item");
+        item.setQuantity(5);
+        item.setPrice(10.0);
+        
+        Seller seller = new Seller();
+        seller.setId(50L);
+        seller.setUsername("SellerUser");
+        seller.setTotalSales(10);
+        item.setSeller(seller);
+
+        // Mocks
+        when(itemsRepository.findById(200)).thenReturn(item);
+        when(itemsRepository.findByUsername("Specific Item")).thenReturn(item); // Mock for getUser/findByUsername
+        when(sellerRepository.findById(50L)).thenReturn(seller);
+        when(itemsRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
+
+        // 1. getAllItems
+        List<Item> allItems = new ArrayList<>();
+        allItems.add(item);
+        when(itemsRepository.findAll()).thenReturn(allItems);
+        controller.perform(get("/items"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name", is("Specific Item")));
+
+        // 2. getAllUser (findById)
+        controller.perform(get("/items/200"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("Specific Item")));
+
+        // 3. getUser (findByUsername)
+        controller.perform(get("/items/u/Specific Item"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("Specific Item")));
+
+        // 4. createItemWithSeller
+        String newItemJson = "{\"name\":\"Seller Item\", \"price\":20.0}";
+        controller.perform(post("/items/seller/50")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newItemJson))
+                .andExpect(status().isCreated());
+
+        // 5. updateItem
+        String updateJson = "{\"name\":\"Updated Item\", \"price\":15.0}";
+        controller.perform(put("/items/200")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJson))
+                .andExpect(status().isOk());
+
+        // 6. deleteItem
+        controller.perform(delete("/items/200"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message", is("success")));
+
+        // 7. getItemSeller
+        controller.perform(get("/items/200/seller"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is("SellerUser")));
+
+        // 8. createItemForSeller
+        controller.perform(post("/items/50/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newItemJson))
+                .andExpect(status().isCreated());
+
+        // 9. getItemQuantity
+        controller.perform(get("/items/200/quantity"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity", is(5)));
+
+        // 10. updateItemQuantity
+        controller.perform(put("/items/200/quantity?quantity=10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity", is(10)));
+        // Reset quantity for next tests
+        item.setQuantity(5);
+
+        // 11. incrementItemQuantity
+        controller.perform(post("/items/200/quantity/increment"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity", is(6)));
+
+        // 12. decrementItemQuantity
+        controller.perform(post("/items/200/quantity/decrement"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity", is(5)));
+
+        // 13. Image Handling
+        MockMultipartFile file = new MockMultipartFile("images", "test.jpg", "image/jpeg", "some xml".getBytes());
+        
+        // uploadItemImages
+        controller.perform(multipart("/items/200/images").file(file))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Images uploaded successfully"));
+
+        // Mock Image retrieval
+        ItemImage itemImage = new ItemImage("some xml".getBytes(), "image/jpeg");
+        // itemImage.setId(1L);
+        itemImage.setItem(item);
+        item.addImage(itemImage); // Add directly to item for getImages test
+
+        when(itemImageRepository.findById(1L)).thenReturn(Optional.of(itemImage));
+
+        // getItemImages
+        controller.perform(get("/items/200/images"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].contentType", is("image/jpeg")));
+
+        // getItemImage (single)
+        controller.perform(get("/items/200/images/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_JPEG));
+
+        // deleteItemImage
+        controller.perform(delete("/items/200/images/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Image deleted successfully"));
+    }
+    
 
     @Test
     public void testDeleteUser() throws Exception {
