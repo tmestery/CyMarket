@@ -2,6 +2,7 @@ package com.example.cymarket;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +36,8 @@ public class SellActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sell);     // sell activity xml
+
+
 
         // link to xml
         messageText = findViewById(R.id.sell_msg_txt);
@@ -76,6 +79,9 @@ public class SellActivity extends AppCompatActivity {
     private void postItemForSale(String itemName, String price, String description, String quantity) {
         String url = "http://coms-3090-056.class.las.iastate.edu:8080/items";
 
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        String username = prefs.getString("username", "unknown");
+
         // build the json payload using information entered by user
         JSONObject json = new JSONObject();
         try {
@@ -83,6 +89,14 @@ public class SellActivity extends AppCompatActivity {
             json.put("price", Double.parseDouble(price));
             json.put("description", description);
             json.put("quantity", Integer.parseInt(quantity));
+            json.put("username", username);
+            json.put("category", "Electronics"); // placeholder
+            JSONObject sellerJson = new JSONObject();
+            sellerJson.put("id", 1); // placeholder
+            json.put("seller", sellerJson);
+            json.put("ifAvailable", true);    // will be available when listed
+
+            Log.d("SELL", "Payload: " + json.toString());
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(),
                     "Error creating request: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -99,21 +113,54 @@ public class SellActivity extends AppCompatActivity {
                     priceEditText.setText("");
                     descriptionEditText.setText("");
                     quantityEditText.setText("");
+
+
+                    // get time
+                    String createdAt = java.time.LocalDateTime.now().toString();
+
+                    // build notif json
+                    JSONObject notifJson = new JSONObject();
+                    try {
+                        notifJson.put("username", username);
+                        notifJson.put("type", "ITEM_LISTED");
+                        notifJson.put("message", "Your item '" + itemName + "' has been listed.");
+                        notifJson.put("createdAt", createdAt);
+                        notifJson.put("isRead", false);
+                    } catch (Exception e) {
+                        Log.e("SELL", "Error building notification JSON: " + e.getMessage());
+                    }
+
+                    // send notification to backend
+                    String notifUrl = "http://coms-3090-056.class.las.iastate.edu:8080/notifications";
+
+                    JsonObjectRequest notifRequest = new JsonObjectRequest(
+                            Request.Method.POST,
+                            notifUrl,
+                            notifJson,
+                            notifResponse -> Log.d("SELL", "Notification sent successfully"),
+                            notifError -> Log.e("SELL", "Notification error: " + notifError.toString())
+                    );
+
+                    VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(notifRequest);
                 },
                 error -> {
                     String body = "";
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
                         body = new String(error.networkResponse.data);
                         Log.e("SELL", "Error response: " + body);
+                    }
 
                     Toast.makeText(getApplicationContext(),
                             "Listing failed: " + error.toString(), Toast.LENGTH_SHORT).show();
-
                 }
         );
 
         // add request to queue
         VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
     }
+
+
+
 
     @Override
     protected void onStart() {
