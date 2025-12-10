@@ -6,13 +6,15 @@ stages:
   - androidtest
 
 maven-build:
-  image: maven:3.9.6-eclipse-temurin-17
+  image: maven:3.9.6-eclipse-temurin-21
   stage: mavenbuild
   tags:
-    - main_backend      # Updated to your registered runner tag
+    - main_backend
   script:
+    - java -version        # 👈 ver qué Java está usando realmente
+    - mvn -v               # 👈 ver qué Java ve Maven
     - cd Backend/backend_code
-    - mvn package
+    - mvn -X -e package    # 👈 más detalle del error
   artifacts:
     paths:
       - Backend/backend_code/target/*.jar
