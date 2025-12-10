@@ -153,6 +153,34 @@ public class CheckoutActivity extends AppCompatActivity {
                 response -> {
                     Toast.makeText(getApplicationContext(), "Order placed!", Toast.LENGTH_SHORT).show();
                     finish();
+
+                    // Build notification JSON
+                    String username = prefs.getString("username", "unknown");
+                    String createdAt = java.time.LocalDateTime.now().toString();
+
+                    JSONObject notifJson = new JSONObject();
+                    try {
+                        notifJson.put("type", "ITEM_SOLD");
+                        notifJson.put("message", "Your checkout was successful for item '"
+                                + selectedItem.getTitle() + "'.");
+                        notifJson.put("relatedEntityId", selectedItem.getID());
+                        notifJson.put("relatedEntityType", "Item");
+                        notifJson.put("actionUrl", JSONObject.NULL);
+                    } catch (Exception e) {
+                        Log.e("CHECKOUT", "Error building notification JSON: " + e.getMessage());
+                    }
+
+                    String notifUrl = "http://coms-3090-056.class.las.iastate.edu:8080/notifications/test/" + username;
+
+                    JsonObjectRequest notifRequest = new JsonObjectRequest(
+                            Request.Method.POST,
+                            notifUrl,
+                            notifJson,
+                            notifResponse -> Log.d("CHECKOUT", "Checkout notification sent successfully"),
+                            notifError -> Log.e("CHECKOUT", "Notification error: " + notifError.toString())
+                    );
+
+                    VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(notifRequest);
                 },
                 error -> {
                     String body = "";
@@ -161,18 +189,13 @@ public class CheckoutActivity extends AppCompatActivity {
                         Log.e("CHECKOUT", "Error response: " + body);
                     }
                     Toast.makeText(getApplicationContext(),
-                            "Checkout failed: " + error.toString() + "\n" + body, Toast.LENGTH_LONG).show();
+                            "Checkout failed: " + error.toString(), Toast.LENGTH_LONG).show();
                 }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                return headers;
-            }
-        };
+        );
 
-        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+            // finally add to queue
+            VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+
+
     }
-
 }
