@@ -50,6 +50,7 @@ auto-deploy:
   stage: mavendeploy
   tags:
     - main_backend      # Updated to your registered runner tag
+    - shell
   script:
     - cd Backend/backend_code
     - sudo mv target/*.jar /target/web-demo.jar
