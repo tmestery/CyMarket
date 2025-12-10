@@ -13,7 +13,7 @@ import onetomany.Reports.Reports;
 import onetomany.userLogIn.userLogin;
 
 
-// testss
+// tests
 // =============================== Entity Class for User ================================= //
 @Entity
 @Table(name="Users")
