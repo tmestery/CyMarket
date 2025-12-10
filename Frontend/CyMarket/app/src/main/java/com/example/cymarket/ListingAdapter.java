@@ -21,7 +21,9 @@ import org.json.JSONObject;
 import java.util.List;
 
 
-// this class will bind listing information to the views set in item_listing_card.xml
+/**
+ * @author - Alexander LeFeber
+ */
 public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ViewHolder> {
 
     private List<Listing> listings;    // list of listings, from Listing.java

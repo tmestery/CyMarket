@@ -1,5 +1,8 @@
 package com.example.cymarket;
 
+/**
+ * @author - Alexander LeFeber
+ */
 public class CheckoutItemRequest {
     private int itemId;
     private int quantity;

@@ -13,7 +13,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 
 @RunWith(AndroidJUnit4.class)
-public class AlexanderSystemTest {
+public class AlexanderCheckoutTest {
 
     @Rule
     public ActivityScenarioRule<CheckoutActivity> activityRule =

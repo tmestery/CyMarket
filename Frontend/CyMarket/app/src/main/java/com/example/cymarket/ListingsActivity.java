@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import com.example.cymarket.Messages.MessagesActivity;
 
+/**
+ * @author - Alexander LeFeber
+ */
 public class ListingsActivity extends AppCompatActivity {
 
     private TextView messageText;    // establish messagetext variable

@@ -28,6 +28,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author - Alexander LeFeber
+ */
 public class NotificationsActivity extends AppCompatActivity {
 
     private TextView messageText;    // establish messagetext variable

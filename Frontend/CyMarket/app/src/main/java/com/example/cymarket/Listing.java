@@ -1,5 +1,8 @@
 package com.example.cymarket;
 
+/**
+ * @author - Alexander LeFeber
+ */
 public class Listing {
     public String title;
     public String description;

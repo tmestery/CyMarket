@@ -23,6 +23,9 @@ import org.json.JSONObject;
 import java.util.List;
 
 // bind notifications to the cards in notifications xml
+/**
+ * @author - Alexander LeFeber
+ */
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
     private final List<Notification> notifications;
 

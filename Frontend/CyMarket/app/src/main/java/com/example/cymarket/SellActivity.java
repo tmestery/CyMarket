@@ -17,7 +17,7 @@ import com.example.cymarket.Services.VolleySingleton;
 import org.json.JSONObject;
 
 /**
- * TODO - Add image support
+ * @author - Alexander LeFeber
  */
 public class SellActivity extends AppCompatActivity {
 
@@ -121,17 +121,17 @@ public class SellActivity extends AppCompatActivity {
                     // build notif json
                     JSONObject notifJson = new JSONObject();
                     try {
-                        notifJson.put("username", username);
-                        notifJson.put("type", "ITEM_LISTED");
+                        notifJson.put("type", "ITEM_SOLD");
                         notifJson.put("message", "Your item '" + itemName + "' has been listed.");
-                        notifJson.put("createdAt", createdAt);
-                        notifJson.put("isRead", false);
+                        notifJson.put("relatedEntityId", 1);
+                        notifJson.put("relatedEntityType", "Item");
+                        notifJson.put("actionUrl", JSONObject.NULL);
                     } catch (Exception e) {
                         Log.e("SELL", "Error building notification JSON: " + e.getMessage());
                     }
 
                     // send notification to backend
-                    String notifUrl = "http://coms-3090-056.class.las.iastate.edu:8080/notifications";
+                    String notifUrl = "http://coms-3090-056.class.las.iastate.edu:8080/notifications/test/" + username;
 
                     JsonObjectRequest notifRequest = new JsonObjectRequest(
                             Request.Method.POST,

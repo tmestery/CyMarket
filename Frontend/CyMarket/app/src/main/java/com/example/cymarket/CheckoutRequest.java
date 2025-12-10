@@ -1,6 +1,10 @@
 package com.example.cymarket;
 
 import java.util.List;
+
+/**
+ * @author - Alexander LeFeber
+ */
 public class CheckoutRequest {
 
     private int userId;
