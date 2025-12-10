@@ -85,6 +85,11 @@ public class NotificationsActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
          username = prefs.getString("username", null);
 
+        if (username == null) {
+            Toast.makeText(this, "No username found, please log in", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         // links to xml
         messageText = findViewById(R.id.notifs_msg_txt);
         backButton = findViewById(R.id.notifs_back_btn);
@@ -125,7 +130,7 @@ public class NotificationsActivity extends AppCompatActivity {
                 .registerReceiver(notificationReceiver, new IntentFilter("WS_MSG"));
 
         LocalBroadcastManager.getInstance(this)
-                .registerReceiver(notificationReceiver, new IntentFilter("WS_READY"));
+                .registerReceiver(socketReadyReceiver, new IntentFilter("WS_READY"));
     }
 
     @Override

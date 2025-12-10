@@ -77,10 +77,10 @@ public class SellActivity extends AppCompatActivity {
 
     // Volley request
     private void postItemForSale(String itemName, String price, String description, String quantity) {
-        String url = "http://coms-3090-056.class.las.iastate.edu:8080/items";
-
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
         String username = prefs.getString("username", "unknown");
+        String url = "http://coms-3090-056.class.las.iastate.edu:8080/items/seller/" + userId;
 
         // build the json payload using information entered by user
         JSONObject json = new JSONObject();
@@ -92,7 +92,7 @@ public class SellActivity extends AppCompatActivity {
             json.put("username", username);
             json.put("category", "Electronics"); // placeholder
             JSONObject sellerJson = new JSONObject();
-            sellerJson.put("id", 1); // placeholder
+            sellerJson.put("id", userId);
             json.put("seller", sellerJson);
             json.put("ifAvailable", true);    // will be available when listed
 

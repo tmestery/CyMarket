@@ -32,6 +32,10 @@ public class Notification {
         this.actionUrl = actionUrl;
     }
 
+    public Notification() {
+
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }
