@@ -1,0 +1,278 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DanielSystemTest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetomany.BackendTests</a>
+</div>
+
+<h1>Coverage Summary for Class: DanielSystemTest (onetomany.BackendTests)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DanielSystemTest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.3%
+  </span>
+  <span class="absValue">
+    (58/68)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetomany.BackendTests;
+&nbsp;
+&nbsp;import static org.hamcrest.Matchers.containsString;
+&nbsp;import static org.hamcrest.Matchers.hasSize;
+&nbsp;import static org.hamcrest.Matchers.is;
+&nbsp;import static org.mockito.ArgumentMatchers.any;
+&nbsp;import static org.mockito.Mockito.verify;
+&nbsp;import static org.mockito.Mockito.when;
+&nbsp;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+&nbsp;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+&nbsp;import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+&nbsp;import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+&nbsp;import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import org.junit.Test;
+&nbsp;import org.junit.runner.RunWith;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+&nbsp;import org.springframework.boot.test.mock.mockito.MockBean;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.test.context.junit4.SpringRunner;
+&nbsp;import org.springframework.test.web.servlet.MockMvc;
+&nbsp;
+&nbsp;import onetomany.Group.Group;
+&nbsp;import onetomany.Group.GroupController;
+&nbsp;import onetomany.Group.GroupRepository;
+&nbsp;import onetomany.Users.User;
+&nbsp;import onetomany.Users.UserRepository;
+&nbsp;import onetomany.userLogIn.userLogin;
+&nbsp;import onetomany.userLogIn.userLoginController;
+&nbsp;import onetomany.userLogIn.userLoginRepository;
+&nbsp;import onetomany.AdminActivityReport.adminActivityReportRepository;
+&nbsp;import onetomany.Reports.ReportsRepository;
+&nbsp;import onetomany.Sellers.SellerRepository;
+&nbsp;import onetomany.adminUser.adminUserRepository;
+&nbsp;
+&nbsp;@RunWith(SpringRunner.class)
+&nbsp;@WebMvcTest(controllers = {GroupController.class, userLoginController.class})
+<b class="fc">&nbsp;public class DanielSystemTest {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private MockMvc mockMvc;
+&nbsp;
+&nbsp;    @MockBean private GroupRepository groupRepository;
+&nbsp;    @MockBean private UserRepository userRepository;
+&nbsp;
+&nbsp;    @MockBean private userLoginRepository userLoginRepository;
+&nbsp;    @MockBean private SellerRepository sellerRepository;
+&nbsp;    @MockBean private ReportsRepository reportsRepository;
+&nbsp;    @MockBean private adminUserRepository addminUserRepository;
+&nbsp;    @MockBean private adminActivityReportRepository adddminActivityReportRepository;
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testCreateGroupAndListMembership() throws Exception {
+<b class="fc">&nbsp;        Group created = new Group(&quot;study&quot;);</b>
+<b class="fc">&nbsp;        created.setId(5);</b>
+&nbsp;
+<b class="fc">&nbsp;        when(groupRepository.findByName(&quot;study&quot;)).thenReturn(null).thenReturn(created);</b>
+<b class="fc">&nbsp;        when(groupRepository.save(any(Group.class))).thenAnswer(invocation -&gt; {</b>
+<b class="fc">&nbsp;            Group g = invocation.getArgument(0);</b>
+<b class="pc">&nbsp;            if (g.getId() == 0) {</b>
+<b class="fc">&nbsp;                g.setId(5);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return g;</b>
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        mockMvc.perform(post(&quot;/groups/create/study&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(content().string(&quot;5&quot;));</b>
+&nbsp;
+<b class="fc">&nbsp;        User member = new User();</b>
+<b class="fc">&nbsp;        member.setUsername(&quot;daniel&quot;);</b>
+<b class="fc">&nbsp;        created.setUsers(Set.of(member));</b>
+&nbsp;
+<b class="fc">&nbsp;        when(userRepository.findByUsername(&quot;daniel&quot;)).thenReturn(member);</b>
+<b class="fc">&nbsp;        when(groupRepository.findAll()).thenReturn(List.of(created));</b>
+&nbsp;
+<b class="fc">&nbsp;        mockMvc.perform(get(&quot;/groups/list/daniel&quot;).accept(MediaType.APPLICATION_JSON))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$&quot;, hasSize(1)))</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$[0].name&quot;, is(&quot;study&quot;)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testAddUserToGroup() throws Exception {
+<b class="fc">&nbsp;        Group group = new Group(&quot;alpha&quot;);</b>
+<b class="fc">&nbsp;        group.setId(3);</b>
+&nbsp;
+<b class="fc">&nbsp;        User user = new User();</b>
+<b class="fc">&nbsp;        user.setUsername(&quot;alex&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        when(groupRepository.findById(3)).thenReturn(group);</b>
+<b class="fc">&nbsp;        when(userRepository.findByUsername(&quot;alex&quot;)).thenReturn(user);</b>
+<b class="fc">&nbsp;        when(groupRepository.save(group)).thenReturn(group);</b>
+<b class="fc">&nbsp;        when(userRepository.save(user)).thenReturn(user);</b>
+&nbsp;
+<b class="fc">&nbsp;        mockMvc.perform(post(&quot;/groups/group/add-user/3/alex&quot;))</b>
+<b class="nc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="nc">&nbsp;                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))</b>
+<b class="nc">&nbsp;                .andExpect(jsonPath(&quot;$.message&quot;, is(&quot;User added to group successfully&quot;)));</b>
+&nbsp;
+<b class="nc">&nbsp;        verify(groupRepository).save(group);</b>
+<b class="nc">&nbsp;        verify(userRepository).save(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testAddUserToGroupWhenNotFound() throws Exception {
+<b class="fc">&nbsp;        when(groupRepository.findById(8)).thenReturn(null);</b>
+<b class="fc">&nbsp;        when(userRepository.findByUsername(&quot;ghost&quot;)).thenReturn(null);</b>
+&nbsp;
+<b class="fc">&nbsp;        mockMvc.perform(post(&quot;/groups/group/add-user/8/ghost&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isBadRequest())</b>
+<b class="fc">&nbsp;                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))</b>
+<b class="nc">&nbsp;                .andExpect(jsonPath(&quot;$.message&quot;, is(&quot;Group or user not found&quot;)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testUserLoginEndpoints() throws Exception {
+<b class="fc">&nbsp;        userLogin login = new userLogin();</b>
+<b class="fc">&nbsp;        login.setEmail(&quot;test@example.com&quot;);</b>
+<b class="fc">&nbsp;        login.setType(&#39;u&#39;);</b>
+<b class="fc">&nbsp;        login.setPassword(&quot;secret&quot;);</b>
+<b class="fc">&nbsp;        login.setUserName(&quot;tester&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        when(userLoginRepository.findByEmail(&quot;test@example.com&quot;)).thenReturn(login);</b>
+<b class="fc">&nbsp;        when(userLoginRepository.findByUserName(&quot;tester&quot;)).thenReturn(login);</b>
+&nbsp;
+<b class="fc">&nbsp;        mockMvc.perform(get(&quot;/userslogin/getUserType/test@example.com&quot;).accept(MediaType.TEXT_PLAIN))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="nc">&nbsp;                .andExpect(content().string(containsString(&quot;u&quot;)));</b>
+&nbsp;
+<b class="nc">&nbsp;        mockMvc.perform(get(&quot;/userslogin/tester/wrong&quot;))</b>
+<b class="nc">&nbsp;                .andExpect(status().isUnauthorized())</b>
+<b class="nc">&nbsp;                .andExpect(content().string(containsString(&quot;Invalid password&quot;)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testCreateGroupDuplicateAndMembers() throws Exception {
+<b class="fc">&nbsp;        Group original = new Group(&quot;gamers&quot;);</b>
+<b class="fc">&nbsp;        original.setId(2);</b>
+&nbsp;
+<b class="fc">&nbsp;        when(groupRepository.findByName(&quot;gamers&quot;)).thenReturn(original);</b>
+&nbsp;
+<b class="fc">&nbsp;        mockMvc.perform(post(&quot;/groups/create/gamers&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(content().string(&quot;-1&quot;));</b>
+&nbsp;
+<b class="fc">&nbsp;        User member = new User();</b>
+<b class="fc">&nbsp;        member.setUsername(&quot;lin&quot;);</b>
+<b class="fc">&nbsp;        original.setUsers(Set.of(member));</b>
+&nbsp;
+<b class="fc">&nbsp;        when(groupRepository.findById(2)).thenReturn(original);</b>
+&nbsp;
+<b class="fc">&nbsp;        mockMvc.perform(get(&quot;/groups/getMembers/2&quot;).accept(MediaType.APPLICATION_JSON))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$&quot;, hasSize(1)))</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$[0].username&quot;, is(&quot;lin&quot;)));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 11:02</div>
+</div>
+</body>
+</html>

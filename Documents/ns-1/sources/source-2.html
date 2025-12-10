@@ -1,0 +1,607 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JasonSystemTest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetomany.BackendTests</a>
+</div>
+
+<h1>Coverage Summary for Class: JasonSystemTest (onetomany.BackendTests)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JasonSystemTest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51%
+  </span>
+  <span class="absValue">
+    (51/100)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    99.2%
+  </span>
+  <span class="absValue">
+    (261/263)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetomany.BackendTests;
+&nbsp;
+&nbsp;import static org.hamcrest.Matchers.is;
+&nbsp;import static org.mockito.ArgumentMatchers.any;
+&nbsp;import static org.mockito.ArgumentMatchers.anyInt;
+&nbsp;import static org.mockito.Mockito.doAnswer;
+&nbsp;import static org.mockito.Mockito.when;
+&nbsp;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+&nbsp;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+&nbsp;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+&nbsp;import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+&nbsp;import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+&nbsp;import static org.mockito.Mockito.verify;
+&nbsp;import static org.mockito.Mockito.atLeastOnce;
+&nbsp;import static org.mockito.ArgumentMatchers.eq;
+&nbsp;import static org.mockito.ArgumentMatchers.anyString;
+&nbsp;import static org.mockito.ArgumentMatchers.isNull;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Optional; // Ensure this is imported
+&nbsp;import onetomany.Items.ItemImage;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Base64;
+&nbsp;import org.springframework.mock.web.MockMultipartFile;
+&nbsp;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+&nbsp;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+&nbsp;import static org.mockito.ArgumentMatchers.anyLong;
+&nbsp;
+&nbsp;import org.junit.Test;
+&nbsp;import org.junit.runner.RunWith;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+&nbsp;import org.springframework.boot.test.mock.mockito.MockBean;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.test.context.junit4.SpringRunner;
+&nbsp;import org.springframework.test.web.servlet.MockMvc;
+&nbsp;import org.springframework.test.util.ReflectionTestUtils;
+&nbsp;import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+&nbsp;
+&nbsp;import onetomany.Items.Item;
+&nbsp;import onetomany.Items.ItemImageRepository;
+&nbsp;import onetomany.Items.ItemsController;
+&nbsp;import onetomany.Items.ItemsRepository;
+&nbsp;import onetomany.Users.PasswordRecoveryService;
+&nbsp;import onetomany.Users.User;
+&nbsp;import onetomany.Users.UserController;
+&nbsp;import onetomany.Users.UserImageRepository;
+&nbsp;import onetomany.Users.UserRepository;
+&nbsp;import onetomany.userLogIn.userLogin;
+&nbsp;import onetomany.userLogIn.userLoginRepository;
+&nbsp;import onetomany.Sellers.SellerRepository;
+&nbsp;import onetomany.Sellers.Seller;
+&nbsp;import onetomany.Checkout.CheckoutRepository;
+&nbsp;import onetomany.Notifications.NotificationService;
+&nbsp;import onetomany.Notifications.Notification;
+&nbsp;import onetomany.Notifications.NotificationType;
+&nbsp;import onetomany.Checkout.Checkout;
+&nbsp;import onetomany.Checkout.OrderStatus;
+&nbsp;import onetomany.Checkout.CheckoutItem;
+&nbsp;import onetomany.Checkout.CheckoutService;
+&nbsp;import onetomany.Checkout.CheckoutRequest;
+&nbsp;import onetomany.Checkout.CheckoutItemRequest;
+&nbsp;
+<b class="fc">&nbsp;@RunWith(SpringRunner.class)</b>
+&nbsp;@WebMvcTest(controllers = {UserController.class, ItemsController.class})
+<b class="fc">&nbsp;public class JasonSystemTest {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private MockMvc controller;
+&nbsp;
+&nbsp;
+&nbsp;    @MockBean private UserRepository userRepository;
+&nbsp;    @MockBean private userLoginRepository userLoginRepo;
+&nbsp;    @MockBean private PasswordRecoveryService passwordRecoveryService;
+&nbsp;    @MockBean private UserImageRepository userImageRepository;
+&nbsp;    @MockBean private ItemsRepository itemsRepository;
+&nbsp;    @MockBean private SellerRepository sellerRepository;
+&nbsp;    @MockBean private ItemImageRepository itemImageRepository;
+&nbsp;    // Added mocks for Checkout and Notification coverage
+&nbsp;    @MockBean private CheckoutRepository checkoutRepository;
+&nbsp;    @MockBean private NotificationService notificationService;
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testCreateAndFetchUser() throws Exception {
+<b class="fc">&nbsp;        List&lt;User&gt; userList = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;        when(userRepository.save(any(User.class))).thenAnswer(x -&gt; {</b>
+<b class="fc">&nbsp;            User r = x.getArgument(0);</b>
+<b class="fc">&nbsp;            if(r.getId() == 0) r.setId(1);</b>
+<b class="fc">&nbsp;            userList.add(r);</b>
+<b class="fc">&nbsp;            return r;</b>
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        when(userLoginRepo.save(any(userLogin.class))).thenReturn(null);</b>
+&nbsp;
+<b class="fc">&nbsp;        when(userRepository.findUserByUsername(any(String.class))).thenAnswer(x -&gt; {</b>
+<b class="fc">&nbsp;             String name = x.getArgument(0);</b>
+<b class="pc">&nbsp;             for (User u : userList) {</b>
+<b class="pc">&nbsp;                 if (u.getUsername() != null &amp;&amp; u.getUsername().equals(name)) return u;</b>
+&nbsp;             }
+<b class="nc">&nbsp;             return null;</b>
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        when(userRepository.findById(anyInt())).thenAnswer(x -&gt; {</b>
+<b class="fc">&nbsp;            int id = x.getArgument(0);</b>
+<b class="pc">&nbsp;            for (User u : userList) {</b>
+<b class="pc">&nbsp;                if (u.getId() == id) return u;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        String jsonUser = &quot;{\&quot;username\&quot;:\&quot;testUser\&quot;, \&quot;emailId\&quot;:\&quot;test@example.com\&quot;, \&quot;userPassword\&quot;:\&quot;password123\&quot;}&quot;;</b>
+&nbsp;
+<b class="fc">&nbsp;        controller.perform(post(&quot;/users&quot;)</b>
+<b class="fc">&nbsp;                .contentType(MediaType.APPLICATION_JSON)</b>
+<b class="fc">&nbsp;                .content(jsonUser))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.message&quot;, is(&quot;success&quot;)));</b>
+&nbsp;
+<b class="fc">&nbsp;            controller.perform(get(&quot;/users/1&quot;))</b>
+<b class="fc">&nbsp;                    .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                    .andExpect(jsonPath(&quot;$.username&quot;, is(&quot;testUser&quot;)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testEntitiesAndCheckoutServiceCoverage() {
+&nbsp;        // --- 1. User Entity Coverage ---
+<b class="fc">&nbsp;        User user = new User(&quot;Coverage User&quot;, &quot;cov@test.com&quot;, &quot;pass&quot;, &quot;covUser&quot;);</b>
+<b class="fc">&nbsp;        user.setId(1);</b>
+<b class="fc">&nbsp;        user.setBalance(500.0);</b>
+<b class="fc">&nbsp;        user.setIfActive(true);</b>
+<b class="fc">&nbsp;        user.setJoiningDate(new Date());</b>
+<b class="fc">&nbsp;        user.setLastLoggin();</b>
+<b class="fc">&nbsp;        user.setPasswordRecoveryCode(&quot;1234&quot;);</b>
+<b class="fc">&nbsp;        user.setPasswordRecoveryExpiry(new Date());</b>
+&nbsp;
+&nbsp;        // Validate basic getters
+<b class="pc">&nbsp;        assert user.getId() == 1;</b>
+<b class="pc">&nbsp;        assert user.getBalance() == 500.0;</b>
+<b class="pc">&nbsp;        assert user.getName().equals(&quot;Coverage User&quot;);</b>
+<b class="pc">&nbsp;        assert user.getPasswordRecoveryCode().equals(&quot;1234&quot;);</b>
+<b class="pc">&nbsp;        assert user.getUserGroups() != null;</b>
+&nbsp;        
+&nbsp;        // Test Item liking in User
+<b class="fc">&nbsp;        Item item = new Item();</b>
+<b class="fc">&nbsp;        item.setId(101); // Item ID is int</b>
+<b class="fc">&nbsp;        item.setName(&quot;Test Item&quot;);</b>
+<b class="fc">&nbsp;        item.setPrice(50.0);</b>
+<b class="fc">&nbsp;        item.setQuantity(10);</b>
+<b class="fc">&nbsp;        item.setIfAvailable(true);</b>
+&nbsp;        
+&nbsp;        // Item getters coverage
+<b class="pc">&nbsp;        assert item.getId() == 101;</b>
+<b class="pc">&nbsp;        assert item.getName().equals(&quot;Test Item&quot;);</b>
+<b class="pc">&nbsp;        assert item.getPrice() == 50.0;</b>
+<b class="pc">&nbsp;        assert item.getQuantity() == 10;</b>
+<b class="pc">&nbsp;        assert item.isIfAvailable();</b>
+&nbsp;
+<b class="fc">&nbsp;        user.addItem(item);</b>
+<b class="pc">&nbsp;        assert user.getLikedItems().contains(item);</b>
+<b class="pc">&nbsp;        assert user.getLikedItemsCount() == 1;</b>
+<b class="fc">&nbsp;        user.removeItem(item);</b>
+<b class="pc">&nbsp;        assert user.getLikedItemsCount() == 0;</b>
+<b class="fc">&nbsp;        user.setLikedItems(new HashSet&lt;&gt;());</b>
+<b class="fc">&nbsp;        user.addItem(item);</b>
+<b class="fc">&nbsp;        user.removeAllItems();</b>
+<b class="pc">&nbsp;        assert user.getLikedItems().isEmpty();</b>
+&nbsp;
+&nbsp;        // Coverage for User.getNotifications
+<b class="pc">&nbsp;        assert user.getNotifications() == null || user.getNotifications().isEmpty();</b>
+&nbsp;
+&nbsp;        // --- 2. Notification Entity Coverage ---
+<b class="fc">&nbsp;        Notification notif = new Notification(user, NotificationType.TRANSACTION_PENDING, &quot;Test Message&quot;);</b>
+<b class="fc">&nbsp;        notif.setId(1L);</b>
+<b class="fc">&nbsp;        notif.setRead(true);</b>
+<b class="fc">&nbsp;        notif.setRelatedEntityId(55L);</b>
+<b class="fc">&nbsp;        notif.setRelatedEntityType(&quot;ORDER&quot;);</b>
+<b class="fc">&nbsp;        notif.setActionUrl(&quot;/orders/55&quot;);</b>
+<b class="fc">&nbsp;        notif.setCreatedAt(new Date());</b>
+&nbsp;        
+<b class="pc">&nbsp;        assert notif.getId() == 1L;</b>
+<b class="pc">&nbsp;        assert notif.isRead();</b>
+<b class="pc">&nbsp;        assert notif.getType() == NotificationType.TRANSACTION_PENDING;</b>
+<b class="pc">&nbsp;        assert notif.getActionUrl().equals(&quot;/orders/55&quot;);</b>
+<b class="pc">&nbsp;        assert notif.getUser() == user;</b>
+&nbsp;        
+&nbsp;        // Constructor coverage
+<b class="fc">&nbsp;        Notification notif2 = new Notification(user, NotificationType.SYSTEM_ANNOUNCEMENT, &quot;Msg&quot;, 1L, &quot;ITEM&quot;);</b>
+<b class="pc">&nbsp;        assert notif2.getRelatedEntityType().equals(&quot;ITEM&quot;);</b>
+&nbsp;
+&nbsp;        // --- 3. Checkout Entity Coverage ---
+<b class="fc">&nbsp;        Checkout checkout = new Checkout(user, &quot;123 Main St&quot;, &quot;Ames&quot;, &quot;IA&quot;, &quot;50010&quot;, &quot;USA&quot;);</b>
+<b class="fc">&nbsp;        checkout.setBillingAddress(&quot;123 Main St&quot;);</b>
+<b class="fc">&nbsp;        checkout.setBillingCity(&quot;Ames&quot;);</b>
+<b class="fc">&nbsp;        checkout.setBillingState(&quot;IA&quot;);</b>
+<b class="fc">&nbsp;        checkout.setBillingZipCode(&quot;50010&quot;);</b>
+<b class="fc">&nbsp;        checkout.setBillingCountry(&quot;USA&quot;);</b>
+<b class="fc">&nbsp;        checkout.setNotes(&quot;Leave at door&quot;);</b>
+<b class="fc">&nbsp;        checkout.setCardInfo(&quot;1234567812345678&quot;, &quot;Test Holder&quot;);</b>
+&nbsp;
+<b class="pc">&nbsp;        assert checkout.getCardLastFour().equals(&quot;5678&quot;);</b>
+<b class="pc">&nbsp;        assert checkout.getCardHolderName().equals(&quot;Test Holder&quot;);</b>
+<b class="pc">&nbsp;        assert checkout.getShippingZipCode().equals(&quot;50010&quot;);</b>
+&nbsp;        
+&nbsp;        // Coverage for Checkout Default Constructor
+<b class="fc">&nbsp;        Checkout emptyCheckout = new Checkout();</b>
+<b class="pc">&nbsp;        assert emptyCheckout.getStatus() == OrderStatus.PENDING;</b>
+<b class="pc">&nbsp;        assert emptyCheckout.getOrderDate() != null;</b>
+&nbsp;
+&nbsp;        // Checkout Item Coverage
+<b class="fc">&nbsp;        Seller seller = new Seller();</b>
+<b class="fc">&nbsp;        seller.setId(5L);</b>
+<b class="fc">&nbsp;        seller.setTotalSales(100);</b>
+&nbsp;        // Mock seller login for notifications
+<b class="fc">&nbsp;        userLogin sellerLogin = new userLogin();</b>
+<b class="fc">&nbsp;        User sellerUser = new User();</b>
+<b class="fc">&nbsp;        sellerUser.setId(2);</b>
+<b class="fc">&nbsp;        sellerUser.setBalance(0.0);</b>
+<b class="fc">&nbsp;        sellerLogin.setUser(sellerUser);</b>
+<b class="fc">&nbsp;        seller.setUserLogin(sellerLogin);</b>
+<b class="fc">&nbsp;        item.setSeller(seller);</b>
+&nbsp;
+&nbsp;        // Seller getters coverage
+<b class="pc">&nbsp;        assert seller.getId() == 5L;</b>
+<b class="pc">&nbsp;        assert seller.getTotalSales() == 100;</b>
+<b class="pc">&nbsp;        assert seller.getUserLogin() == sellerLogin;</b>
+&nbsp;
+<b class="fc">&nbsp;        CheckoutItem checkoutItem = new CheckoutItem(item, 2, seller);</b>
+<b class="fc">&nbsp;        checkoutItem.setId(99L);</b>
+<b class="pc">&nbsp;        assert checkoutItem.getPrice() == 50.0; // Should match item price</b>
+&nbsp;        // FIXED: getTotalPrice() method doesn&#39;t exist, calculating manually
+<b class="pc">&nbsp;        assert (checkoutItem.getPrice() * checkoutItem.getQuantity()) == 100.0;</b>
+&nbsp;        
+<b class="fc">&nbsp;        checkout.addItem(checkoutItem);</b>
+<b class="pc">&nbsp;        assert checkout.getItems().size() == 1;</b>
+<b class="pc">&nbsp;        assert checkout.getTotalPrice() == 100.0;</b>
+&nbsp;        
+<b class="fc">&nbsp;        checkout.removeItem(checkoutItem);</b>
+<b class="pc">&nbsp;        assert checkout.getItems().isEmpty();</b>
+&nbsp;        
+<b class="fc">&nbsp;        checkout.addItem(checkoutItem);</b>
+<b class="fc">&nbsp;        checkout.completeOrder();</b>
+<b class="pc">&nbsp;        assert checkout.getStatus() == OrderStatus.COMPLETED;</b>
+&nbsp;        
+&nbsp;        // Coverage for cancelOrder and getItemCount
+<b class="fc">&nbsp;        checkout.cancelOrder();</b>
+<b class="pc">&nbsp;        assert checkout.getStatus() == OrderStatus.CANCELLED;</b>
+&nbsp;
+&nbsp;        // getItemCount sums quantities (checkoutItem quantity is 2)
+<b class="pc">&nbsp;        assert checkout.getItemCount() == 2;</b>
+&nbsp;
+&nbsp;        // --- 4. CheckoutService Logic Coverage ---
+&nbsp;        // We manually instantiate the service and inject mocks to test the logic
+<b class="fc">&nbsp;        CheckoutService service = new CheckoutService();</b>
+<b class="fc">&nbsp;        ReflectionTestUtils.setField(service, &quot;checkoutRepository&quot;, checkoutRepository);</b>
+<b class="fc">&nbsp;        ReflectionTestUtils.setField(service, &quot;userRepository&quot;, userRepository);</b>
+<b class="fc">&nbsp;        ReflectionTestUtils.setField(service, &quot;itemsRepository&quot;, itemsRepository);</b>
+<b class="fc">&nbsp;        ReflectionTestUtils.setField(service, &quot;sellerRepository&quot;, sellerRepository);</b>
+<b class="fc">&nbsp;        ReflectionTestUtils.setField(service, &quot;notificationService&quot;, notificationService);</b>
+&nbsp;
+&nbsp;        // Setup Request
+<b class="fc">&nbsp;        CheckoutRequest req = new CheckoutRequest();</b>
+&nbsp;        // FIXED: Casting int ID to long for setUserId
+<b class="fc">&nbsp;        req.setUserId((int) user.getId());</b>
+<b class="fc">&nbsp;        req.setShippingAddress(&quot;Addr&quot;); req.setShippingCity(&quot;City&quot;); req.setShippingState(&quot;ST&quot;); req.setShippingZipCode(&quot;00000&quot;); req.setShippingCountry(&quot;US&quot;);</b>
+<b class="fc">&nbsp;        req.setBillingAddress(&quot;Addr&quot;); req.setBillingCity(&quot;City&quot;); req.setBillingState(&quot;ST&quot;); req.setBillingZipCode(&quot;00000&quot;); req.setBillingCountry(&quot;US&quot;);</b>
+<b class="fc">&nbsp;        req.setCardNumber(&quot;1234567890123456&quot;);</b>
+<b class="fc">&nbsp;        req.setCardHolderName(&quot;Holder&quot;);</b>
+<b class="fc">&nbsp;        req.setExpirationMonth(&quot;12&quot;);</b>
+<b class="fc">&nbsp;        req.setExpirationYear(&quot;2030&quot;);</b>
+<b class="fc">&nbsp;        req.setCvv(&quot;123&quot;);</b>
+&nbsp;        
+<b class="fc">&nbsp;        List&lt;CheckoutItemRequest&gt; reqItems = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        CheckoutItemRequest itemReq = new CheckoutItemRequest();</b>
+&nbsp;        // FIXED: Cast int ID to Long if setItemId expects Long, or ensure it matches
+&nbsp;        // Based on error &quot;int cannot be converted to Long&quot;, setItemId likely takes Long
+<b class="fc">&nbsp;        itemReq.setItemId((long) item.getId()); </b>
+<b class="fc">&nbsp;        itemReq.setQuantity(1);</b>
+<b class="fc">&nbsp;        reqItems.add(itemReq);</b>
+<b class="fc">&nbsp;        req.setItems(reqItems);</b>
+&nbsp;
+&nbsp;        // Define Mock Behaviors for Service call
+<b class="fc">&nbsp;        when(userRepository.findById(user.getId())).thenReturn(user);</b>
+&nbsp;
+&nbsp;        // FIXED: Use any() to match both int and Integer, and return Optional because service expects it
+<b class="fc">&nbsp;        when(itemsRepository.findById(any())).thenReturn(Optional.of(item));</b>
+&nbsp;        
+<b class="fc">&nbsp;        when(checkoutRepository.save(any(Checkout.class))).thenAnswer(invocation -&gt; {</b>
+<b class="fc">&nbsp;                Checkout c = invocation.getArgument(0);</b>
+<b class="fc">&nbsp;            c.setId(777L);</b>
+<b class="fc">&nbsp;            return c;</b>
+&nbsp;        });
+&nbsp;
+&nbsp;        // Execute Service Method
+<b class="fc">&nbsp;        Checkout resultOrder = service.createCheckout(req);</b>
+&nbsp;
+&nbsp;        // Verify Results
+<b class="pc">&nbsp;        assert resultOrder != null;</b>
+<b class="pc">&nbsp;        assert resultOrder.getId() == 777L;</b>
+<b class="pc">&nbsp;        assert user.getBalance() == 450.0; // 500 - 50</b>
+<b class="pc">&nbsp;        assert item.getQuantity() == 9; // 10 - 1</b>
+&nbsp;    
+&nbsp;        // Verify Notification interaction
+<b class="fc">&nbsp;        verify(notificationService, atLeastOnce()).createAndSendNotification(</b>
+<b class="fc">&nbsp;            any(User.class), </b>
+<b class="fc">&nbsp;            any(NotificationType.class), </b>
+<b class="fc">&nbsp;            anyString(), </b>
+<b class="fc">&nbsp;            any(), </b>
+<b class="fc">&nbsp;            anyString(), </b>
+<b class="fc">&nbsp;            any()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testCreateItem() throws Exception {
+<b class="fc">&nbsp;        List&lt;Item&gt; itemList = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;        when(itemsRepository.save(any(Item.class))).thenAnswer(x -&gt; {</b>
+<b class="fc">&nbsp;            Item i = x.getArgument(0);</b>
+<b class="pc">&nbsp;            if(i.getId() == 0) i.setId(100);</b>
+<b class="fc">&nbsp;            itemList.add(i);</b>
+<b class="fc">&nbsp;            return i;</b>
+&nbsp;        });
+&nbsp;        
+<b class="fc">&nbsp;        when(itemsRepository.findAll()).thenReturn(itemList);</b>
+<b class="fc">&nbsp;        when(itemsRepository.findById(anyInt())).thenReturn(new Item());</b>
+&nbsp;
+<b class="fc">&nbsp;        String jsonItem = &quot;{\&quot;name\&quot;:\&quot;Gaming Console\&quot;, \&quot;description\&quot;:\&quot;New\&quot;, \&quot;price\&quot;:499.99}&quot;;</b>
+&nbsp;
+<b class="fc">&nbsp;        controller.perform(post(&quot;/items&quot;)</b>
+<b class="fc">&nbsp;                .contentType(MediaType.APPLICATION_JSON)</b>
+<b class="fc">&nbsp;                .content(jsonItem))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.message&quot;, is(&quot;success&quot;)));</b>
+&nbsp;
+<b class="fc">&nbsp;        System.out.println(&quot;Items count: &quot; + itemList.size());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testItemControllerAdditionalMethods() throws Exception {
+&nbsp;        // Setup Item and Seller
+<b class="fc">&nbsp;        Item item = new Item();</b>
+<b class="fc">&nbsp;        item.setId(200);</b>
+<b class="fc">&nbsp;        item.setName(&quot;Specific Item&quot;);</b>
+<b class="fc">&nbsp;        item.setQuantity(5);</b>
+<b class="fc">&nbsp;        item.setPrice(10.0);</b>
+&nbsp;        
+<b class="fc">&nbsp;        Seller seller = new Seller();</b>
+<b class="fc">&nbsp;        seller.setId(50L);</b>
+<b class="fc">&nbsp;        seller.setUsername(&quot;SellerUser&quot;);</b>
+<b class="fc">&nbsp;        seller.setTotalSales(10);</b>
+<b class="fc">&nbsp;        item.setSeller(seller);</b>
+&nbsp;
+&nbsp;        // Mocks
+<b class="fc">&nbsp;        when(itemsRepository.findById(200)).thenReturn(item);</b>
+<b class="fc">&nbsp;        when(itemsRepository.findByUsername(&quot;Specific Item&quot;)).thenReturn(item); // Mock for getUser/findByUsername</b>
+<b class="fc">&nbsp;        when(sellerRepository.findById(50L)).thenReturn(seller);</b>
+<b class="fc">&nbsp;        when(itemsRepository.save(any(Item.class))).thenAnswer(i -&gt; i.getArgument(0));</b>
+&nbsp;
+&nbsp;        // 1. getAllItems
+<b class="fc">&nbsp;        List&lt;Item&gt; allItems = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        allItems.add(item);</b>
+<b class="fc">&nbsp;        when(itemsRepository.findAll()).thenReturn(allItems);</b>
+<b class="fc">&nbsp;        controller.perform(get(&quot;/items&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$[0].name&quot;, is(&quot;Specific Item&quot;)));</b>
+&nbsp;
+&nbsp;        // 2. getAllUser (findById)
+<b class="fc">&nbsp;        controller.perform(get(&quot;/items/200&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.name&quot;, is(&quot;Specific Item&quot;)));</b>
+&nbsp;
+&nbsp;        // 3. getUser (findByUsername)
+<b class="fc">&nbsp;        controller.perform(get(&quot;/items/u/Specific Item&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.name&quot;, is(&quot;Specific Item&quot;)));</b>
+&nbsp;
+&nbsp;        // 4. createItemWithSeller
+<b class="fc">&nbsp;        String newItemJson = &quot;{\&quot;name\&quot;:\&quot;Seller Item\&quot;, \&quot;price\&quot;:20.0}&quot;;</b>
+<b class="fc">&nbsp;        controller.perform(post(&quot;/items/seller/50&quot;)</b>
+<b class="fc">&nbsp;                .contentType(MediaType.APPLICATION_JSON)</b>
+<b class="fc">&nbsp;                .content(newItemJson))</b>
+<b class="fc">&nbsp;                .andExpect(status().isCreated());</b>
+&nbsp;
+&nbsp;        // 5. updateItem
+<b class="fc">&nbsp;        String updateJson = &quot;{\&quot;name\&quot;:\&quot;Updated Item\&quot;, \&quot;price\&quot;:15.0}&quot;;</b>
+<b class="fc">&nbsp;        controller.perform(put(&quot;/items/200&quot;)</b>
+<b class="fc">&nbsp;                .contentType(MediaType.APPLICATION_JSON)</b>
+<b class="fc">&nbsp;                .content(updateJson))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk());</b>
+&nbsp;
+&nbsp;        // 6. deleteItem
+<b class="fc">&nbsp;        controller.perform(delete(&quot;/items/200&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.message&quot;, is(&quot;success&quot;)));</b>
+&nbsp;
+&nbsp;        // 7. getItemSeller
+<b class="fc">&nbsp;        controller.perform(get(&quot;/items/200/seller&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.username&quot;, is(&quot;SellerUser&quot;)));</b>
+&nbsp;
+&nbsp;        // 8. createItemForSeller
+<b class="fc">&nbsp;        controller.perform(post(&quot;/items/50/items&quot;)</b>
+<b class="fc">&nbsp;                .contentType(MediaType.APPLICATION_JSON)</b>
+<b class="fc">&nbsp;                .content(newItemJson))</b>
+<b class="fc">&nbsp;                .andExpect(status().isCreated());</b>
+&nbsp;
+&nbsp;        // 9. getItemQuantity
+<b class="fc">&nbsp;        controller.perform(get(&quot;/items/200/quantity&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.quantity&quot;, is(5)));</b>
+&nbsp;
+&nbsp;        // 10. updateItemQuantity
+<b class="fc">&nbsp;        controller.perform(put(&quot;/items/200/quantity?quantity=10&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.quantity&quot;, is(10)));</b>
+&nbsp;        // Reset quantity for next tests
+<b class="fc">&nbsp;        item.setQuantity(5);</b>
+&nbsp;
+&nbsp;        // 11. incrementItemQuantity
+<b class="fc">&nbsp;        controller.perform(post(&quot;/items/200/quantity/increment&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.quantity&quot;, is(6)));</b>
+&nbsp;
+&nbsp;        // 12. decrementItemQuantity
+<b class="fc">&nbsp;        controller.perform(post(&quot;/items/200/quantity/decrement&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.quantity&quot;, is(5)));</b>
+&nbsp;
+&nbsp;        // 13. Image Handling
+<b class="fc">&nbsp;        MockMultipartFile file = new MockMultipartFile(&quot;images&quot;, &quot;test.jpg&quot;, &quot;image/jpeg&quot;, &quot;some xml&quot;.getBytes());</b>
+&nbsp;        
+&nbsp;        // uploadItemImages
+<b class="fc">&nbsp;        controller.perform(multipart(&quot;/items/200/images&quot;).file(file))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(content().string(&quot;Images uploaded successfully&quot;));</b>
+&nbsp;
+&nbsp;        // Mock Image retrieval
+<b class="fc">&nbsp;        ItemImage itemImage = new ItemImage(&quot;some xml&quot;.getBytes(), &quot;image/jpeg&quot;);</b>
+&nbsp;        // itemImage.setId(1L);
+<b class="fc">&nbsp;        itemImage.setItem(item);</b>
+<b class="fc">&nbsp;        item.addImage(itemImage); // Add directly to item for getImages test</b>
+&nbsp;
+<b class="fc">&nbsp;        when(itemImageRepository.findById(1L)).thenReturn(Optional.of(itemImage));</b>
+&nbsp;
+&nbsp;        // getItemImages
+<b class="fc">&nbsp;        controller.perform(get(&quot;/items/200/images&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$[0].contentType&quot;, is(&quot;image/jpeg&quot;)));</b>
+&nbsp;
+&nbsp;        // getItemImage (single)
+<b class="fc">&nbsp;        controller.perform(get(&quot;/items/200/images/1&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(content().contentType(MediaType.IMAGE_JPEG));</b>
+&nbsp;
+&nbsp;        // deleteItemImage
+<b class="fc">&nbsp;        controller.perform(delete(&quot;/items/200/images/1&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(content().string(&quot;Image deleted successfully&quot;));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;
+&nbsp;    @Test
+&nbsp;    public void testDeleteUser() throws Exception {
+<b class="fc">&nbsp;        List&lt;User&gt; userList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        User u = new User();</b>
+<b class="fc">&nbsp;        u.setId(1);</b>
+<b class="fc">&nbsp;        u.setUsername(&quot;deleteMe&quot;);</b>
+<b class="fc">&nbsp;        userList.add(u);</b>
+&nbsp;
+<b class="fc">&nbsp;        when(userRepository.findById(1)).thenReturn(u);</b>
+&nbsp;
+<b class="fc">&nbsp;        doAnswer(x -&gt; {</b>
+<b class="fc">&nbsp;            userList.remove(u);</b>
+<b class="fc">&nbsp;            return null;</b>
+<b class="fc">&nbsp;        }).when(userRepository).delete(u);</b>
+&nbsp;
+<b class="fc">&nbsp;        controller.perform(delete(&quot;/users/1&quot;))</b>
+<b class="fc">&nbsp;                .andExpect(status().isOk())</b>
+<b class="fc">&nbsp;                .andExpect(jsonPath(&quot;$.message&quot;, is(&quot;success&quot;)));</b>
+&nbsp;                
+<b class="pc">&nbsp;        if (userList.isEmpty()) {</b>
+<b class="fc">&nbsp;            System.out.println(&quot;User deleted successfully in mock.&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 11:02</div>
+</div>
+</body>
+</html>
