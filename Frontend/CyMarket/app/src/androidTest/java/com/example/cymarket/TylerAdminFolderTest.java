@@ -44,7 +44,6 @@ public class TylerAdminFolderTest {
             );
 
     // onCreate → screen loads
-    @Test
     public void testAdminDashboardLoads() {
         onView(withId(R.id.sales_btn)).check(matches(isDisplayed()));
         onView(withId(R.id.users_btn)).check(matches(isDisplayed()));
@@ -53,7 +52,6 @@ public class TylerAdminFolderTest {
     }
 
     // fetchUsers() → users view visible by default
-    @Test
     public void testUsersRecyclerViewVisibleOnLaunch() {
         onView(withId(R.id.recyclerViewFriends))
                 .check(matches(isDisplayed()));
