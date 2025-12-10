@@ -6,15 +6,19 @@ stages:
   - androidtest
 
 maven-build:
-  image: maven:3.9.6-eclipse-temurin-21
   stage: mavenbuild
   tags:
     - main_backend
   script:
-    - java -version        # 👈 ver qué Java está usando realmente
-    - mvn -v               # 👈 ver qué Java ve Maven
+    # 1) Forzar Java 17 para este job
+    - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.17.0.10-1.el9.x86_64
+    - export PATH="$JAVA_HOME/bin:$PATH"
+    - java -version
+    - mvn -v
+
+    # 2) Build del backend
     - cd Backend/backend_code
-    - mvn -X -e package    # 👈 más detalle del error
+    - mvn package
   artifacts:
     paths:
       - Backend/backend_code/target/*.jar
@@ -27,8 +31,13 @@ maven-build:
 maven-test:
   stage: maventest
   tags:
-    - main_backend      # Updated to your registered runner tag
+    - main_backend
   script:
+    - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.17.0.10-1.el9.x86_64
+    - export PATH="$JAVA_HOME/bin:$PATH"
+    - java -version
+    - mvn -v
+
     - cd Backend/backend_code
     - mvn test
   only:
