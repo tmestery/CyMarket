@@ -90,7 +90,7 @@ public class MessagesActivity extends AppCompatActivity {
         messagesRecyclerView.setAdapter(messageAdapter);                   // <-- NOW VALID
 
         // --- Group info ---
-        groupId = getIntent().getIntExtra("groupID", -1);
+        groupId = getIntent().getIntExtra("groupID", 1);
         groupName = getIntent().getStringExtra("groupName");
         CHAT_KEY = "group_" + groupId;
 
