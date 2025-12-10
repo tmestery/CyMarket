@@ -114,8 +114,10 @@ public class BuyActivity extends AppCompatActivity {
                             // get id from backend
                             int id = obj.getInt("id");
 
-                            // add to local list
-                            listingList.add(new Listing(title, description, price, quantity, id));
+                            // add to local list, only items with a real quantity
+                            if (quantity > 0) {
+                                listingList.add(new Listing(title, description, price, quantity, id));
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
