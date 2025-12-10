@@ -29,11 +29,10 @@ public class Item {
     private int quantity = 0;
 
 
-    @Column(unique = true)
     private String username;
 
    @ManyToOne(optional = false)
-@JoinColumn(name = "seller_id", nullable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
 @JsonIgnore
 private Seller seller;
 
